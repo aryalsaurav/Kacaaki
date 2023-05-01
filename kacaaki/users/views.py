@@ -1,13 +1,11 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from .serializers import  (
-    UserSerializer,
-    NepaliStudentSerializer,
-    PasswordChangeSerializer,
     UserLoginSerializer,
+    UserUpdateSerializer,
     NepaliStudentSerializer,
-    NepaliStudentUpdateSerializer
-
+    NepaliStudentUpdateSerializer,
+    PasswordChangeSerializer,
 
 )
 from rest_framework.views import  APIView
@@ -31,30 +29,14 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from rest_framework import  permissions
 from django.contrib.auth.hashers import make_password
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth import login
+
 # from rest_framework.authtoken.models import Token
 
 
 
 # Create your views here.
-
-class UserDeleteView(APIView):
-    def delete(self,request):
-        try:
-            user = request.user
-            user.delete()
-            context = {
-                "status":200,
-                "message":"User deleted successfully"
-            }
-            return Response(context,status=200)
-        except:
-            context = {
-                "status":400,
-                "message":"User does not exist"
-            }
-            return Response(context,status=400)
 
 
 class NepaliStudentView(APIView):
@@ -90,22 +72,6 @@ class NepaliStudentView(APIView):
 
 
 
-
-class StudentUpdateView(generics.UpdateAPIView):
-    queryset = NepaliStudent.objects.all()
-    serializer_class = NepaliStudentUpdateSerializer
-    lookup_field = 'pk'
-
-    def put(self, request, *args, **kwargs):
-        user = request.user # get the current user
-        student = self.get_object()
-        if student.user != user:
-            return Response({'message': 'You do not have permission to update this student'}, status=status.HTTP_403_FORBIDDEN)
-        serializer = self.get_serializer(student, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
 class NepaliStudentDPDView(APIView):
     def get_object(self,pk):
         try:
@@ -115,7 +81,13 @@ class NepaliStudentDPDView(APIView):
     
     def get(self,request,pk):
         nepali_student = self.get_object(pk)
-        serializer = NepaliStudentUpdateSerializer(nepali_student)
+        if request.user != nepali_student.user:
+            context = {
+                "status":403,
+                "message":"You do not have permission to update this student"
+            }
+            return Response(context,status=403)
+        serializer = NepaliStudentSerializer(nepali_student)
         context = {
             "status":200,
             "message":f"Nepali Student {pk} got successfully",
@@ -131,22 +103,45 @@ class NepaliStudentDPDView(APIView):
                 "message":"You do not have permission to update this student"
             }
             return Response(context,status=403)
-        serializer = NepaliStudentUpdateSerializer(nepali_student,data=request.data,partial=True)
-        if serializer.is_valid():
-            serializer.save()
+        user_serializer = UserUpdateSerializer(nepali_student.user,data=request.data,partial=True)
+        nepali_student_serializer = NepaliStudentUpdateSerializer(nepali_student,data=request.data,partial=True)
+        if user_serializer.is_valid() and nepali_student_serializer.is_valid():
+            user_serializer.save()
+            nepali_student_serializer.save()
             context = {
                 "status":200,
-                "message":f"Nepali Student {pk} updated successfully",
-                "user":serializer.data
+                "message":"Nepali Student data updated successfully",
+                "data": {
+                    "user":user_serializer.data,
+                    "nepali_student":nepali_student_serializer.data
+                }
             }
             return Response(context,status=200)
         else:
             context = {
                 "status":400,
                 "message":"Entered data is not valided",
-                "error":serializer.errors
+                "error":{
+                    "user":user_serializer.errors,
+                    "nepali_student":nepali_student_serializer.errors
+                }
             }
             return Response(context,status=400)
+    
+    def delete(self,request,pk):
+        nepali_student = self.get_object(pk)
+        if request.user != nepali_student.user:
+            context = {
+                "status":403,
+                "message":"You do not have permission to delete this student"
+            }
+            return Response(context,status=403)
+        nepali_student.delete()
+        context = {
+            "status":200,
+            "message":"Nepali Student deleted successfully"
+        }
+        return Response(context,status=200)
 
 
 class UserLoginView(APIView):

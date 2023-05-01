@@ -109,6 +109,10 @@ class NepaliStudent(models.Model):
 
     def __str__(self):
         return self.user.email
+    
+    def delete(self, *args, **kwargs):
+        self.user.delete()
+        super().delete(*args, **kwargs)
 
     
 
@@ -140,6 +144,10 @@ class DanceStudent(models.Model):
 
     def __str__(self):
         return self.user.email
+    
+    def delete(self, *args, **kwargs):
+        self.user.delete()
+        super().delete(*args, **kwargs)
 
 
 teacher_choices = [
@@ -158,6 +166,10 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.user.email
+    
+    def delete(self, *args, **kwargs):
+        self.user.delete()
+        super().delete(*args, **kwargs)
 
 
 
@@ -169,6 +181,10 @@ class ManagementStaff(models.Model):
 
     def __str__(self):
         return self.user.email
+    
+    def delete(self, *args, **kwargs):
+        self.user.delete()
+        super().delete(*args, **kwargs)
 
 
 

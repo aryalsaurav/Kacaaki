@@ -21,6 +21,34 @@ class UserSerializer(serializers.ModelSerializer):
             'password':{'write_only':True}
         }
     
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id','email','full_name','gender','age','phone','photo','city','state','country']
+        extra_kwargs = {
+            'email':{'required':False},
+            'full_name':{'required':False},
+            'gender':{'required':False},
+            'age':{'required':False},
+            'phone':{'required':False},
+            'photo':{'required':False},
+            'city':{'required':False},
+            'state':{'required':False},
+            'country':{'required':False},
+        }
+    
+    def update(self,instance,validated_data):
+        instance.email = validated_data.get('email',instance.email)
+        instance.full_name = validated_data.get('full_name',instance.full_name)
+        instance.gender = validated_data.get("gender",instance.gender)
+        instance.age = validated_data.get('age',instance.age)
+        instance.phone = validated_data.get('phone',instance.phone)
+        instance.photo = validated_data.get('photo',instance.photo)
+        instance.city = validated_data.get('city',instance.city)
+        instance.state = validated_data.get('state',instance.state)
+        instance.country = validated_data.get('country',instance.country)
+        instance.save()
+        return instance
 
     
         
@@ -38,42 +66,32 @@ class NepaliStudentSerializer(serializers.ModelSerializer):
         nepali_student = NepaliStudent.objects.create(user=user,**validated_data)
         return nepali_student
 
-class UserUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id','email','full_name','gender','age','phone','photo','city','state','country']
-        extra_kwargs = {
-            'email':{'required':False},
-            'full_name':{'required':False},
-            'gender':{'required':False},
-            'age':{'required':False},
-            'phone':{'required':False},
-            'photo':{'required':False},
-            'city':{'required':False},
-            'state':{'required':False},
-            'country':{'required':False},
-        }
+
+
 
 class NepaliStudentUpdateSerializer(serializers.ModelSerializer):
-    user = UserUpdateSerializer()
     class Meta:
         model = NepaliStudent
-        fields = fields = ['id','user','signing_for','parents_name','nepali_at_home','listening','speaking','reading','writing','course_level','session_type','class_time','goal_for_class','hear_from','special_request','other_classes']
+        fields = fields = ['id','signing_for','parents_name','nepali_at_home','listening','speaking','reading','writing','course_level','session_type','class_time','goal_for_class','hear_from','special_request','other_classes']
         
     
     def update(self,instance,validated_data):
-        print(validated_data)
-        print("hello")
-        user_data = validated_data.pop('user',None)
-        print(user_data)
-        user_serializer = UserUpdateSerializer(instance.user, data=user_data)
-        if user_serializer.is_valid():
-            user_serializer.save()
-        else:
-            raise serializers.ValidationError(user_serializer.errors)
-        instance = super().update(instance, validated_data)
+        instance.signing_for = validated_data.get('signing_for',instance.signing_for)
+        instance.parents_name = validated_data.get('parents_name',instance.parents_name)
+        instance.nepali_at_home = validated_data.get('nepali_at_home',instance.nepali_at_home)
+        instance.listening = validated_data.get('listening',instance.listening)
+        instance.speaking = validated_data.get('speaking',instance.speaking)
+        instance.reading = validated_data.get('reading',instance.reading)
+        instance.writing = validated_data.get('writing',instance.writing)
+        instance.course_level = validated_data.get('course_level',instance.course_level)
+        instance.session_type = validated_data.get('session_type',instance.session_type)
+        instance.class_time = validated_data.get('class_time',instance.class_time)
+        instance.goal_for_class = validated_data.get('goal_for_class',instance.goal_for_class)
+        instance.hear_from = validated_data.get('hear_from',instance.hear_from)
+        instance.special_request = validated_data.get('special_request',instance.special_request)
+        instance.other_classes = validated_data.get('other_classes',instance.other_classes)
+        instance.save()
         return instance
-
 
 
 
