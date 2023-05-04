@@ -5,6 +5,8 @@ from .serializers import  (
     UserUpdateSerializer,
     NepaliStudentSerializer,
     NepaliStudentUpdateSerializer,
+    DanceStudentSerializer,
+    DanceStudentUpdateSerializer,
     PasswordChangeSerializer,
 
 )
@@ -52,6 +54,8 @@ class NepaliStudentView(APIView):
  
     def post(self, request,*args,**kwargs):
         serializer = NepaliStudentSerializer(data=request.data)
+        a = request.data
+        print(type(a['class_time']))
         if serializer.is_valid():
             # print(serializer)
             serializer.save()
@@ -144,6 +148,132 @@ class NepaliStudentDPDView(APIView):
         return Response(context,status=200)
 
 
+class DanceStudentView(APIView):
+    def get(self,request):
+        queryset = DanceStudent.objects.all()
+        serializer = DanceStudentSerializer(queryset,many=True)
+        context = {
+            "status":200,
+            "message":"All Dance Student got successfully",
+            "user":serializer.data
+        }
+        return Response(context,status=200)
+ 
+    def post(self, request,*args,**kwargs):
+        serializer = DanceStudentSerializer(data=request.data)
+        if serializer.is_valid():
+            # print(serializer)
+            serializer.save()
+            context = {
+                "status":201,
+                "message":"Dance Student created successfully",
+                "user":serializer.data
+
+            }
+            return Response(context, status=status.HTTP_201_CREATED)
+        else:
+            context = {
+                'status':400,
+                "message":"Entered data is not valid",
+                "error":serializer.errors
+            }
+            return Response(context,status=400)
+
+
+class DanceStudentDPDView(APIView):
+    def get_object(self,pk):
+        try:
+            return DanceStudent.objects.get(pk=pk)
+        except DanceStudent.DoesNotExist:
+            raise Http404
+        
+    
+    def get(self,request,pk):
+        dance_student = self.get_object(pk)
+        if request.user != dance_student.user:
+            context = {
+                "status":403,
+                "message":"You do not have permission to view this student"
+            }
+            return Response(context,status=403)
+        serializer = DanceStudentSerializer(dance_student)
+        context = {
+            "status":200,
+            "message":f"Nepali Student {pk} got successfully",
+            "user":serializer.data
+        }
+        return Response(context,status=200)
+
+    def put(self,request,pk):
+        dance_student = self.get_object(pk)
+        if request.user != dance_student.user:
+            context = {
+                "status":403,
+                "message":"You do not have permission to update this student"
+            }
+            return Response(context,status=403)
+        user_serializer = UserUpdateSerializer(dance_student.user,data=request.data,partial=True)
+        dance_student_serializer = DanceStudentUpdateSerializer(dance_student,data=request.data,partial=True)
+        if user_serializer.is_valid() and dance_student_serializer.is_valid():
+            user_serializer.save()
+            dance_student_serializer.save()
+            context = {
+                "status":200,
+                "message":"Nepali Student data updated successfully",
+                "data": {
+                    "user":user_serializer.data,
+                    "dance_student":dance_student_serializer.data
+                }
+            }
+            return Response(context,status=200)
+        else:
+            context = {
+                "status":400,
+                "message":"Entered data is not valided",
+                "error":{
+                    "user":user_serializer.errors,
+                    "dance_student":dance_student_serializer.errors
+                }
+            }
+            return Response(context,status=400)
+    
+    def delete(self,request,pk):
+        dance_student = self.get_object(pk)
+        if request.user != dance_student.user:
+            context = {
+                "status":403,
+                "message":"You do not have permission to delete this student"
+            }
+            return Response(context,status=403)
+        dance_student.delete()
+        context = {
+            "status":200,
+            "message":"Nepali Student deleted successfully"
+        }
+        return Response(context,status=200)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class UserLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = UserLoginSerializer
@@ -173,7 +303,7 @@ class UserLoginView(APIView):
             }
             return Response(context,status=400)
 
-    
+
         
 class LogoutView(APIView):
     def post(self, request, format=None):

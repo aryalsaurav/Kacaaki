@@ -9,6 +9,8 @@ from .views import (
     LogoutView,
     NepaliStudentView,
     NepaliStudentDPDView,
+    DanceStudentView,
+    DanceStudentDPDView,
     
 )
 
@@ -17,7 +19,9 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path('',include(router.urls)),
     path('nepali-student/',NepaliStudentView.as_view(),name='nepali_student'),
-    path('nepali-student/<int:pk>/',NepaliStudentDPDView.as_view(),name='nepali_student'),
+    path('nepali-student/<int:pk>/',NepaliStudentDPDView.as_view(),name='nepali_student_dpd'),
+    path('dance-student/',DanceStudentView.as_view(),name='dance_student'),
+    path('dance-student/<int:pk>/',DanceStudentDPDView.as_view(),name='dance_student_dpd'),
     path('user/login/',UserLoginView.as_view(),name='login'),
     path('user/change-password/',PasswordChangeView.as_view(),name="password"),
     path('user/logout/',LogoutView.as_view(),name='logout'),

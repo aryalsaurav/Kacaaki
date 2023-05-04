@@ -6,10 +6,20 @@ from .models import (
     DanceStudent,
     Teacher,
     ManagementStaff,
+    class_timing,
 )
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import make_password
+
+times = [t[1] for t in class_timing]
+def validate_class_time(value):
+    for v in value:
+        if v not in times:
+            raise serializers.ValidationError(
+               "Class time entered is not valid"
+                
+            )
 
 
 
@@ -54,9 +64,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         
 class NepaliStudentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    class_time = serializers.ListField(validators=[validate_class_time])
     class Meta:
         model = NepaliStudent
-        fields = fields = ['id','user','signing_for','parents_name','nepali_at_home','listening','speaking','reading','writing','course_level','session_type','class_time','goal_for_class','hear_from','special_request','other_classes']
+        fields = fields = ['id','user','signing_for','parents_name','nepali_at_home','listening','speaking','reading','writing','course_level','session_type','class_time','goal_for_class','hear_from','special_request','other_classes','is_nepali_student']
         
 
     def create(self, validated_data):
@@ -70,6 +81,7 @@ class NepaliStudentSerializer(serializers.ModelSerializer):
 
 
 class NepaliStudentUpdateSerializer(serializers.ModelSerializer):
+    class_time = serializers.ListField(validators=[validate_class_time])
     class Meta:
         model = NepaliStudent
         fields = fields = ['id','signing_for','parents_name','nepali_at_home','listening','speaking','reading','writing','course_level','session_type','class_time','goal_for_class','hear_from','special_request','other_classes']
@@ -92,6 +104,57 @@ class NepaliStudentUpdateSerializer(serializers.ModelSerializer):
         instance.other_classes = validated_data.get('other_classes',instance.other_classes)
         instance.save()
         return instance
+
+
+
+class DanceStudentSerializer(serializers.ModelSerializer):
+    class_time = serializers.ListField(validators=[validate_class_time])
+    user = UserSerializer()
+    class Meta:
+        model = DanceStudent
+        fields = ['id','user','signing_for','parents_name','dance_skills','dance_style','session_type','class_time','goal_for_class','hear_from','special_request','other_classes','is_dance_student']
+        
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        user_password = user_data.pop('password')
+        print(type(validated_data['class_time']))
+        user = User.objects.create(password=make_password(user_password),**user_data)
+        dance_student = DanceStudent.objects.create(user=user,**validated_data)
+        return dance_student
+
+
+class DanceStudentUpdateSerializer(serializers.ModelSerializer):
+    class_time = serializers.ListField(validators=[validate_class_time])
+    class Meta:
+        model = DanceStudent
+        fields = ['id','user','signing_for','parents_name','dance_skills','dance_style','session_type','class_time','goal_for_class','hear_from','special_request','other_classes']
+        
+    
+    def update(self,instance,validated_data):
+        instance.signing_for = validated_data.get('signing_for',instance.signing_for)
+        instance.parents_name = validated_data.get('parents_name',instance.parents_name)
+        instance.dance_skills = validated_data.get('dance_skills',instance.dance_skills)
+        instance.dance_style = validated_data.get('dance_style',instance.dance_style)
+        instance.session_type = validated_data.get('session_type',instance.session_type)
+        instance.class_time = validated_data.get('class_time',instance.class_time)
+        instance.goal_for_class = validated_data.get('goal_for_class',instance.goal_for_class)
+        instance.hear_from = validated_data.get('hear_from',instance.hear_from)
+        instance.special_request = validated_data.get('special_request',instance.special_request)
+        instance.other_classes = validated_data.get('other_classes',instance.other_classes)
+        instance.save()
+        return instance
+
+
+
+
+
+
+
+
+
+
+
 
 
 
