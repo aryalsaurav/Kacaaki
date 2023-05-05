@@ -5,7 +5,6 @@ from .models import (
     NepaliStudent,
     DanceStudent,
     Teacher,
-    ManagementStaff,
     class_timing,
 )
 from django.contrib.auth import authenticate
@@ -26,15 +25,33 @@ def validate_class_time(value):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','email','password','full_name','gender','age','phone','photo','city','state','country']
+        fields = ['id','email','password','full_name','gender','age','phone','photo','city','state','country','is_staff','is_superuser','is_active','created_at']
         extra_kwargs = {
             'password':{'write_only':True}
         }
+        # fields = "__all__"
+    
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id','email','password','full_name','gender','age','phone','photo','city','state','country','is_staff','is_superuser','is_active','created_at']
+        extra_kwargs = {
+            'password':{'write_only':True},
+            'is_staff':{'default':True},
+            
+        }
+        # fields = "__all__"
+    
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User.objects.create(password=make_password(password),**validated_data)
+        return user
     
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','email','full_name','gender','age','phone','photo','city','state','country']
+        fields = ['id','email','full_name','gender','age','phone','photo','city','state','country','is_staff','is_superuser','is_active','created_at']
         extra_kwargs = {
             'email':{'required':False},
             'full_name':{'required':False},
@@ -45,6 +62,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'city':{'required':False},
             'state':{'required':False},
             'country':{'required':False},
+            'is_staff':{'required':False},
+            'is_superuser':{'required':False},
+            'is_active':{'required':False},
+            
         }
     
     def update(self,instance,validated_data):
@@ -57,6 +78,9 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.city = validated_data.get('city',instance.city)
         instance.state = validated_data.get('state',instance.state)
         instance.country = validated_data.get('country',instance.country)
+        instance.is_staff = validated_data.get('is_staff',instance.is_staff)
+        instance.is_superuser = validated_data.get('is_superuser',instance.is_superuser)
+        instance.is_active = validated_data.get('is_active',instance.is_active)
         instance.save()
         return instance
 

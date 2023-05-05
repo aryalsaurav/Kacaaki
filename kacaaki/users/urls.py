@@ -5,6 +5,8 @@ from rest_framework import  routers
 
 from .views import (
     PasswordChangeView,
+    AdminUserView,
+    AdminUserDPDView,
     UserLoginView,
     LogoutView,
     NepaliStudentView,
@@ -20,6 +22,8 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('',include(router.urls)),
+    path('admin-user/',AdminUserView.as_view(),name='admin_user'),
+    path('admin-user/<int:pk>/',AdminUserDPDView.as_view(),name='admin_user_dpd'),
     path('nepali-student/',NepaliStudentView.as_view(),name='nepali_student'),
     path('nepali-student/<int:pk>/',NepaliStudentDPDView.as_view(),name='nepali_student_dpd'),
     path('dance-student/',DanceStudentView.as_view(),name='dance_student'),

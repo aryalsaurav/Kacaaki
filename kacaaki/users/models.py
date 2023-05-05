@@ -175,16 +175,7 @@ class Teacher(models.Model):
 
 
 
-class ManagementStaff(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    is_management_staff = models.BooleanField(default=True)
 
-    def __str__(self):
-        return self.user.email
-    
-    def delete(self, *args, **kwargs):
-        self.user.delete()
-        super().delete(*args, **kwargs)
 
 
 

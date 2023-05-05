@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from .serializers import  (
     UserLoginSerializer,
+    AdminUserSerializer,
     UserUpdateSerializer,
     NepaliStudentSerializer,
     NepaliStudentUpdateSerializer,
@@ -21,7 +22,6 @@ from .models import  (
     NepaliStudent,
     DanceStudent,
     Teacher,
-    ManagementStaff,
     Token,
    
 )
@@ -41,8 +41,93 @@ from django.contrib.auth import login
 
 
 # Create your views here.
+class AdminUserView(APIView):
+
+    def get(self,request):
+        queryset = User.objects.filter(is_staff=True)
+        serializer = AdminUserSerializer(queryset,many=True)
+        context = {
+            "status":200,
+            "message":"All User got successfully",
+            "data":serializer.data
+        }
+        return Response(context,status=200)
+ 
+    def post(self, request,*args,**kwargs):
+        serializer = AdminUserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            context = {
+                "status":201,
+                "message":"User created successfully",
+                "data":serializer.data
+
+            }
+            return Response(context, status=status.HTTP_201_CREATED)
+        else:
+            context = {
+                'status':400,
+                "message":"Entered data is not valid",
+                "error":serializer.errors
+            }
+            return Response(context,status=400)
+
+class AdminUserDPDView(APIView):
+    permission_classes = (permissions.IsAdminUser,)
+    def get_object(self,pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+        
+    
+    def get(self,request,pk):
+        user = self.get_object(pk)
+        serializer = AdminUserSerializer(user)
+        context = {
+            "status":200,
+            "message":f"User {pk} got successfully",
+            "data":serializer.data
+        }
+        return Response(context,status=200)
+
+    def put(self,request,pk):
+        user = self.get_object(pk)
+        if request.user != user:
+            context = {
+                "status":403,
+                "message":"You do not have permission to update this user"
+            }
+            return Response(context,status=403)
+        serializer = UserUpdateSerializer(user,data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            context = {
+                "status":200,
+                "message":f"User {pk} data updated successfully",
+                "data":serializer.data
+            }
+            return Response(context,status=200)
+        else:
+            context = {
+                "status":400,
+                "message":"Entered data is not valided",
+                "error":serializer.errors
+            }
+            return Response(context,status=400)
+    
+    def delete(self,request,pk):
+        user = self.get_object(pk)
+        user.delete()
+        context = {
+            "status":200,
+            "message":"User deleted successfully"
+        }
+        return Response(context,status=200)
 
 
+
+#Nepali Student View
 class NepaliStudentView(APIView):
     def get(self,request):
         queryset = NepaliStudent.objects.all()
@@ -50,7 +135,7 @@ class NepaliStudentView(APIView):
         context = {
             "status":200,
             "message":"All Nepali Student got successfully",
-            "user":serializer.data
+            "data":serializer.data
         }
         return Response(context,status=200)
  
@@ -62,7 +147,7 @@ class NepaliStudentView(APIView):
             context = {
                 "status":201,
                 "message":"Nepali Student created successfully",
-                "user":serializer.data
+                "data":serializer.data
 
             }
             return Response(context, status=status.HTTP_201_CREATED)
@@ -85,19 +170,22 @@ class NepaliStudentDPDView(APIView):
     
     def get(self,request,pk):
         nepali_student = self.get_object(pk)
-        if request.user != nepali_student.user:
+        
+        if request.user.is_staff is True or request.user == nepali_student.user:
+            serializer = NepaliStudentSerializer(nepali_student)
+            context = {
+                "status":200,
+                "message":f"Nepali Student {pk} got successfully",
+                "data":serializer.data
+            }
+            return Response(context,status=200)
+        else:
+            
             context = {
                 "status":403,
-                "message":"You do not have permission to update this student"
+                "message":"You do not have permission to view this student"
             }
             return Response(context,status=403)
-        serializer = NepaliStudentSerializer(nepali_student)
-        context = {
-            "status":200,
-            "message":f"Nepali Student {pk} got successfully",
-            "user":serializer.data
-        }
-        return Response(context,status=200)
 
     def put(self,request,pk):
         nepali_student = self.get_object(pk)
@@ -157,7 +245,7 @@ class DanceStudentView(APIView):
         context = {
             "status":200,
             "message":"All Dance Student got successfully",
-            "user":serializer.data
+            "data":serializer.data
         }
         return Response(context,status=200)
  
@@ -169,7 +257,7 @@ class DanceStudentView(APIView):
             context = {
                 "status":201,
                 "message":"Dance Student created successfully",
-                "user":serializer.data
+                "data":serializer.data
 
             }
             return Response(context, status=status.HTTP_201_CREATED)
@@ -192,19 +280,20 @@ class DanceStudentDPDView(APIView):
     
     def get(self,request,pk):
         dance_student = self.get_object(pk)
-        if request.user != dance_student.user:
+        if request.user.is_staff is True or request.user == dance_student.user:
+            serializer = DanceStudentSerializer(dance_student)
+            context = {
+                "status":200,
+                "message":f"Dance Student {pk} got successfully",
+                "data":serializer.data
+            }
+            return Response(context,status=200)
+        else:
             context = {
                 "status":403,
                 "message":"You do not have permission to view this student"
             }
             return Response(context,status=403)
-        serializer = DanceStudentSerializer(dance_student)
-        context = {
-            "status":200,
-            "message":f"Dance Student {pk} got successfully",
-            "user":serializer.data
-        }
-        return Response(context,status=200)
 
     def put(self,request,pk):
         dance_student = self.get_object(pk)
@@ -263,7 +352,7 @@ class TeacherView(APIView):
         context = {
             "status":200,
             "message":"All Teacher got successfully",
-            "user":serializer.data
+            "data":serializer.data
         }
         return Response(context,status=200)
  
@@ -275,7 +364,7 @@ class TeacherView(APIView):
             context = {
                 "status":201,
                 "message":"Teacher created successfully",
-                "user":serializer.data
+                "data":serializer.data
 
             }
             return Response(context, status=status.HTTP_201_CREATED)
@@ -298,19 +387,20 @@ class TeacherDPDView(APIView):
     
     def get(self,request,pk):
         teacher = self.get_object(pk)
-        if request.user != teacher.user:
+        if request.user == teacher.user or request.user.is_staff is True:
+            serializer = TeacherSerializer(teacher)
+            context = {
+                "status":200,
+                "message":f"Teacher {pk} got successfully",
+                "data":serializer.data
+            }
+            return Response(context,status=200)
+        else:
             context = {
                 "status":403,
                 "message":"You do not have permission to view this teacher"
             }
             return Response(context,status=403)
-        serializer = TeacherSerializer(teacher)
-        context = {
-            "status":200,
-            "message":f"Teacher {pk} got successfully",
-            "user":serializer.data
-        }
-        return Response(context,status=200)
 
     def put(self,request,pk):
         teacher = self.get_object(pk)
