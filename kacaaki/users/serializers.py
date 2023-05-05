@@ -146,8 +146,30 @@ class DanceStudentUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 
+class TeacherSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = Teacher
+        fields = ['id','user','teacher_type','zoom_link','is_teacher']
+    
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        user_password = user_data.pop('password')
+        user = User.objects.create(password=make_password(user_password),**user_data)
+        teacher = Teacher.objects.create(user=user,**validated_data)
+        return teacher
+    
 
-
+class TeacherUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields = ['id','teacher_type','zoom_link']
+    
+    def update(self,instance,validated_data):
+        instance.teacher_type = validated_data.get('teacher_type',instance.teacher_type)
+        instance.zoom_link = validated_data.get('zoom_link',instance.zoom_link)
+        instance.save()
+        return instance
 
 
 

@@ -11,6 +11,8 @@ from .views import (
     NepaliStudentDPDView,
     DanceStudentView,
     DanceStudentDPDView,
+    TeacherView,
+    TeacherDPDView,
     
 )
 
@@ -22,6 +24,8 @@ urlpatterns = [
     path('nepali-student/<int:pk>/',NepaliStudentDPDView.as_view(),name='nepali_student_dpd'),
     path('dance-student/',DanceStudentView.as_view(),name='dance_student'),
     path('dance-student/<int:pk>/',DanceStudentDPDView.as_view(),name='dance_student_dpd'),
+    path('teacher/',TeacherView.as_view(),name='teacher'),
+    path('teacher/<int:pk>/',TeacherDPDView.as_view(),name='teacher_dpd'),
     path('user/login/',UserLoginView.as_view(),name='login'),
     path('user/change-password/',PasswordChangeView.as_view(),name="password"),
     path('user/logout/',LogoutView.as_view(),name='logout'),

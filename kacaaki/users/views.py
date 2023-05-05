@@ -7,6 +7,8 @@ from .serializers import  (
     NepaliStudentUpdateSerializer,
     DanceStudentSerializer,
     DanceStudentUpdateSerializer,
+    TeacherSerializer,
+    TeacherUpdateSerializer,
     PasswordChangeSerializer,
 
 )
@@ -54,8 +56,6 @@ class NepaliStudentView(APIView):
  
     def post(self, request,*args,**kwargs):
         serializer = NepaliStudentSerializer(data=request.data)
-        a = request.data
-        print(type(a['class_time']))
         if serializer.is_valid():
             # print(serializer)
             serializer.save()
@@ -148,6 +148,8 @@ class NepaliStudentDPDView(APIView):
         return Response(context,status=200)
 
 
+#Dance Student View
+
 class DanceStudentView(APIView):
     def get(self,request):
         queryset = DanceStudent.objects.all()
@@ -199,7 +201,7 @@ class DanceStudentDPDView(APIView):
         serializer = DanceStudentSerializer(dance_student)
         context = {
             "status":200,
-            "message":f"Nepali Student {pk} got successfully",
+            "message":f"Dance Student {pk} got successfully",
             "user":serializer.data
         }
         return Response(context,status=200)
@@ -219,7 +221,7 @@ class DanceStudentDPDView(APIView):
             dance_student_serializer.save()
             context = {
                 "status":200,
-                "message":"Nepali Student data updated successfully",
+                "message":f"Dance student {pk} data updated successfully",
                 "data": {
                     "user":user_serializer.data,
                     "dance_student":dance_student_serializer.data
@@ -248,9 +250,118 @@ class DanceStudentDPDView(APIView):
         dance_student.delete()
         context = {
             "status":200,
-            "message":"Nepali Student deleted successfully"
+            "message":"Dance Student deleted successfully"
         }
         return Response(context,status=200)
+
+#Teacher View
+
+class TeacherView(APIView):
+    def get(self,request):
+        queryset = Teacher.objects.all()
+        serializer = TeacherSerializer(queryset,many=True)
+        context = {
+            "status":200,
+            "message":"All Teacher got successfully",
+            "user":serializer.data
+        }
+        return Response(context,status=200)
+ 
+    def post(self, request,*args,**kwargs):
+        serializer = TeacherSerializer(data=request.data)
+        if serializer.is_valid():
+            # print(serializer)
+            serializer.save()
+            context = {
+                "status":201,
+                "message":"Teacher created successfully",
+                "user":serializer.data
+
+            }
+            return Response(context, status=status.HTTP_201_CREATED)
+        else:
+            context = {
+                'status':400,
+                "message":"Entered data is not valid",
+                "error":serializer.errors
+            }
+            return Response(context,status=400)
+
+
+class TeacherDPDView(APIView):
+    def get_object(self,pk):
+        try:
+            return Teacher.objects.get(pk=pk)
+        except Teacher.DoesNotExist:
+            raise Http404
+        
+    
+    def get(self,request,pk):
+        teacher = self.get_object(pk)
+        if request.user != teacher.user:
+            context = {
+                "status":403,
+                "message":"You do not have permission to view this teacher"
+            }
+            return Response(context,status=403)
+        serializer = TeacherSerializer(teacher)
+        context = {
+            "status":200,
+            "message":f"Teacher {pk} got successfully",
+            "user":serializer.data
+        }
+        return Response(context,status=200)
+
+    def put(self,request,pk):
+        teacher = self.get_object(pk)
+        if request.user != teacher.user:
+            context = {
+                "status":403,
+                "message":"You do not have permission to update this teacher"
+            }
+            return Response(context,status=403)
+        user_serializer = UserUpdateSerializer(teacher.user,data=request.data,partial=True)
+        teacher_serializer = TeacherUpdateSerializer(teacher,data=request.data,partial=True)
+        if user_serializer.is_valid() and teacher_serializer.is_valid():
+            user_serializer.save()
+            teacher_serializer.save()
+            context = {
+                "status":200,
+                "message":f"Teacher {pk} data updated successfully",
+                "data": {
+                    "user":user_serializer.data,
+                    "teacher":teacher_serializer.data
+                }
+            }
+            return Response(context,status=200)
+        else:
+            context = {
+                "status":400,
+                "message":"Entered data is not valided",
+                "error":{
+                    "user":user_serializer.errors,
+                    "teacher":teacher_serializer.errors
+                }
+            }
+            return Response(context,status=400)
+    
+    def delete(self,request,pk):
+        teacher = self.get_object(pk)
+        if request.user != teacher.user:
+            context = {
+                "status":403,
+                "message":"You do not have permission to delete this teacher"
+            }
+            return Response(context,status=403)
+        teacher.delete()
+        context = {
+            "status":200,
+            "message":"Teacher deleted successfully"
+        }
+        return Response(context,status=200)
+
+
+
 
 
 
