@@ -146,9 +146,12 @@ REST_FRAMEWORK = {
 }
 
 
-AUTHENTICATION_BACKENDS = (
-        'django.contrib.auth.backends.ModelBackend',
-    )
+# AUTHENTICATION_BACKENDS = (
+#         'django.contrib.auth.backends.ModelBackend',
+#     )
+
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend']
+
 
 AUTH_USER_MODEL = 'users.User'
 # REST_AUTH_TOKEN_MODEL = "accounts.models.Token"

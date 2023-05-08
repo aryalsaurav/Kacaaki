@@ -147,7 +147,6 @@ class DanceStudentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user_password = user_data.pop('password')
-        print(type(validated_data['class_time']))
         user = User.objects.create(password=make_password(user_password),**user_data)
         dance_student = DanceStudent.objects.create(user=user,**validated_data)
         return dance_student
@@ -243,31 +242,25 @@ class UserLoginSerializer(serializers.Serializer):
             )
        
         user = authenticate(email=email, password=password)
-        # try:
-        #     user = User.objects.get(email=email)
-        #     if 
-        # except user.DoesNotExist:
-        #     raise serializers.ValidationError(
-        #         'A user with this email was not found.'
-        #     )
+        
     
-       
+        
         if user is None:
             user_filter = User.objects.filter(email=email)
-            print(user_filter)
             if user_filter.exists():
                 raise serializers.ValidationError(
-                    "Invald password"
+                    "Invalid password"
                 )
                 
             else:
                 raise serializers.ValidationError(
-                    "No user"
+                    "User with this email address doesn't exists. Please register first."
                 )
 
         if not user.is_active:
+            user_verification_email(user)
             raise serializers.ValidationError(
-                'This user has been deactivated.'
+                'Please verify your email to login. We have just sent you verification email.'
             
             )
         user.last_login = datetime.now()
