@@ -151,8 +151,8 @@ AUTHENTICATION_BACKENDS = (
     )
 
 AUTH_USER_MODEL = 'users.User'
-REST_AUTH_TOKEN_MODEL = "accounts.models.Token"
-REST_AUTH_TOKEN_CREATOR = "accounts.utils.custom_create_token"
+# REST_AUTH_TOKEN_MODEL = "accounts.models.Token"
+# REST_AUTH_TOKEN_CREATOR = "accounts.utils.custom_create_token"
 
 TOKEN_TTL = datetime.timedelta(days=30)
 
@@ -182,3 +182,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000',
     'http://yoursite.com'
 ]
+
+
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

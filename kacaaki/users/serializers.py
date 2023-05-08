@@ -10,6 +10,8 @@ from .models import (
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import make_password
+from .utils import user_verification_email
+from datetime import datetime
 
 times = [t[1] for t in class_timing]
 def validate_class_time(value):
@@ -98,7 +100,10 @@ class NepaliStudentSerializer(serializers.ModelSerializer):
         user_data = validated_data.pop('user')
         user_password = user_data.pop('password')
         user = User.objects.create(password=make_password(user_password),**user_data)
+        user.is_active=False
+        user.save()
         nepali_student = NepaliStudent.objects.create(user=user,**validated_data)
+        user_verification_email(user)
         return nepali_student
 
 
@@ -238,16 +243,35 @@ class UserLoginSerializer(serializers.Serializer):
             )
        
         user = authenticate(email=email, password=password)
+        # try:
+        #     user = User.objects.get(email=email)
+        #     if 
+        # except user.DoesNotExist:
+        #     raise serializers.ValidationError(
+        #         'A user with this email was not found.'
+        #     )
+    
        
         if user is None:
-            raise serializers.ValidationError(
-                'A user wi.'
-            )
+            user_filter = User.objects.filter(email=email)
+            print(user_filter)
+            if user_filter.exists():
+                raise serializers.ValidationError(
+                    "Invald password"
+                )
+                
+            else:
+                raise serializers.ValidationError(
+                    "No user"
+                )
 
         if not user.is_active:
             raise serializers.ValidationError(
                 'This user has been deactivated.'
+            
             )
+        user.last_login = datetime.now()
+        user.save()
 
         validated_data['user'] = user
         
