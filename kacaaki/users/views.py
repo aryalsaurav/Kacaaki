@@ -35,6 +35,7 @@ from rest_framework import  permissions
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth import login
+from .utils import verify_token
 
 # from rest_framework.authtoken.models import Token
 
@@ -462,16 +463,28 @@ class TeacherDPDView(APIView):
 
 
 
+class VerifyEmailView(APIView):
+    """
+    GET auth/verify-email/<str:token>/
+    """
+    permission_classes = (permissions.AllowAny,)
 
-
-
-
-
-
-
-
-
-
+    def get(self, request, token, *args, **kwargs):
+        user = verify_token(token)
+        if user:
+            user.is_active = True
+            user.save() 
+            context = {
+                "status":200,
+                "message":"Email verified successfully"
+            }
+            return Response(context, status=status.HTTP_200_OK)
+        else:
+            context = {
+                "status":400,
+                "message":"Invalid token"
+            }
+            return Response(context, status=status.HTTP_400_BAD_REQUEST)
 
 
 
