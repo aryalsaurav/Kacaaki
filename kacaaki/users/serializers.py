@@ -221,6 +221,14 @@ class PasswordChangeSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password1 = serializers.CharField(required=True)
     new_password2 = serializers.CharField(required=True)
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    new_password1 = serializers.CharField(required=True)
+    new_password2 = serializers.CharField(required=True)
+
+class UserEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
    
 
 class UserLoginSerializer(serializers.Serializer):

@@ -29,6 +29,17 @@ def user_verification_email(user):
     )
 
 
+def user_password_reset_email(user):
+    token = generate_token(user)
+    send_mail(
+        "Reset your password",
+        "Please reset your password by clicking the link below: "
+        f"http://127.0.0.1:8000/api/user/reset-password/{token}",
+        "noreply@gmail.com",
+        [user.email],
+        fail_silently=False,
+    )
+
 def generate_token(user):
     token = PasswordResetTokenGenerator()
     return token.make_token(user)

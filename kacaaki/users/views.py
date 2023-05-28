@@ -11,6 +11,8 @@ from .serializers import  (
     TeacherSerializer,
     TeacherUpdateSerializer,
     PasswordChangeSerializer,
+    PasswordResetSerializer,
+    UserEmailSerializer,
 
 )
 from rest_framework.views import  APIView
@@ -35,7 +37,7 @@ from rest_framework import  permissions
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth import login
-from .utils import verify_token
+from .utils import verify_token,user_password_reset_email
 
 # from rest_framework.authtoken.models import Token
 
@@ -486,7 +488,29 @@ class VerifyEmailView(APIView):
             }
             return Response(context, status=status.HTTP_400_BAD_REQUEST)
 
+class PasswordResetEmail(APIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = UserEmailSerializer
 
+    def post(self,request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            email = serializer.data['email']
+            user = User.objects.get(email=email)
+            user_password_reset_email(user)
+            context = {
+                "status":200,
+                "message":"Password reset email sent successfully"
+            }
+            return Response(context,status=200)
+        else:
+            context = {
+                'status':400,
+                'message':'failed',
+                'error':serializer.errors
+            }
+            return Response(context,status=400)
+            
 
 class UserLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -529,10 +553,13 @@ class LogoutView(APIView):
         return Response(context,status=status.HTTP_200_OK)
 
 
-@method_decorator(login_required,name='dispatch')
 class PasswordChangeView(APIView):
-    def put(self,request):
-        user = request.user
+    permission_classes = (permissions.IsAuthenticated,)
+
+   
+
+    def put(self,request,*args,**kwargs):
+        user  = request.user
         serializer = PasswordChangeSerializer(data=request.data)
         if serializer.is_valid():
             if not user.check_password(serializer.data.get('old_password')):
@@ -565,7 +592,7 @@ class PasswordChangeView(APIView):
                 user.save()
                 context = {
                     'status':200,
-                    'message':'success'
+                    'message':'Password changed successfully'
                 }
                 return Response(context,status=200)
         else:
@@ -575,3 +602,5 @@ class PasswordChangeView(APIView):
                 'errors':serializer.errors
             }
             return Response(context,status=400)
+        
+    
