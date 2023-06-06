@@ -38,9 +38,12 @@ from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth import login
 from .utils import verify_token,user_password_reset_email
+import redis
+import pickle
 
 # from rest_framework.authtoken.models import Token
 
+r = redis.Redis(host=settings.REDIS_HOST,port=settings.REDIS_PORT,db=0)
 
 
 # Create your views here.
@@ -133,14 +136,27 @@ class AdminUserDPDView(APIView):
 #Nepali Student View
 class NepaliStudentView(APIView):
     def get(self,request):
-        queryset = NepaliStudent.objects.all()
-        serializer = NepaliStudentSerializer(queryset,many=True)
-        context = {
-            "status":200,
-            "message":"All Nepali Student got successfully",
-            "data":serializer.data
-        }
-        return Response(context,status=200)
+        if r.exists('nepali_student'):
+            data = r.get('nepali_student')
+            data = pickle.loads(data)
+            context = {
+                "status":200,
+                "message":"All Nepali Student got successfully",
+                "data":data
+            }
+            return Response(context,status=200)
+        else:
+            queryset = NepaliStudent.objects.all()
+            serializer = NepaliStudentSerializer(queryset,many=True)
+            r.set('nepali_student',pickle.dumps(serializer.data))
+            r.expire('nepali_student',15,nx=True)
+            
+            context = {
+                "status":200,
+                "message":"All Nepali Student got successfully",
+                "data":serializer.data
+            }
+            return Response(context,status=200)
  
     def post(self, request,*args,**kwargs):
         serializer = NepaliStudentSerializer(data=request.data)

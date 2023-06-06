@@ -12,6 +12,12 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import make_password
 from .utils import user_verification_email
 from datetime import datetime
+import redis 
+import pickle
+
+
+
+
 
 times = [t[1] for t in class_timing]
 def validate_class_time(value):
