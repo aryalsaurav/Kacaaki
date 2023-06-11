@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  kacaaki:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/kacaaki
+    depends_on:
+      - database
+    container_name: kacaaki
+  database:
+    image: postgres:13.3-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=HelloWorld
+      - POSTGRES_DB=kacaaki_dev
+
+volumes:
+  postgres_data:

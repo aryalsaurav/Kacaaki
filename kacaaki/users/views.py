@@ -40,6 +40,9 @@ from django.contrib.auth import login
 from .utils import verify_token,user_password_reset_email
 import redis
 import pickle
+import django_filters 
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 # from rest_framework.authtoken.models import Token
 
@@ -468,6 +471,40 @@ class TeacherDPDView(APIView):
             "message":"Teacher deleted successfully"
         }
         return Response(context,status=200)
+
+
+
+
+class NepaliStudentFilter(django_filters.FilterSet):
+    user__city = django_filters.CharFilter(lookup_expr='icontains')
+    user__state = django_filters.CharFilter(lookup_expr='icontains')
+    user__country = django_filters.CharFilter(lookup_expr='icontains')
+    session_type = django_filters.CharFilter(lookup_expr='icontains')
+    class_time = django_filters.CharFilter(lookup_expr='icontains')
+
+
+
+    class Meta:
+        model = NepaliStudent
+        fields = ['user__city','user__state','user__country','session_type','class_time']
+
+
+
+class NepaliStudentSearch(filters.SearchFilter):
+    def get_search_fields(self,view, request):
+        search_params = super().get_search_fields(view,request)
+        return search_params 
+
+class NepaliStudentFilterView(generics.ListAPIView):
+    queryset = NepaliStudent.objects.all()
+    serializer_class = NepaliStudentSerializer
+    permission_classes = (permissions.AllowAny,)
+    filter_backends = [NepaliStudentSearch,DjangoFilterBackend]
+    filterset_class = NepaliStudentFilter
+    search_fields = ['user__full_name','user__email','user__phone','parents_name','user__city','user__state','user__country','session_type','class_time']
+    
+    
+
 
 
 

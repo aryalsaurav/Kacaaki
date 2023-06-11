@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'multiselectfield',
     'rest_framework',
     'corsheaders',
+    'django_filters',
+    
     
 ]
 
@@ -77,7 +79,9 @@ ROOT_URLCONF = 'kacaaki.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -108,7 +112,9 @@ DATABASES = {
         'NAME': 'kacaaki_dev',
         'USER': 'postgres',
         'PASSWORD': 'HelloWorld',
+        # 'HOST': '172.24.0.2',
         'HOST': 'localhost',
+        # 'HOST':'database',
         'PORT': '5432',
     }
 }
