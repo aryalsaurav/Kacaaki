@@ -51,3 +51,58 @@ def verify_token(token):
         if token_generator.check_token(user, token):
             return user
     return None
+
+
+def verify_reset_token(token):
+    token_generator = PasswordResetTokenGenerator()
+    users = get_user_model().objects.filter(is_active=True)
+    for user in users:
+        if token_generator.check_token(user, token):
+            return user
+    return None
+
+
+def check_password(password1,password2):
+
+    
+    if (password1!=password2):
+        context = {
+            'status':400,
+            'message':'failed',
+            'error':'Password did not match'
+        }
+        return context
+    
+    
+    
+    
+    elif (password1.isalpha()):
+        context = {
+            'status':400,
+            'message':'failed',
+            'error':'Password must contain at least 1 number'
+        }
+        return context
+    
+    elif (password1.islower()):
+        context = {
+            'status':400,
+            'message':'failed',
+            'error':'Password must contain at least 1 uppercase letter'
+        }
+        return context
+    
+    elif (password1.isupper()):
+        context = {
+            'status':400,
+            'message':'failed',
+            'error':'Password must contain at least 1 lowercase letter'
+        }
+        return context
+    elif (password1.isalnum()):
+        context = {
+            'status':400,
+            'message':'failed',
+            'error':'Password must contain at least 1 special character'
+        }
+        return context

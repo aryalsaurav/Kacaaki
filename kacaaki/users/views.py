@@ -37,7 +37,7 @@ from rest_framework import  permissions
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth import login
-from .utils import verify_token,user_password_reset_email
+from .utils import verify_token,user_password_reset_email,check_password,verify_reset_token
 import redis
 import pickle
 import django_filters 
@@ -632,22 +632,17 @@ class PasswordChangeView(APIView):
             
            
             
-            elif (serializer.data.get('new_password1')!=serializer.data.get('new_password2')):
-                context = {
-                    'status':400,
-                    'message':'failed',
-                    'error':'Password did not match'
-                }
-                return Response(context,status=400)
-            else:
+            elif_result= check_password(serializer.data.get('new_password1') , serializer.data.get('new_password2'))
+            if elif_result:
+                return Response(elif_result,status=400)
 
-                user.set_password(serializer.data.get('new_password2'))
-                user.save()
-                context = {
-                    'status':200,
-                    'message':'Password changed successfully'
-                }
-                return Response(context,status=200)
+            user.set_password(serializer.data.get('new_password2'))
+            user.save()
+            context = {
+                'status':200,
+                'message':'Password changed successfully',
+            }
+            return Response(context,status=200)
         else:
             context = {
                 'status':400,
@@ -656,4 +651,43 @@ class PasswordChangeView(APIView):
             }
             return Response(context,status=400)
         
-    
+
+
+
+class PasswordResetView(APIView):
+    """
+    GET auth/verify-email/<str:token>/
+    """
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = PasswordResetSerializer
+
+    def post(self, request, token, *args, **kwargs):
+        user = verify_reset_token(token)
+        if user:
+            serializer = self.serializer_class(data=request.data)
+            if serializer.is_valid():
+                elif_result= check_password(serializer.data.get('new_password1') , serializer.data.get('new_password2'))
+                if elif_result:
+                    return Response(elif_result,status=400)
+                user.set_password(serializer.data.get('new_password2'))
+                user.save()
+                context = {
+                    'status':200,
+                    'message':'Password reset successfully'
+                }
+                return Response(context,status=200)
+            else:
+                context = {
+                    'status':400,
+                    'message':'failed',
+                    'error':serializer.errors
+                }
+                return Response(context,status=400)
+
+
+        else:
+            context = {
+                "status":400,
+                "message":"Invalid token"
+            }
+            return Response(context, status=status.HTTP_400_BAD_REQUEST) 

@@ -10,6 +10,7 @@ from .models import (
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth import password_validation
 from .utils import user_verification_email
 from datetime import datetime
 import redis 
@@ -234,6 +235,13 @@ class PasswordChangeSerializer(serializers.Serializer):
 class PasswordResetSerializer(serializers.Serializer):
     new_password1 = serializers.CharField(required=True)
     new_password2 = serializers.CharField(required=True)
+
+    def validate_new_password1(self, value):
+        try:
+            password_validation.validate_password(value)
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
+        return value
 
 class UserEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)

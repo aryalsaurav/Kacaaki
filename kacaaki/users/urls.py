@@ -17,6 +17,9 @@ from .views import (
     TeacherDPDView,
     VerifyEmailView,
     NepaliStudentFilterView,
+    PasswordResetEmail,
+    PasswordResetView,
+
     
 )
 
@@ -37,6 +40,10 @@ urlpatterns = [
     path('user/logout/',LogoutView.as_view(),name='logout'),
     path('user/verify-email/<str:token>/',VerifyEmailView.as_view(),name='verify_email'),
     path('nepali-student/filter/',NepaliStudentFilterView.as_view(),name='nepali_student_filter'),
+    path('user/password-reset-email/',PasswordResetEmail.as_view(),name='password_reset_email'),
+    path('user/reset-password/<str:token>/',PasswordResetView.as_view(),name='password_reset'),
+
+
     
    
 ]
