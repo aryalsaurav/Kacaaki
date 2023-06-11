@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from .serializers import  (
+    UserSerializer,
     UserLoginSerializer,
     AdminUserSerializer,
     UserUpdateSerializer,
@@ -136,6 +137,53 @@ class AdminUserDPDView(APIView):
 
 
 
+class UserFilter(django_filters.FilterSet):
+    city = django_filters.CharFilter(lookup_expr='icontains')
+    state = django_filters.CharFilter(lookup_expr='icontains')
+    country = django_filters.CharFilter(lookup_expr='icontains')
+    is_active = django_filters.BooleanFilter()
+    is_staff = django_filters.BooleanFilter()
+    is_superuser = django_filters.BooleanFilter()
+    #age greater than and less than compare
+    age_gt = django_filters.NumberFilter(field_name='age', lookup_expr='gt')
+    age_lt = django_filters.NumberFilter(field_name='age', lookup_expr='lt')
+
+
+
+
+    class Meta:
+        model = User
+        fields = ['city','state','country','is_active','is_staff','is_superuser','age_gt','age_lt']
+
+
+
+class UserSearch(filters.SearchFilter):
+    def get_search_fields(self,view, request):
+        search_params = super().get_search_fields(view,request)
+        return search_params 
+
+class UserFilterView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.AllowAny,)
+    filter_backends = [UserSearch,DjangoFilterBackend]
+    filterset_class = UserFilter
+    search_fields = ['full_name','email','phone','city','state','country']
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #Nepali Student View
 class NepaliStudentView(APIView):
     def get(self,request):
@@ -265,12 +313,14 @@ class NepaliStudentFilter(django_filters.FilterSet):
     user__country = django_filters.CharFilter(lookup_expr='icontains')
     session_type = django_filters.CharFilter(lookup_expr='icontains')
     class_time = django_filters.CharFilter(lookup_expr='icontains')
+    age_gt = django_filters.NumberFilter(field_name='user__age', lookup_expr='gt')
+    age_lt = django_filters.NumberFilter(field_name='user__age', lookup_expr='lt')
 
 
 
     class Meta:
         model = NepaliStudent
-        fields = ['user__city','user__state','user__country','session_type','class_time']
+        fields = ['user__city','user__state','user__country','session_type','class_time','age_gt','age_lt']
 
 
 
@@ -410,6 +460,8 @@ class DanceStudentFilter(django_filters.FilterSet):
     user__country = django_filters.CharFilter(lookup_expr='icontains')
     session_type = django_filters.CharFilter(lookup_expr='icontains')
     class_time = django_filters.CharFilter(lookup_expr='icontains')
+    age_gt = django_filters.NumberFilter(field_name='user__age', lookup_expr='gt')
+    age_lt = django_filters.NumberFilter(field_name='user__age', lookup_expr='lt')
 
 
 

@@ -21,6 +21,8 @@ from .views import (
     NepaliStudentFilterView,
     DanceStudentFilterView,
     TeacherFilterView,
+    UserFilterView,
+
 
     
 
@@ -48,6 +50,8 @@ urlpatterns = [
     path('nepali-student/filter/',NepaliStudentFilterView.as_view(),name='nepali_student_filter'),
     path('dance-student/filter/',DanceStudentFilterView.as_view(),name='dance_student_filter'),
     path('teacher/filter/',TeacherFilterView.as_view(),name='teacher_filter'),
+    path('user/filter/',UserFilterView.as_view(),name='user_filter'),
+
 
     
 
