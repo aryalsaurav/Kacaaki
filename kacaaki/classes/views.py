@@ -65,11 +65,11 @@ class NepaliClassDetailView(APIView):
         if serializer.is_valid():
             serializer.save()
             context = {
-                'status':201,
+                'status':200,
                 'message': 'Nepali Class updated successfully',
                 'nepali_class': serializer.data,
             }
-            return Response(context, status=status.HTTP_201_CREATED)
+            return Response(context, status=status.HTTP_200_OK)
 
         else:
             context = {
@@ -146,11 +146,11 @@ class DanceClassDetailView(APIView):
         if serializer.is_valid():
             serializer.save()
             context = {
-                'status':201,
+                'status':200,
                 'message': 'Dance Class updated successfully',
                 'dance_class': serializer.data,
             }
-            return Response(context, status=status.HTTP_201_CREATED)
+            return Response(context, status=status.HTTP_200_OK)
 
         else:
             context = {

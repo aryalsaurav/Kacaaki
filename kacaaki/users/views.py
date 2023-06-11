@@ -163,12 +163,13 @@ class UserSearch(filters.SearchFilter):
         return search_params 
 
 class UserFilterView(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.order_by('id')
     serializer_class = UserSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = [UserSearch,DjangoFilterBackend]
     filterset_class = UserFilter
     search_fields = ['full_name','email','phone','city','state','country']
+    
  
 
 
