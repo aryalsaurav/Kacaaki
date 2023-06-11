@@ -258,6 +258,43 @@ class NepaliStudentDPDView(APIView):
         return Response(context,status=200)
 
 
+
+class NepaliStudentFilter(django_filters.FilterSet):
+    user__city = django_filters.CharFilter(lookup_expr='icontains')
+    user__state = django_filters.CharFilter(lookup_expr='icontains')
+    user__country = django_filters.CharFilter(lookup_expr='icontains')
+    session_type = django_filters.CharFilter(lookup_expr='icontains')
+    class_time = django_filters.CharFilter(lookup_expr='icontains')
+
+
+
+    class Meta:
+        model = NepaliStudent
+        fields = ['user__city','user__state','user__country','session_type','class_time']
+
+
+
+class NepaliStudentSearch(filters.SearchFilter):
+    def get_search_fields(self,view, request):
+        search_params = super().get_search_fields(view,request)
+        return search_params 
+
+class NepaliStudentFilterView(generics.ListAPIView):
+    queryset = NepaliStudent.objects.all()
+    serializer_class = NepaliStudentSerializer
+    permission_classes = (permissions.AllowAny,)
+    filter_backends = [NepaliStudentSearch,DjangoFilterBackend]
+    filterset_class = NepaliStudentFilter
+    search_fields = ['user__full_name','user__email','user__phone','parents_name','user__city','user__state','user__country','session_type','class_time']
+    
+
+
+
+
+
+
+
+
 #Dance Student View
 
 class DanceStudentView(APIView):
@@ -364,6 +401,51 @@ class DanceStudentDPDView(APIView):
             "message":"Dance Student deleted successfully"
         }
         return Response(context,status=200)
+
+
+
+class DanceStudentFilter(django_filters.FilterSet):
+    user__city = django_filters.CharFilter(lookup_expr='icontains')
+    user__state = django_filters.CharFilter(lookup_expr='icontains')
+    user__country = django_filters.CharFilter(lookup_expr='icontains')
+    session_type = django_filters.CharFilter(lookup_expr='icontains')
+    class_time = django_filters.CharFilter(lookup_expr='icontains')
+
+
+
+    class Meta:
+        model = DanceStudent
+        fields = ['user__city','user__state','user__country','session_type','class_time']
+
+
+
+class DanceStudentSearch(filters.SearchFilter):
+    def get_search_fields(self,view, request):
+        search_params = super().get_search_fields(view,request)
+        return search_params 
+
+class DanceStudentFilterView(generics.ListAPIView):
+    queryset = DanceStudent.objects.all()
+    serializer_class = DanceStudentSerializer
+    permission_classes = (permissions.AllowAny,)
+    filter_backends = [DanceStudentSearch,DjangoFilterBackend]
+    filterset_class = DanceStudentFilter
+    search_fields = ['user__full_name','user__email','user__phone','parents_name','user__city','user__state','user__country','session_type','class_time']
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #Teacher View
 
@@ -473,36 +555,37 @@ class TeacherDPDView(APIView):
         return Response(context,status=200)
 
 
-
-
-class NepaliStudentFilter(django_filters.FilterSet):
+class TeacherFilter(django_filters.FilterSet):
     user__city = django_filters.CharFilter(lookup_expr='icontains')
     user__state = django_filters.CharFilter(lookup_expr='icontains')
     user__country = django_filters.CharFilter(lookup_expr='icontains')
-    session_type = django_filters.CharFilter(lookup_expr='icontains')
-    class_time = django_filters.CharFilter(lookup_expr='icontains')
+    teacher_type = django_filters.CharFilter(lookup_expr='icontains')
+
 
 
 
     class Meta:
-        model = NepaliStudent
-        fields = ['user__city','user__state','user__country','session_type','class_time']
+        model = Teacher
+        fields = ['user__city','user__state','user__country','teacher_type']
 
 
 
-class NepaliStudentSearch(filters.SearchFilter):
+class TeacherSearch(filters.SearchFilter):
     def get_search_fields(self,view, request):
         search_params = super().get_search_fields(view,request)
         return search_params 
 
-class NepaliStudentFilterView(generics.ListAPIView):
-    queryset = NepaliStudent.objects.all()
-    serializer_class = NepaliStudentSerializer
+class TeacherFilterView(generics.ListAPIView):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
     permission_classes = (permissions.AllowAny,)
-    filter_backends = [NepaliStudentSearch,DjangoFilterBackend]
-    filterset_class = NepaliStudentFilter
-    search_fields = ['user__full_name','user__email','user__phone','parents_name','user__city','user__state','user__country','session_type','class_time']
-    
+    filter_backends = [TeacherSearch,DjangoFilterBackend]
+    filterset_class = TeacherFilter
+    search_fields = ['user__full_name','user__email','user__phone','user__city','user__state','user__country','teacher_type','zoom_link']
+ 
+
+
+
     
 
 
