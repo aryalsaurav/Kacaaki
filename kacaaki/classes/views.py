@@ -1,16 +1,26 @@
 from django.shortcuts import render
 from django.http import HttpResponse,Http404
-from .models import NepaliClass, DanceClass
+from .models import NepaliClass, DanceClass, Assignment, AssignmentSubmission, AssignmentFile
 from .serializers import (
     NepaliClassSerializer,
     DanceClassSerializer,
+    AssignmentSerializer,
+
 )
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+import django_filters
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+
 
 
 # Create your views here.
+
+
+#Nepali Class Views
+
 
 class NepaliClassView(APIView):
     def get(self, request):
@@ -89,8 +99,30 @@ class NepaliClassDetailView(APIView):
         return Response(context, status=status.HTTP_200_OK)
 
 
+class NepaliclassFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(lookup_expr='icontains')
+    class Meta:
+        model = NepaliClass
+        fields = ['name', 'teacher', 'students']
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Dance Class Views
 
 class DanceClassView(APIView):
     def get(self, request):
@@ -169,3 +201,38 @@ class DanceClassDetailView(APIView):
             'message': 'Dance Class deleted successfully',
         }
         return Response(context, status=status.HTTP_200_OK)
+
+
+
+
+#assignment view
+
+class AssignmentView(APIView):
+    def get(self,request):
+        assignments = Assignment.objects.all()
+        serializer = AssignmentSerializer(assignments, many=True)
+        context = {
+            'status':200,
+            'assignments': serializer.data,
+        }
+        return Response(context,status=status.HTTP_200_OK)
+
+
+    def post(self, request):
+        serializer = AssignmentSerializer(data=request.data,context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            context = {
+                'status':201,
+                'message': 'Assignment created successfully',
+                'assignment': serializer.data,
+            }
+            return Response(context, status=status.HTTP_201_CREATED)
+
+        else:
+            context = {
+                'status':400,
+                'message': 'Assignment not created',
+                'errors': serializer.errors,
+            }
+            return Response(context, status=status.HTTP_400_BAD_REQUEST)

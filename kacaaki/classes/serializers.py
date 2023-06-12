@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import NepaliClass, DanceClass
+from .models import NepaliClass, DanceClass, Assignment, AssignmentSubmission, AssignmentFile
 from users.models import User, NepaliStudent, DanceStudent, Teacher
 
 
@@ -59,6 +59,55 @@ class DanceClassSerializer(serializers.ModelSerializer):
         instance.students.set(students_data)
         instance.save()
         return instance
+
+
+
+
+class AssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = '__all__'
+
+
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+    #validate if the teacher is in the nepali class or not
+
+    def validate(self, data):
+        teacher = data['nepali_class'].teacher
+        print(teacher)
+        if teacher.user != self.context['request'].user:
+            raise serializers.ValidationError("You are not the teacher of this class")
+        return data
+
+    def create(self, validated_data):
+        assignment = Assignment.objects.create(**validated_data)
+        return assignment
+
+
+    def update(self, instance, validated_data):
+        instance.topic = validated_data.get('topic', instance.topic)
+        instance.nepali_class = validated_data.get('nepali_class', instance.nepali_class)
+        instance.save()
+        return instance
+
+
+
+
+class AssignmentFileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AssignmentFile
+        fields = '__all__'
+
+
+
+
+
+
+
         
 
     
