@@ -5,6 +5,8 @@ from .serializers import (
     NepaliClassSerializer,
     DanceClassSerializer,
     AssignmentSerializer,
+    AssignmentSubmissionSerializer,
+    AssignmentFileSerializer,
 
 )
 from rest_framework.views import APIView
@@ -13,7 +15,8 @@ from rest_framework import status
 import django_filters
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework.parsers import MultiPartParser, FormParser
+from users.models import User, NepaliStudent, DanceStudent, Teacher
 
 
 # Create your views here.
@@ -236,3 +239,109 @@ class AssignmentView(APIView):
                 'errors': serializer.errors,
             }
             return Response(context, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class AssignmentDetailView(APIView):
+    def get_object(self,pk):
+        try:
+            return Assignment.objects.get(pk=pk)
+        except Assignment.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk):
+        assignment = self.get_object(pk)
+        serializer = AssignmentSerializer(assignment)
+        context = {
+            'status':200,
+            'assignment': serializer.data,
+        }
+        return Response(context, status=status.HTTP_200_OK)
+
+
+    def put(self, request, pk):
+        assignment = self.get_object(pk)
+        serializer = AssignmentSerializer(assignment, data=request.data, partial=True,context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            context = {
+                'status':200,
+                'message': 'Assignment updated successfully',
+                'assignment': serializer.data,
+            }
+            return Response(context, status=status.HTTP_200_OK)
+
+        else:
+            context = {
+                'status':400,
+                'message': 'Assignment not updated',
+                'errors': serializer.errors,
+            }
+            return Response(context, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, pk):
+        assignment = self.get_object(pk)
+        assignment.delete()
+        context = {
+            'status':200,
+            'message': 'Assignment deleted successfully',
+        }
+        return Response(context, status=status.HTTP_200_OK)
+
+
+
+
+def modify_input_for_multiple_files(assignment_id, student, files):
+    modified_data = []
+    for file in files:
+        data = {
+            'assignment_submission': {'assignment': assignment_id, 'student': student},
+            'a_file': file
+        }
+        modified_data.append(data)
+    return modified_data
+
+
+
+
+
+class AssignmentSubmissionView(APIView):
+    # parser_classes = (MultiPartParser, FormParser)
+    def get(self,request):
+        assignment_submissions = AssignmentSubmission.objects.all()
+        serializer = AssignmentSubmissionSerializer(assignment_submissions, many=True)
+        context = {
+            'status':200,
+            'assignment_submissions': serializer.data,
+        }
+        return Response(context,status=status.HTTP_200_OK)
+
+    def post(self,request):
+        # print(request.data)
+        serializer = AssignmentSubmissionSerializer(data=request.data,context = {'request': request})
+        files = request.FILES.getlist('a_file')
+        
+        if serializer.is_valid():
+            
+            serializer.save()
+            assignment_submission = AssignmentSubmission.objects.get(pk=serializer.data['id'])
+            for file in files:
+                AssignmentFile.objects.create(assignment_submission=assignment_submission, a_file=file)
+            context = {
+                'status':201,
+                'message': 'Assignment submitted successfully',
+                'assignment_submission': serializer.data,
+            }
+            return Response(context, status=status.HTTP_201_CREATED)
+
+        else:
+            context = {
+                'status':400,
+                'message': 'Assignment not submitted',
+                'errors': serializer.errors,
+            }
+            return Response(context, status=status.HTTP_400_BAD_REQUEST)
+
+
+    

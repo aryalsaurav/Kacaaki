@@ -6,6 +6,9 @@ from .views import (
     NepaliClassDetailView,
     DanceClassDetailView,
     AssignmentView,
+    AssignmentDetailView,
+    AssignmentSubmissionView,
+
 
 )
 
@@ -15,6 +18,8 @@ urlpatterns = [
     path('dance-class/', DanceClassView.as_view(), name='dance-class'),
     path('dance-class/<int:pk>/', DanceClassDetailView.as_view(), name='dance-class-detail'),
     path('assignment/', AssignmentView.as_view(), name='assignment'),
+    path('assignment/<int:pk>/', AssignmentDetailView.as_view(), name='assignment-detail'),
+    path('assignment-submission/', AssignmentSubmissionView.as_view(), name='assignment-submission'),
 
 
 ]

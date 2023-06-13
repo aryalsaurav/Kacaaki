@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import NepaliClass, DanceClass, Assignment, AssignmentSubmission, AssignmentFile
 from users.models import User, NepaliStudent, DanceStudent, Teacher
+#import integrityerror 
+from django.db import IntegrityError
 
 
 class NepaliClassSerializer(serializers.ModelSerializer):
@@ -95,17 +97,49 @@ class AssignmentSerializer(serializers.ModelSerializer):
 
 
 
-
 class AssignmentFileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = AssignmentFile
-        fields = '__all__'
+        fields = ['id','a_file']
+
+    
 
 
 
 
 
+
+class AssignmentSubmissionSerializer(serializers.ModelSerializer):
+    images = AssignmentFileSerializer(many=True, required=False)
+    class Meta:
+        model = AssignmentSubmission
+        fields = ['id','assignment', 'student', 'submitted_at','images']
+        
+
+    
+    def validate(self, data):
+        student = self.context['request'].user
+        assignment = data['assignment']
+        #if student exists in the class the assignment is issued 
+        if not assignment.nepali_class.students.filter(user=student).exists():
+            raise serializers.ValidationError("You are not the student of this class")
+        return data
+        
+
+    def create(self, validated_data):
+        images_data = validated_data.pop('images',[])
+        assignment_submission = AssignmentSubmission.objects.create(**validated_data)
+        return assignment_submission
+        
+
+
+
+
+
+
+
+    
+        
 
 
         
