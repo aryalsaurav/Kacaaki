@@ -7,6 +7,8 @@ from .serializers import (
     AssignmentSerializer,
     AssignmentSubmissionSerializer,
     AssignmentFileSerializer,
+    AssignmentSubmissionDetailSerializer,
+    AssignmentFileUploadSerializer,
 
 )
 from rest_framework.views import APIView
@@ -292,15 +294,7 @@ class AssignmentDetailView(APIView):
 
 
 
-def modify_input_for_multiple_files(assignment_id, student, files):
-    modified_data = []
-    for file in files:
-        data = {
-            'assignment_submission': {'assignment': assignment_id, 'student': student},
-            'a_file': file
-        }
-        modified_data.append(data)
-    return modified_data
+
 
 
 
@@ -310,10 +304,11 @@ class AssignmentSubmissionView(APIView):
     # parser_classes = (MultiPartParser, FormParser)
     def get(self,request):
         assignment_submissions = AssignmentSubmission.objects.all()
-        serializer = AssignmentSubmissionSerializer(assignment_submissions, many=True)
+        serializer = AssignmentSubmissionDetailSerializer(assignment_submissions, many=True)
+        print(serializer.data)
         context = {
             'status':200,
-            'assignment_submissions': serializer.data,
+            'data': serializer.data,
         }
         return Response(context,status=status.HTTP_200_OK)
 
@@ -342,6 +337,75 @@ class AssignmentSubmissionView(APIView):
                 'errors': serializer.errors,
             }
             return Response(context, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class AssignmentSubmissionDetailView(APIView):
+    # parser_classes = (MultiPartParser, FormParser)
+    def get_object(self,pk):
+        try:
+            return AssignmentSubmission.objects.get(pk=pk)
+        except AssignmentSubmission.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk):
+        assignment_submission = self.get_object(pk)
+        serializer = AssignmentSubmissionDetailSerializer(assignment_submission)
+        context = {
+            'status':200,
+            'assignment_submission': serializer.data,
+        }
+        return Response(context, status=status.HTTP_200_OK)
+    
+
+    def post(self, request, pk):
+        assignment_submission = self.get_object(pk)
+        if not assignment_submission.assignment.nepali_class.students.filter(user=request.user).exists():
+            context = {
+                'status':400,
+                'message': 'You are not the student of this class',
+            }
+            return Response(context, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = AssignmentFileUploadSerializer(data=request.data,many=True)
+        files = request.FILES.getlist('a_file')
+        if serializer.is_valid():
+            serializer.save()
+            li = []
+            for file in range(len(files)):
+                a = AssignmentFile.objects.create(assignment_submission=assignment_submission,a_file=files[file])
+                li.append(files[file].name)
+            
+
+            
+            context = {
+                'status':201,
+                'message': 'Assignment submitted successfully',
+                'assignment_submission': li
+            }
+            return Response(context, status=status.HTTP_201_CREATED)
+
+        else:
+            context = {
+                'status':400,
+                'message': 'Assignment not submitted',
+                'errors': serializer.errors
+            }
+            return Response(context, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+    def delete(self, request, pk):
+        assignment_submission = self.get_object(pk)
+        assignment_submission.delete()
+        context = {
+            'status':200,
+            'message': 'Assignment deleted successfully',
+        }
+        return Response(context, status=status.HTTP_200_OK)
 
 
     

@@ -8,6 +8,7 @@ from .views import (
     AssignmentView,
     AssignmentDetailView,
     AssignmentSubmissionView,
+    AssignmentSubmissionDetailView,
 
 
 )
@@ -20,6 +21,7 @@ urlpatterns = [
     path('assignment/', AssignmentView.as_view(), name='assignment'),
     path('assignment/<int:pk>/', AssignmentDetailView.as_view(), name='assignment-detail'),
     path('assignment-submission/', AssignmentSubmissionView.as_view(), name='assignment-submission'),
+    path('assignment-submission/<int:pk>/', AssignmentSubmissionDetailView.as_view(), name='assignment-submission-detail'),
 
 
 ]

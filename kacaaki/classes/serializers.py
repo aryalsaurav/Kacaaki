@@ -102,10 +102,24 @@ class AssignmentFileSerializer(serializers.ModelSerializer):
         model = AssignmentFile
         fields = ['id','a_file']
 
+
+class AssignmentFileUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AssignmentFile
+        fields = ['id','assignment_submission','a_file']
+        extra_kwargs = {
+                'assignment_submission': {'required': False},
+            }
+
+
+
+    
     
 
 
 
+
+    
 
 
 
@@ -114,25 +128,42 @@ class AssignmentSubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = AssignmentSubmission
         fields = ['id','assignment', 'student', 'submitted_at','images']
+        extra_kwargs = {
+            'student': {'read_only': True},
+        }
         
 
     
     def validate(self, data):
         student = self.context['request'].user
         assignment = data['assignment']
-        #if student exists in the class the assignment is issued 
         if not assignment.nepali_class.students.filter(user=student).exists():
+            
             raise serializers.ValidationError("You are not the student of this class")
         return data
         
 
     def create(self, validated_data):
         images_data = validated_data.pop('images',[])
-        assignment_submission = AssignmentSubmission.objects.create(**validated_data)
+        n_student = self.context['request'].user
+        student = NepaliStudent.objects.get(user=n_student)
+        try:
+            assignment_submission = AssignmentSubmission.objects.create(student=student,**validated_data)
+        except IntegrityError:
+            raise serializers.ValidationError({"status":400,"error": "You have already submitted this assignment"})
         return assignment_submission
-        
 
 
+    
+ 
+
+
+
+class AssignmentSubmissionDetailSerializer(serializers.ModelSerializer):
+    images = AssignmentFileSerializer(many=True, source='assignmentfile_set')
+    class Meta:
+        model = AssignmentSubmission
+        fields = ['id','assignment', 'student', 'submitted_at','images']
 
 
 

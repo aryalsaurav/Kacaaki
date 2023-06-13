@@ -45,6 +45,8 @@ class AssignmentSubmission(models.Model):
         unique_together = ('assignment', 'student',)
         verbose_name_plural = 'Assignment Submissions'
 
+
+    #automatically save the student to be the one who is logged in
     
 
     
