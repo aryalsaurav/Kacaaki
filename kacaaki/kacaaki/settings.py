@@ -43,10 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
     'classes',
+    
     'multiselectfield',
     'rest_framework',
     'corsheaders',
     'django_filters',
+    'main',
     
     
 ]
@@ -71,8 +73,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.contrib.gis.middleware.geoip2.GeoIP2Middleware',
+    # 'users.middleware.UserAgentMiddleware',
     
 ]
+
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 ROOT_URLCONF = 'kacaaki.urls'
 
@@ -157,7 +164,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        "users.authentication.ExpiringTokenAuthentication",
+        "users.api.authentication.ExpiringTokenAuthentication",
     ],
 }
 

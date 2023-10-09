@@ -1,0 +1,37 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+    <a href="{% url 'main:home' %}" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+        <h2 class="m-0 text-success"><i class="fa fa-book me-3"></i>KAKAAKI</h2>
+    </a>
+    <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto p-4 p-lg-0">
+            <a href="{% url 'main:home' %}" class="nav-item nav-link active">Home</a>
+            <a href="{% url 'main:about_us' %}" class="nav-item nav-link">About US</a>
+            <a href="{% url 'users:teachers_list' %}" class="nav-item nav-link">Our Teachers</a>
+            <a href="{% url 'main:testomonials' %}" class="nav-item nav-link">Testimonial</a>
+            <a href="{% url 'main:contact_us' %}" class="nav-item nav-link">Contact Us</a>
+            <!-- <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"></a>
+                <div class="dropdown-menu fade-down m-0">
+                    <a href="team.html" class="dropdown-item">Our Team</a>
+                    
+                    <a href="404.html" class="dropdown-item">404 Page</a>
+                </div>
+            </div> -->
+            
+        </div>
+        
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'main:logout' %}" class="nav-item nav-link">Logout</a>
+        <a href="" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">My Profile<i class="fa fa-arrow-right ms-3"></i></a>
+        {% else %}
+        <a href="{% url 'main:login' %}" class="nav-item nav-link">Login</a>
+        <a href="" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Join Now<i class="fa fa-arrow-right ms-3"></i></a>
+        {% endif %}
+        
+    </div>
+</nav>

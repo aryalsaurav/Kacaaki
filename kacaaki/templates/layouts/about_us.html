@@ -1,0 +1,159 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+
+{% block title %}About Us{% endblock %}
+
+{% block head %}
+
+<style>
+    #round-image {
+        max-width: 200px;
+        max-height: 200px;
+        height: auto;
+        width: auto;
+    }
+</style>
+    
+{% endblock %}
+
+{% block content %}
+
+    <!-- Carousel Start -->
+        
+
+
+    <!-- Service Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="service-item text-center pt-3">
+                        <div class="p-4">
+                            <i class="fa fa-3x fa-graduation-cap text-primary mb-4"></i>
+                            <h5 class="mb-3">Skilled Instructors</h5>
+                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="service-item text-center pt-3">
+                        <div class="p-4">
+                            <i class="fa fa-3x fa-globe text-primary mb-4"></i>
+                            <h5 class="mb-3">Online Classes</h5>
+                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="service-item text-center pt-3">
+                        <div class="p-4">
+                            <i class="fa fa-3x fa-home text-primary mb-4"></i>
+                            <h5 class="mb-3">Home Projects</h5>
+                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
+                    <div class="service-item text-center pt-3">
+                        <div class="p-4">
+                            <i class="fa fa-3x fa-book-open text-primary mb-4"></i>
+                            <h5 class="mb-3">Book Library</h5>
+                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Service End -->
+
+    <!-- About Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
+                    <div class="position-relative h-100">
+                        <img class="img-fluid position-absolute w-100 h-100" src="{% static 'img/about.jpg' %}" alt="" style="object-fit: cover;">
+                    </div>
+                </div>
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                    
+                    <h1 class="mb-4">Welcome to KAKAAKI</h1>
+                    <p class="mb-4">Covid-19 forced kids to stay home getting bored, playing video games or spending time on Youtube or other mobile apps. 
+                        There is very limited teaching by their school teachers. Parents can only give certain time to the kids as they have to do their own work. 
+                        This is a typical scenario in many homes. As online school came to an end and summer break started for our kids, they had even more time to get bored (or indulged in TV or phone). 
+                        As parents, we started thinking of productive ways to keep our kids busy. As Nepali parents, we always have a desire for our kids to learn Nepali. We even tried to teach Nepali to our kids by ourselves or by sending them to classes locally run by enthusiastic parents. 
+                        However, those classes only go so far as the parents are not trained to be teachers. Moreover, it is always challenging for parents to manage limited weekend time in driving kids back and forth from the classes. 
+                        Since June 2020, our daughters have been learning Nepali online from an experienced teacher in Nepal. Over the past two months, we have seen significant improvement in their Nepali skills, beyond our expectations. 
+                        This success led to Kakaaki – an opportunity for kids (and adults) anywhere in the world to learn Nepali from experienced teachers in Nepal. We are starting with Nepali language, however please let us know if you or someone you know is interested in learning other languages. 
+                        We will make it happen!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+    <!-- About End -->
+
+    <!-- About Co founder -->
+    <div class="container col-lg-12"><div class="shadow-none p-3 mb-5 bg-light rounded"><h4 style="text-align: center;">Our Founders</h4></div></div>
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-5 p-3 shadow-lg">
+                <div class="col-lg-3 wow fadeInUp" data-wow-delay="0.1s" style="max-height: 200px; height: auto;">
+                    <div class="position-relative h-100">
+                        <img id="round-image" class="rounded-circle shadow-4-strong"  alt="avatar2" src="{% static 'img/about.jpg' %}" />
+                    </div>
+                </div>
+                <div class="col-lg-9 wow fadeInUp" data-wow-delay="0.3s">
+                    
+                    <h1 class="mb-4">Batsal Devkota</h1>
+                    <p class="mb-4" style="display: inline-block;">Father of two kids, Adeeti - 11 years old and Pranil - 5 years old, I came to the USA for my undergraduate in 1997 and have been in the US ever since.</p>
+                    <p class="mb-4">I was finding it hard to teach Nepali to my daughter. I along with another Nepali friend started taking her and my friend’s daughter to the nearby library and was teaching Nepali for about 2 hours every week. During COVID time, since we couldn’t do on site teaching, I enrolled my daughter in an online class being conducted by some friends in Maryland, USA. The teachers were all local volunteers. Situation was the same, the teachers were all professionals in different fields other than teaching. Even though this was much better than two of us taking our daughters to the library, I wanted more structured teaching with a defined curriculum by experienced teachers. This want shared with the founders of Kakaaki drove us to launch this online nepali language learning platform. We as founders of Kakaaki all share the same vision, to connect our sons and daughters to Nepal via Nepali language using an online platform. With the launch of Kakaaki, I am excited about the possibility of giving my daughter, eventually my son and many other daughters/sons from Nepali origin the opportunity to learn Nepali from anywhere in the world.</p>
+                    
+                </div>
+            </div>
+
+            
+            <div class="row g-5 p-3 shadow-lg mt-5">
+                <div class="col-lg-3 wow fadeInUp" data-wow-delay="0.1s" style="max-height: 200px; height: auto;">
+                    <div class="position-relative h-100">
+                        <img id="round-image" class="rounded-circle shadow-4-strong"  alt="avatar2" src="{% static 'img/about.jpg' %}" />
+                    </div>
+                </div>
+                <div class="col-lg-9 wow fadeInUp" data-wow-delay="0.3s">
+                    
+                    <h1 class="mb-4">Pradeep Khanal</h1>
+                    <p class="mb-4" style="display: inline-block;">Proud father of two kids, Bela - 7 years and Nama - 1 year, I have been living away from Nepal for almost 20 years. Both Bela and Nama were born in the United States.</p>
+                    <p class="mb-4">Research has shown that there are cognitive benefits of being bilingual. And, it’s a bonus to learn language from your roots – helps with self-identity and enables you to communicate with your loved ones back home. I wished the same for my daughter Bela. Bela learned to speak Nepali from a young age, however, when she joined Kindergarten her fluency dropped. She would spend so much time at school that the limited conversation we had at home couldn’t keep up and she preferred to speak English more than Nepali. This is a very common theme for kids who live overseas. Moreover, just speaking wasn’t enough for Bela to retain the words that she had learned. That’s when I realized she ought to be able to read and write as well so that she could remember the language long term, just like swimming or cycling. All of this changed after we started an online class for Bela and her two friends to learn Nepali from an experienced teacher living in Nepal. I am very happy with the progress she has made thus far and excited to see how far she will go. I am thrilled that we can now offer this learning opportunity to your family through Kakaaki. I hope you’ll sign-up.</p>
+                    
+                </div>
+            </div>
+
+            <div class="row g-5 p-3 shadow-lg mt-5">
+                <div class="col-lg-3 wow fadeInUp" data-wow-delay="0.1s" style="max-height: 200px; height: auto;">
+                    <div class="position-relative h-100">
+                        <img id="round-image" class="rounded-circle shadow-4-strong"  alt="avatar2" src="{% static 'img/about.jpg' %}" />
+                    </div>
+                </div>
+                <div class="col-lg-9 wow fadeInUp" data-wow-delay="0.3s">
+                    
+                    <h1 class="mb-4">Sushil Subedi</h1>
+                    <p class="mb-4" style="display: inline-block;">Father of two kids, Suditi- 8 years old and Sidarth - 4 years old, I came to the United States in 2001 for an Undergraduate degree and currently live in North Carolina.</p>
+                    <p class="mb-4">My daughter Suditi has been taking classes via KaCaaki since the Covid-19 disrupted her regular school. Although she used to speak some Nepali at home, she has made tremendous progress in her writing skills already. Since Suditi turned 5 years old, we tried many avenues to teach her Nepali. We tried at home, and we tried to find Nepali parents with similar age group kids who were interested in teaching Nepali. Nothing seemed to work and as parents, we always wished there was an online, but cost effective way to teach Nepali to kids. With KaCaaKi, we are hoping that no other parents like us will have to go through the same frustration we went through. With minimal cost, we are hoping to connect teachers with students who are interested in learning Nepali.</p>
+                    
+                </div>
+            </div>
+            
+        </div>
+    </div>
+   
+    
+    <!-- About End -->
+    
+
+   
+    
+{% endblock %}

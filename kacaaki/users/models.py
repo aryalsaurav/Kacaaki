@@ -9,6 +9,7 @@ from django.contrib.auth.models import AbstractBaseUser, Group,AbstractUser,Perm
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import Permission,Group
 from rest_framework.authtoken.models import Token as AuthToken
+# from .fields import UserAgentField
 
 
 # Create your models here.
@@ -69,6 +70,14 @@ class User(AbstractUser):
     objects = UserManager()
     def __str__(self):
         return self.email
+    
+
+    def imageURL(self):
+        try:
+            url = self.photo.url
+        except:
+            url = ''
+        return url
 
 class NepaliStudent(models.Model):
     
@@ -188,6 +197,7 @@ class Token(AuthToken):
         verbose_name="User",
     )
     expiration_date = models.DateTimeField()
+    # user_agent = UserAgentField()
 
     def save(self, *args, **kwargs):
         if self.expiration_date is None:
