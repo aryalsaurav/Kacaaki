@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'main',
+    'crispy_forms',
     
     
 ]
@@ -100,6 +101,8 @@ TEMPLATES = [
         },
     },
 ]
+
+CRISPY_TEMPLATE_PACK = 'uni_form'
 
 WSGI_APPLICATION = 'kacaaki.wsgi.application'
 

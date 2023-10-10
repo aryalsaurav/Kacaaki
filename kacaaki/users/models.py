@@ -18,7 +18,7 @@ from rest_framework.authtoken.models import Token as AuthToken
 gender_choices = [
         ('Male','Male'),
         ('Female','Female'),
-        ('Other','Other'),
+        ('Others','Others'),
     ]
 
 skills = [
@@ -58,12 +58,13 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     USERNAME_FIELD = 'email'
     full_name = models.CharField(max_length=50)
-    phone = models.CharField(max_length=20)
-    age = models.IntegerField(null=True)
-    gender = models.CharField(max_length=10,choices=gender_choices)
-    photo = models.ImageField(null=True,blank=True)
+    phone = models.CharField("Phone number",max_length=20)
+    age = models.IntegerField("Age",null=True,blank=True)
+    gender = models.CharField("Gender",max_length=10,choices=gender_choices)
+    photo = models.ImageField("Photo",null=True,blank=True)
     city = models.CharField(max_length=20)
     state = models.CharField(max_length=20)
+    zip_code = models.CharField("Zip Code",max_length=20,null=True,blank=True)
     country = models.CharField(max_length=20)
     created_at = models.DateTimeField(default=timezone.now, blank=True)
     REQUIRED_FIELDS = []

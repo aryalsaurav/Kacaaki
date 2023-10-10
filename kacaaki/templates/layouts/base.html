@@ -37,7 +37,17 @@
             }
 
             .error-message {
-                background-color: #ff0000; /* Red background color for errors */
+                position: relative;
+                top: 5;
+                left: 0;
+                width: 100%;
+                background-color: #a60a0a; /* Green background color */
+                color: white;
+                text-align: center;
+                padding: 10px;
+                z-index: 1000; /* Ensure it's above other elements */
+                opacity: 0; /* Initially hidden */
+                transition: opacity 0.5s ease-in-out; /* Animation transition */ /* Red background color for errors */
             }
             
             .success-message.show {
@@ -132,9 +142,11 @@
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 var successMessage = document.querySelector(".success-message");
+                var errorMessage = document.querySelector(".error-message");
                 
                 // Add the "show" class to trigger the animation
                 successMessage.classList.add("show");
+                errorMessage.classList.add("show");
                 
                 // Remove the success message after 3 seconds (3000 milliseconds)
                 setTimeout(function () {

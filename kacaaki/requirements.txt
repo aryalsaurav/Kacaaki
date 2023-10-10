@@ -13,6 +13,7 @@ Deprecated==1.2.13
 dill==0.3.6
 Django==4.1.6
 django-cors-headers==3.14.0
+django-crispy-forms==2.0
 django-filter==22.1
 django-multiselectfield==0.1.12
 django-oauth-toolkit==2.2.0

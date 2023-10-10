@@ -30,7 +30,7 @@
         <a href="" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">My Profile<i class="fa fa-arrow-right ms-3"></i></a>
         {% else %}
         <a href="{% url 'main:login' %}" class="nav-item nav-link">Login</a>
-        <a href="" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Join Now<i class="fa fa-arrow-right ms-3"></i></a>
+        <a href="{% url 'users:user-register' %}" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Join Now<i class="fa fa-arrow-right ms-3"></i></a>
         {% endif %}
         
     </div>
