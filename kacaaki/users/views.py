@@ -41,6 +41,7 @@ class NepaliStudentRegisterView(View):
             user.save()
             nepali_student = nepali_student_form.save(commit=False)
             nepali_student.user = user
+            nepali_student.is_nepali_student = True
             nepali_student.save()
             messages.success(request,"Your account has been created successfully")
             return HttpResponseRedirect('/')

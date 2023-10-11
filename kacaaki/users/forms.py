@@ -34,3 +34,16 @@ class NepaliStudentRegistrationForm(forms.ModelForm):
     # def __init__(self,*args,**kwargs):
     #     super().__init__(*args,**kwargs)
     #     self.helper = FormHelper()
+
+
+class DanceStudentRegistrationForm(forms.ModelForm):
+    class_time = forms.MultipleChoiceField(widget=forms.SelectMultiple,choices=ClassTime.choices)
+    # class_time = forms.MultipleChoiceField(choices=ClassTime.choices,widget=forms.SelectMultiple)
+    # other_classes = forms.MultipleChoiceField(choices =NepaliExtraClasses.choices,widget=forms.SelectMultiple)
+    class Meta:
+        model = DanceStudent
+        exclude = ['is_dance_student','user']
+
+    # def __init__(self,*args,**kwargs):
+    #     super().__init__(*args,**kwargs)
+    #     self.helper = FormHelper()
