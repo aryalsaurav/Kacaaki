@@ -1,27 +1,36 @@
 from django import forms
+from crispy_forms.helper import FormHelper
+from django.contrib import messages
 from .models import *
 
 class UserRegistrationForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput())
+    password2 = forms.CharField(widget=forms.PasswordInput(),label="Confirm Password")
     class Meta:
         model = User
-        fields = ['email','password','full_name','phone','age','gender','photo','city','state','zip_code','country']
+        fields = ['email','password','password2','full_name','phone','age','gender','photo','city','state','zip_code','country']
 
-    def __init__(self,*args,**kwargs):
-        super().__init__(*args,**kwargs)
-        for field in iter(self.fields):
-            if field == "password":
-                self.fields[field].widget.attrs.update(
-                    {'class':'form-control',
-                     'placeholder':'Enter Password',
-                        'type':'password'})
-            
-            #show gender choices options
-            else:
-                self.fields[field].widget.attrs.update(
-                    {
-                        'class':'form-control',
-                        'placeholder':f'Enter {field.title()}',
-                    })
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        password2 = cleaned_data.get("password2")
+        if password != password2:
+            raise forms.ValidationError(
+                "Password does not match"
+            )
+        return cleaned_data
 
 
         
+class NepaliStudentRegistrationForm(forms.ModelForm):
+    class_time = forms.MultipleChoiceField(widget=forms.SelectMultiple,choices=ClassTime.choices)
+    # class_time = forms.MultipleChoiceField(choices=ClassTime.choices,widget=forms.SelectMultiple)
+    # other_classes = forms.MultipleChoiceField(choices =NepaliExtraClasses.choices,widget=forms.SelectMultiple)
+    class Meta:
+        model = NepaliStudent
+        exclude = ['is_nepali_student','user']
+
+    # def __init__(self,*args,**kwargs):
+    #     super().__init__(*args,**kwargs)
+    #     self.helper = FormHelper()

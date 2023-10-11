@@ -5,7 +5,7 @@ from ..models import (
     NepaliStudent,
     DanceStudent,
     Teacher,
-    class_timing,
+    ClassTime,
 )
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
@@ -20,7 +20,7 @@ import pickle
 
 
 
-times = [t[1] for t in class_timing]
+times = [t[1] for t in ClassTime.choices]
 def validate_class_time(value):
     for v in value:
         if v not in times:

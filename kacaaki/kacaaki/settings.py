@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_filters',
     'main',
     'crispy_forms',
+    'crispy_bootstrap5',
     
     
 ]
@@ -102,7 +103,6 @@ TEMPLATES = [
     },
 ]
 
-CRISPY_TEMPLATE_PACK = 'uni_form'
 
 WSGI_APPLICATION = 'kacaaki.wsgi.application'
 
@@ -215,3 +215,5 @@ CORS_ORIGIN_WHITELIST = [
 
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = 'bootstrap5'

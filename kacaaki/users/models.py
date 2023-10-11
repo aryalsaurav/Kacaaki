@@ -9,10 +9,12 @@ from django.contrib.auth.models import AbstractBaseUser, Group,AbstractUser,Perm
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import Permission,Group
 from rest_framework.authtoken.models import Token as AuthToken
+from django.contrib.postgres.fields import ArrayField
 # from .fields import UserAgentField
 
 
 # Create your models here.
+
 
 
 gender_choices = [
@@ -36,22 +38,23 @@ session_choices=[
         ('One-One class 1 session per week','One-One class 1 session per week'),
         ('One-One class 2 session per week','One-One class 2 session per week'),
     ]
-class_timing = [
-        ('Sunday Morning','Sunday Morning'),
-        ('Sunday Evening','Sunday Evening'),
-        ('Monday Morning','Monday Morning'),
-        ('Monday Evening','Monday Evening'),
-        ('Tuesday Morning','Tuesday Morning'),
-        ('Tuesday Evening','Tuesday Evening'),
-        ('Wednesday Morning','Wednesday Morning'),
-        ('Wednesday Evening','Wednesday Evening'),
-        ('Thursday Morning','Thursday Morning'),
-        ('Thursday Evening','Thursday Evening'),
-        ('Friday Morning','Friday Morning'),
-        ('Friday Evening','Friday Evening'),
-        ('Saturday Morning','Saturday Morning'),
-        ('Saturday Evening','Saturday Evening'),
-    ]
+# 
+
+class ClassTime(models.TextChoices):
+        Sunday_Morning = 'Sunday Morning', 'Sunday Morning'
+        Sunday_Evening = 'Sunday Evening', 'Sunday Evening'
+        Monday_Morning = 'Monday Morning', 'Monday Morning'
+        Monday_Evening = 'Monday Evening', 'Monday Evening'
+        Tuesday_Morning = 'Tuesday Morning', 'Tuesday Morning'
+        Tuesday_Evening = 'Tuesday Evening', 'Tuesday Evening'
+        Wednesday_Morning = 'Wednesday Morning', 'Wednesday Morning'
+        Wednesday_Evening = 'Wednesday Evening', 'Wednesday Evening'
+        Thursday_Morning = 'Thursday Morning', 'Thursday Morning'
+        Thursday_Evening = 'Thursday Evening', 'Thursday Evening'
+        Friday_Morning = 'Friday Morning', 'Friday Morning'
+        Friday_Evening = 'Friday Evening', 'Friday Evening'
+        Saturday_Morning = 'Saturday Morning', 'Saturday Morning'
+        Saturday_Evening = 'Saturday Evening', 'Saturday Evening'
 
 class User(AbstractUser):
     username = None
@@ -79,6 +82,11 @@ class User(AbstractUser):
         except:
             url = ''
         return url
+    
+
+class NepaliExtraClasses(models.TextChoices):
+        Dance_Classes = 'Dance Classes', 'Dance Classes'
+        Music_Classes = 'Music Classes', 'Music Classes'
 
 class NepaliStudent(models.Model):
     
@@ -90,15 +98,16 @@ class NepaliStudent(models.Model):
         ('L4 Yellow','Learn Alphabets, words, sentences and reading'),
     ]
     
-    extra_classes = [
-        ('Dance Classes','Dance Classes'),
-        ('Music Classes','Music Classes'),
-    ]
+   
     nepali_speaking_at_home = [
         ('Always','Always'),
         ('Sometimes','Sometimes'),
         ('Never','Never'),
     ]
+    
+
+
+
     user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='nepali_student')
     signing_for = models.CharField(max_length=20)
     parents_name = models.CharField(max_length=50)
@@ -109,11 +118,11 @@ class NepaliStudent(models.Model):
     writing = models.CharField(max_length=1,choices=skills)
     course_level = models.CharField(max_length=20,choices=course_level)
     session_type = models.CharField(max_length=32,choices=session_choices)
-    class_time = MultiSelectField(choices=class_timing,max_choices=3,max_length=100)
+    class_time = MultiSelectField(choices=ClassTime.choices,max_choices=3,max_length=100,blank=True,null=True)
     goal_for_class = models.TextField(null=True)
     hear_from = models.CharField(max_length=30)
     special_request = models.TextField(null=True,blank=True)
-    other_classes = MultiSelectField(max_length=15,choices=extra_classes,max_choices=2)
+    other_classes = MultiSelectField(max_length=50,choices=NepaliExtraClasses.choices,max_choices=2)
     is_nepali_student = models.BooleanField(default=True)
     
 
@@ -127,6 +136,11 @@ class NepaliStudent(models.Model):
     
 
 
+class DanceExtraClasses(models.TextChoices):
+        Nepali_Classes = 'Nepali Classes', 'Nepali Classes'
+        Music_Classes = 'Music Classes', 'Music Classes'
+
+
 class DanceStudent(models.Model):
     dance_style_choice =[
         ('Nepali Classical Dance','Nepali Classical Dance'),
@@ -135,21 +149,18 @@ class DanceStudent(models.Model):
         ('Bollywood Dance','Bollywood Dance'),
     ]
     
-    extra_classes = [
-        ('Nepali Classes','Nepali Classes'),
-        ('Music Classes','Music Classes'),
-    ]
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     signing_for = models.CharField(max_length=20)
     parents_name = models.CharField(max_length=50)
     dance_skills = models.CharField(max_length=1,choices=skills)
     dance_style = models.CharField(max_length=30,choices=dance_style_choice)
     session_type = models.CharField(max_length=32,choices=session_choices)
-    class_time = MultiSelectField(choices=class_timing,max_choices=3,max_length=100)
+    class_time = MultiSelectField(choices=ClassTime.choices,max_choices=3,max_length=100)
     goal_for_class = models.TextField(null=True)
     hear_from = models.CharField(max_length=30)
     special_request = models.TextField(null=True,blank=True)
-    other_classes = MultiSelectField(max_length=15,choices=extra_classes,max_choices=2)
+    other_classes = MultiSelectField(max_length=50,choices=DanceExtraClasses.choices,max_choices=2)
     is_dance_student = models.BooleanField(default=True)
 
     def __str__(self):

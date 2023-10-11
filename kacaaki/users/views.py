@@ -21,25 +21,33 @@ def teachers_list(request):
     return render(request,template_name,context)
 
 
-class UserRegistrationView(View):
-    template_name = "users/user_registration.html"
+class NepaliStudentRegisterView(View):
+    template_name = "users/nepali_student_registration.html"
 
     def get(self,request):
         
         context = {
-            'form':UserRegistrationForm()
+            'user_form':UserRegistrationForm(),
+            'nepali_student':NepaliStudentRegistrationForm(),
         }
         return render(request,self.template_name,context)
 
     def post(self,request):
-        form = UserRegistrationForm(request.POST,request.FILES)
-        print(form.errors)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
+        user_form = UserRegistrationForm(request.POST,request.FILES)
+        nepali_student_form = NepaliStudentRegistrationForm(request.POST)
+        if user_form.is_valid() and nepali_student_form.is_valid():
+            user = user_form.save(commit=False)
+            user.set_password(user.password)
             user.save()
-            messages.success(request,"Registration Successful")
+            nepali_student = nepali_student_form.save(commit=False)
+            nepali_student.user = user
+            nepali_student.save()
+            messages.success(request,"Your account has been created successfully")
             return HttpResponseRedirect('/')
         else:
-            messages.error(request,"Registration Failed")
-            return render(request,self.template_name,{'form':form})
+            messages.error(request,"Please correct the error below")
+            context = {
+            'user_form':user_form,
+            'nepali_student':nepali_student_form,
+            }
+            return render(request,self.template_name,context)
