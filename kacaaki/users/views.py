@@ -52,3 +52,36 @@ class NepaliStudentRegisterView(View):
             'nepali_student':nepali_student_form,
             }
             return render(request,self.template_name,context)
+        
+
+class DanceStudentRegisterView(View):
+    template_name = "users/dance_student_registration.html"
+
+    def get(self,request):
+        
+        context = {
+            'user_form':UserRegistrationForm(),
+            'dance_student':DanceStudentRegistrationForm(),
+        }
+        return render(request,self.template_name,context)
+
+    def post(self,request):
+        user_form = UserRegistrationForm(request.POST,request.FILES)
+        dance_student_form = DanceStudentRegistrationForm(request.POST)
+        if user_form.is_valid() and dance_student_form.is_valid():
+            user = user_form.save(commit=False)
+            user.set_password(user.password)
+            user.save()
+            dance_student = dance_student_form.save(commit=False)
+            dance_student.user = user
+            dance_student.is_dance_student = True
+            dance_student.save()
+            messages.success(request,"Your account has been created successfully")
+            return HttpResponseRedirect('/')
+        else:
+            messages.error(request,"Please correct the error below")
+            context = {
+            'user_form':user_form,
+            'dance_student':dance_student_form,
+            }
+            return render(request,self.template_name,context)
