@@ -41,8 +41,8 @@
     
       <!-- Register buttons -->
       <div class="text-center">
-        <p>Not a member? <a href="#!">Register</a></p>
-        <p>or sign up with:</p>
+        <p>Not a member? <br><button class="btn btn-primary" id="register" type="button" onclick="openJoinModal()">Register</button></p>
+        <!-- <p>or sign up with:</p>
         <button type="button" class="btn btn-link btn-floating mx-1">
           <i class="fab fa-facebook-f"></i>
         </button>
@@ -57,10 +57,83 @@
     
         <button type="button" class="btn btn-link btn-floating mx-1">
           <i class="fab fa-github"></i>
-        </button>
+        </button> -->
       </div>
     </form>
   </div>
+
+
+  <div class="modal fade" id="joinModal" tabindex="-1" role="dialog" aria-labelledby="joinModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="joinModalLabel">Join Now</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                
+                <input type="radio" name="options" id="option1" value="option1" checked> <span>Nepali Class</span> <br>
+                <input type="radio" name="options" id="option2" value="option2" >  <span>Dance Class</span> <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="joinNowButton">Join Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- JavaScript to open the modal and handle button click -->
+<script>
+    // Function to open the modal
+    function openJoinModal() {
+        $('#joinModal').modal('show');
+    }
+
+    // Handle Join Now button click
+    $('#register').click(function() {
+        // Get the selected options
+        var option1 = $('#option1').val();
+        var option2 = $('#option2').val();
+
+        // You can perform any action with the selected options here
+        // For example, you can submit them to the server or perform other actions.
+
+        // Close the modal
+        $('#joinModal').modal('hide');
+    });
+
+
+
+    $('#joinNowButton').click(function() {
+        // Get the selected radio option
+        var selectedOption = $('input[name="options"]:checked').val();
+
+        // Navigate based on the selected option
+        if (selectedOption === "option1") {
+            // Redirect to a specific URL when "Option 1" is selected
+            window.location.href = '{% url 'users:nepali-student-register' %}'; // Replace with the desired URL
+        } else if (selectedOption === "option2") {
+            // Redirect to a different URL when "Option 2" is selected
+            window.location.href = '{% url 'users:dance-student-register' %}'; // Replace with the desired URL
+        }
+
+        // Close the modal
+        $('#joinModal').modal('hide');
+    });
+
+    $('.close').click(function(){
+        $('#joinModal').modal('hide');
+    })
+
+    
+</script>
     
     
   <script src="{% static 'js/main.js' %}"></script>
