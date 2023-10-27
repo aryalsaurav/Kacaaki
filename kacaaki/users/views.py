@@ -8,8 +8,23 @@ from django.contrib import messages
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from .models import User,NepaliStudent,DanceStudent,Teacher
 from .forms import *
+from dal import autocomplete
 
 # Create your views here.
+
+# class StudentsAutocomplete(autocomplete.Select2QuerySetView):
+#     def get_queryset(self):
+#         # Don't forget to filter out results depending on the visitor !
+#         if not self.request.user.is_authenticated:
+#             return NepaliStudent.objects.none()
+
+#         qs = NepaliStudent.objects.all()
+
+#         if self.q:
+#             qs = qs.filter(name__istartswith=self.q)
+
+#         return qs
+
 
 
 def teachers_list(request):

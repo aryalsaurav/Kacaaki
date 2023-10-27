@@ -7,7 +7,7 @@ from django.conf import settings
 from .managers import UserManager,NepaliStudentManager,DanceStudentManager
 from django.contrib.auth.models import AbstractBaseUser, Group,AbstractUser,PermissionsMixin
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import Permission,Group
+from django.contrib.auth.models import Permission
 from rest_framework.authtoken.models import Token as AuthToken
 from django.contrib.postgres.fields import ArrayField
 # from .fields import UserAgentField
@@ -72,8 +72,9 @@ class User(AbstractUser):
     created_at = models.DateTimeField(default=timezone.now, blank=True)
     REQUIRED_FIELDS = []
     objects = UserManager()
+
     def __str__(self):
-        return self.email
+        return self.full_name
     
 
     def imageURL(self):
@@ -85,8 +86,8 @@ class User(AbstractUser):
     
 
 class NepaliExtraClasses(models.TextChoices):
-        Dance_Classes = 'Dance Classes', 'Dance Classes'
-        Music_Classes = 'Music Classes', 'Music Classes'
+    Dance_Classes = 'Dance Classes', 'Dance Classes'
+    Music_Classes = 'Music Classes', 'Music Classes'
 
 class NepaliStudent(models.Model):
     
@@ -127,7 +128,7 @@ class NepaliStudent(models.Model):
     
 
     def __str__(self):
-        return self.user.email
+        return self.user.full_name
     
     def delete(self, *args, **kwargs):
         self.user.delete()
@@ -164,7 +165,7 @@ class DanceStudent(models.Model):
     is_dance_student = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.user.email
+        return self.user.full_name
     
     def delete(self, *args, **kwargs):
         self.user.delete()
@@ -186,7 +187,7 @@ class Teacher(models.Model):
     
 
     def __str__(self):
-        return self.user.email
+        return self.user.full_name
     
     def delete(self, *args, **kwargs):
         self.user.delete()
@@ -218,3 +219,21 @@ class Token(AuthToken):
 
     def __str__(self):
         return self.user.email
+    
+
+
+
+
+# class (models.Model):
+
+    
+
+#     class Meta:
+#         verbose_name = _("")
+#         verbose_name_plural = _("s")
+
+#     def __str__(self):
+#         return self.name
+
+#     def get_absolute_url(self):
+#         return reverse("_detail", kwargs={"pk": self.pk})

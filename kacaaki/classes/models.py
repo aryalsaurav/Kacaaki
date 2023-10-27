@@ -11,13 +11,19 @@ class NepaliClass(models.Model):
     
     name = models.CharField(max_length=100, unique=True)
     teacher = models.ForeignKey(Teacher,limit_choices_to={'teacher_type':'Nepali Teacher'}, on_delete=models.CASCADE)
-    students = models.ManyToManyField(NepaliStudent, blank=True)
+    students = models.ManyToManyField(NepaliStudent)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
     def __str__(self):
         return self.name
+    
+
+
+    
+    
+    
 
 
 class Assignment(models.Model):
@@ -71,6 +77,15 @@ class DanceClass(models.Model):
     def __str__(self):
         return self.name
 
+
+
+class DanceAssignment(models.Model):
+    topic = models.CharField(max_length=250)
+    dance_class = models.ForeignKey(DanceClass, on_delete=models.CASCADE)
+    
+
+    def __str__(self):
+        return self.topic
 
 
 

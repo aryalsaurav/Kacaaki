@@ -6,7 +6,7 @@ from users.models import User,NepaliStudent,DanceStudent,Teacher
 from .forms import ContactForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-
+from django.urls import reverse
 from .models import *
 
 # Create your views here.
@@ -56,20 +56,29 @@ class TestomonialListView(View):
 class LoginView(View):
     template_name = "layouts/login.html"
 
+
     def get(self,request):
         if request.user.is_authenticated:
+            print("user is authenticated")
             return redirect("/")
         else:
             return render(request,self.template_name)
 
-    def post(self,request):
+    def post(self,request,*args,**kwargs):
         username = request.POST.get('email')
         password = request.POST.get('password')
         user = authenticate(username = username,password=password)
+        next_url = request.POST.get('next')
+        print("next",next_url)
         if user:
             login(request,user)
-            messages.success(request,"You are logged in.")
-            return HttpResponseRedirect("/")
+            # next_url = kwargs.get('next')
+
+            
+            if next_url:
+                return HttpResponseRedirect(next_url)  # Redirect to 'next' URL
+            else:
+                return HttpResponseRedirect(reverse('main:home'))
         else:
             return HttpResponse("Invalid username or password.")
         

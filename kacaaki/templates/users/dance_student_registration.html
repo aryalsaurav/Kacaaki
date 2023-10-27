@@ -20,7 +20,7 @@
   
                   <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up for Dance Class</p>
   
-                  <form class="mx-1 mx-md-4" method="POST" action="{% url 'users:dance-student-register' %}">
+                  <form class="mx-1 mx-md-4" method="POST" enctype="multipart/form-data" action="{% url 'users:dance-student-register' %}">
                     {% csrf_token %}
                     
                     {% for field in user_form %}
