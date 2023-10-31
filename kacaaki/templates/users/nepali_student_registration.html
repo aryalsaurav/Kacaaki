@@ -49,21 +49,13 @@
                     <div class="row">
                     {% for field in nepali_student %}
                     <div class="col-5 m-auto">
-                      {% if field.name == 'class_time' %}
-                      <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-                      <select class="form-select" aria-label="Default select example" name="class_time" multiple>
-                        <option selected>Open this select menu</option>
-                        <option value="Morning">Morning</option>
-                        <option value="Afternoon">Afternoon</option>
-                        <option value="Evening">Evening</option>
-                    </select>
-                      {%else%}
+                      
                       <i class="fas fa-user fa-lg me-3 fa-fw"></i>
                       <div class="form-outline flex-fill mb-0">
                         {{ field|as_crispy_field }}                       
                       
                       </div>
-                      {% endif %}
+                      
                     </div>
                     {% endfor %}
                     </div>
@@ -108,5 +100,16 @@
     })
 
   </script>
+
+  <script type="text/javascript">
+    $("select").select2({
+          width: 'resolve',
+          
+      });
+
+      $('.timepicker').timepicker({
+        showMeridian: false, // Optionally, you can configure the time format
+    });
+    </script>
 
 {% endblock %}
