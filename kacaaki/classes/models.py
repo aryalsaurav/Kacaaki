@@ -9,7 +9,9 @@ from users.models import User, NepaliStudent, DanceStudent, Teacher
 
 class NepaliClass(models.Model):
     
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField("Class Name",max_length=100, unique=True)
+    day = models.CharField("Class Day",max_length=100)
+    time = models.CharField("Class Time",max_length=100)
     teacher = models.ForeignKey(Teacher,limit_choices_to={'teacher_type':'Nepali Teacher'}, on_delete=models.CASCADE)
     students = models.ManyToManyField(NepaliStudent)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -49,8 +49,12 @@ class NepaliClassAddView(LoginRequiredMixin,View):
     def post(self,request,*args,**kwargs):
         form = NepaliClassForm(request.POST)
         if form.is_valid():
-            np_class = form.save()
-
+            np_class = form.save(commit=False)
+            students = form.cleaned_data['students']
+            if students.count() > 4:
+                messages.error(request, 'You cannot add more than 4 students')
+                return HttpResponseRedirect(reverse('classes:nepaliclass_add'))
+            np_class.save()
             messages.success(request, 'Class added successfully')
             return redirect('/')
         else:

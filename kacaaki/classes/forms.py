@@ -8,11 +8,12 @@ from dal import autocomplete
 
 
 class NepaliClassForm(forms.ModelForm):
-    
-    students = forms.ModelChoiceField(queryset=NepaliStudent.objects.filter(user__is_active=True))
+    time = forms.CharField(widget=forms.TextInput(attrs={'type': 'time'}))
+    students = forms.ModelMultipleChoiceField(queryset=NepaliStudent.objects.all())
+    # teacher = forms.ModelChoiceField(queryset=Teacher.objects.filter(teacher_type='Nepali Teacher'))
     class Meta:
         model = NepaliClass
-        fields = ('name', 'teacher', 'students',)
+        fields = ('name',"day","time", 'teacher', 'students',)
         # widgets = {
         #     'name': forms.TextInput(attrs={'class':'form-control'}),
         #     'teacher': forms.Select(attrs={'class':'form-control'}),
@@ -21,20 +22,13 @@ class NepaliClassForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super(NepaliClassForm, self).__init__(*args, **kwargs)
-        self.fields['teacher'].queryset = Teacher.objects.filter(teacher_type='Nepali Teacher')
+        # self.fields['teacher'].queryset = Teacher.objects.filter(teacher_type='Nepali Teacher')
 
         for field in iter(self.fields):
+            
             self.fields[field].widget.attrs.update({
                 'class': 'form-control'
             })
-        #     if field == "students":
-        #         self.fields[field].queryset = NepaliStudent.objects.filter(user__is_active=True)
-        #         self.fields[field].widget.attrs.update({
-        #             'class': 'select2',
-        #             'data-placeholder': 'Autocomplete ...',
-        #             'data-minimum-input-length': 3,
-        #         })
-        # self.fields['students'].queryset = NepaliStudent.objects.filter(user__is_active=True)
-
-        # for field in self.fields:
-        #     self.fields[field].widget.attrs['class'] = 'form-control'
+            
+    
+        
