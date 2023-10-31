@@ -121,8 +121,8 @@ class NepaliStudent(models.Model):
     session_type = models.CharField(max_length=32,choices=session_choices)
     class_time = MultiSelectField(choices=ClassTime.choices,max_choices=3,max_length=100,blank=True,null=True)
     goal_for_class = models.TextField(null=True)
-    hear_from = models.CharField(max_length=30)
     special_request = models.TextField(null=True,blank=True)
+    hear_from = models.CharField(max_length=30)
     other_classes = MultiSelectField(max_length=50,choices=NepaliExtraClasses.choices,max_choices=2)
     is_nepali_student = models.BooleanField(default=True)
     
@@ -159,8 +159,8 @@ class DanceStudent(models.Model):
     session_type = models.CharField(max_length=32,choices=session_choices)
     class_time = MultiSelectField(choices=ClassTime.choices,max_choices=3,max_length=100)
     goal_for_class = models.TextField(null=True)
-    hear_from = models.CharField(max_length=30)
     special_request = models.TextField(null=True,blank=True)
+    hear_from = models.CharField(max_length=30)
     other_classes = MultiSelectField(max_length=50,choices=DanceExtraClasses.choices,max_choices=2)
     is_dance_student = models.BooleanField(default=True)
 

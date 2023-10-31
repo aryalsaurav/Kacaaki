@@ -7,12 +7,9 @@ from dal import autocomplete
 
 
 
-class NepaliClassForm(autocomplete.FutureModelForm):
+class NepaliClassForm(forms.ModelForm):
     
-    students  = forms.ModelMultipleChoiceField(
-        queryset=NepaliStudent.objects.all(),
-        widget=autocomplete.ModelSelect2Multiple(url='classes:nepali-student-autocomplete')
-    )
+    students = forms.ModelChoiceField(queryset=NepaliStudent.objects.filter(user__is_active=True))
     class Meta:
         model = NepaliClass
         fields = ('name', 'teacher', 'students',)
@@ -22,11 +19,14 @@ class NepaliClassForm(autocomplete.FutureModelForm):
         #     'students': autocomplete.ModelSelect2Multiple(url='classes:nepali-student-autocomplete')
         # }
         
-    # def __init__(self, *args, **kwargs):
-    #     super(NepaliClassForm, self).__init__(*args, **kwargs)
-    #     self.fields['teacher'].queryset = Teacher.objects.filter(teacher_type='Nepali Teacher')
+    def __init__(self, *args, **kwargs):
+        super(NepaliClassForm, self).__init__(*args, **kwargs)
+        self.fields['teacher'].queryset = Teacher.objects.filter(teacher_type='Nepali Teacher')
 
-        # for field in iter(self.fields):
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control'
+            })
         #     if field == "students":
         #         self.fields[field].queryset = NepaliStudent.objects.filter(user__is_active=True)
         #         self.fields[field].widget.attrs.update({

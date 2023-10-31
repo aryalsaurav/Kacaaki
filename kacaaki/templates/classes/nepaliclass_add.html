@@ -3,6 +3,16 @@
 {% load crispy_forms_tags %}
 {% block title %}Nepali Class Add{% endblock %}
 
+{% block head %}
+
+<style>
+    .dropdown-item {
+        text-decoration: none !important;
+    }
+</style>
+
+{% endblock %}
+
 {% block content %}
     <div class="container mt-5">
         <div class="row d-flex justify-content-center align-items-center h-100">
@@ -11,13 +21,13 @@
                     <div class="card-body p-md-5">
                         <div class="row justify-content-center">
                             <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
-                                {{ form.media }}
+                                
                                 <form class="" method="post" action="{% url 'classes:nepaliclass_add' %}">
                                     {% csrf_token %}
                                     
                                     {% for field in form %}
                                     
-                                        <div class="form-outline mb-4">
+                                        <div class="form-group">
                                             {{ field }}
                                         </div>
                                     {% endfor %}
@@ -33,15 +43,13 @@
         </div>
     </div>
 
-
-    <script>
-        $(document).ready(function() {
-            console.log("ready!");
-            // Replace 'your-select-element-id' with the ID or selector of your <select> element.
-            $('#id_students').select2();
-            console.log("select2!");
-        });
-    </script>
+    
+    <script type="text/javascript">
+        $("select").select2({
+              width: 'resolve',
+              
+          });
+        </script>
     
 
 {% endblock %}
