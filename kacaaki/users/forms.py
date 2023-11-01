@@ -26,6 +26,10 @@ class UserRegistrationForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         self.helper = FormHelper()
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                'class':'form-control'
+            })
 
 
 
@@ -52,9 +56,13 @@ class NepaliStudentRegistrationForm(forms.ModelForm):
         model = NepaliStudent
         exclude = ['is_nepali_student','user']
 
-    # def __init__(self,*args,**kwargs):
-    #     super().__init__(*args,**kwargs)
-    #     self.helper = FormHelper()
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.helper = FormHelper()
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                'class':'form-control'
+            })
 
 
 class DanceStudentRegistrationForm(forms.ModelForm):

@@ -9,6 +9,15 @@
     .dropdown-item {
         text-decoration: none !important;
     }
+
+    .select2-container .select2-selection--single {
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        height: 37px;
+        user-select: none;
+        -webkit-user-select: none;
+    }
 </style>
 
 {% endblock %}
@@ -53,10 +62,15 @@
 
     
     <script type="text/javascript">
-        $("select").select2({
-              width: 'resolve',
+        $("select#id_students").select2({
+              width: '100%',
               
           });
+        
+          $("select#id_teacher").select2({
+            width: '100%',
+            
+        });
 
           $('.timepicker').timepicker({
             showMeridian: false, // Optionally, you can configure the time format
