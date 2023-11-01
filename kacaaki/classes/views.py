@@ -51,7 +51,7 @@ class NepaliClassAddView(LoginRequiredMixin,View):
         if form.is_valid():
             np_class = form.save(commit=False)
             students = form.cleaned_data['students']
-            if students.count() > 4:
+            if students.count() > 5:
                 messages.error(request, 'You cannot add more than 4 students')
                 return HttpResponseRedirect(reverse('classes:nepaliclass_add'))
             np_class.save()
@@ -60,3 +60,26 @@ class NepaliClassAddView(LoginRequiredMixin,View):
         else:
             messages.error(request, 'Class not added')
             return redirect('classes:nepaliclass_list')
+        
+        
+
+
+class NepaliClassListView(LoginRequiredMixin,ListView):
+    template_name = 'classes/nepaliclass_list.html'
+    login_url = '/login/'
+    model = NepaliClass
+    
+    def get_queryset(self):
+        return super().get_queryset()
+
+class NepaliClassUpdateView(LoginRequiredMixin,View):
+    template_name = "classes/nepaliclass_update.html"
+    login_url = '/login/'
+    
+    def get(self,rquest,*args,**kwargs):
+        form = NepaliClassForm()
+        context = {
+            'form':form,
+        }
+        return render(request, self.template_name, context)
+    

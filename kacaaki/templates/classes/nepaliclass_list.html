@@ -1,0 +1,71 @@
+{% extends "layouts/base.html" %} 
+
+{% load static %}
+
+
+{% block title %}Nepali Classes{% endblock %}
+
+{% block subtitle %}Nepali Class{% endblock %}
+
+{% block head %}
+
+
+{% endblock %} 
+
+
+
+{% block content %}
+	<div class="container-xxl py-5 card mt-5">
+		<div class="container ">
+			<div class="row">
+				<div class="col-sm-12 document-table-space">
+					<table class="table w-full no-footer" role="grid" >
+						<thead class="table-space-top-bottom">
+							<tr role="row">
+								<th>S.N.</th>
+								<th>Name</th>
+								<th>Day</th>
+								<th>Class Time</th>
+								<th>Teacher</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							   {% for object in object_list %}
+							<tr>
+								<td>{{ forloop.counter }}</td>
+								<td><a href="">{{ object.name }}</a></td>
+								<td>{{ object.day }}</td>
+								<td>{{ object.time }} </td>
+								<td>{{ object.teacher }}</td>
+								<td>
+									<div class="dropdown">
+										<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										  Action
+										</button>
+											<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+											<a href="" class="btn-sm dropdown-item btn btn-success-space">
+												<i class="fas fa-info"></i>&nbsp; Detail
+											</a> 
+										  {% if object.is_editable %}                                                   
+										  <a href="" class="btn-sm dropdown-item btn btn-success-space">
+											  <i class="fa fa-pencil-alt"></i> Modify
+										  </a>
+										  <a href="" class="btn-sm dropdown-item btn btn-danger a-delete">
+											  <i class="far fa-trash-alt"></i> Delete
+										  </a>
+										  {% endif %}
+
+									  </div>
+								  </div>
+								</td>
+							</tr>
+							{% endfor %}   
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+{% endblock %}
