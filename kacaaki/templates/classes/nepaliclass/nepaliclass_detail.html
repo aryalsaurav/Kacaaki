@@ -7,7 +7,7 @@
 {% block head %}
 
 <style>
-    tbody, td, tfoot, th, thead, tr {
+    tbody#table1, td, tfoot, th, thead, tr {
         border-color: inherit;
         border-style: none;
         border-width: 0;
@@ -50,10 +50,18 @@
                         <h1>{{ np_class.name }}</h1>
                     </div>
                     {% if request.user|is_staff_or_teacher %}
-                    <div class="col-md-2 mt-2" >
-                        <a href="{% url 'classes:nepaliclass_update' np_class.id %}?where=detail" class="btn btn-primary me-3">Update</a>
-                        <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmationModal" >Delete</a>
-                    </div>
+                    <div class="col-md-2 mt-2">
+                        <div class="dropdown">
+                          <a href="#" class="btn btn-primary dropdown-toggle me-3" role="button" id="updateDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Actions
+                          </a>
+                          <ul class="dropdown-menu" aria-labelledby="updateDropdown">
+                            <li><a class="dropdown-item" href="{% url 'classes:assignment_add' %}?class={{ np_class.id }}">Assignments Add</a></li>
+                            <li><a class="dropdown-item" href="{% url 'classes:nepaliclass_update' np_class.id %}?where=detail">Update</a></li>
+                            <li><a class="dropdown-item " href="#" data-toggle="modal" data-target="#confirmationModal" id="btn-danger">Delete</a></li>
+                          </ul>
+                        </div>
+                      </div>
                     {% endif %}
                     
                 </div>
@@ -62,10 +70,10 @@
             <div class="row border-top">
                 <div class="col-md-6">
                     <div class="card">
-                        <div class="table">
-                            <table class="table">
+                        <div class="table" >
+                            <table class="table" >
                                 <thead></thead>
-                                <tbody>
+                                <tbody id="table1">
                                     <tr>
                                         <th>Day</th>
                                         <td>{{ np_class.day }}</td>
@@ -106,6 +114,67 @@
         </div>
     </div>
 
+
+    <div class="container-xxl py-5 card mt-2 ">
+      <div class="container  ms-5 ">
+        <div class="row mb-2">
+          <div class="col-md-2">
+            
+          </div>
+          <div class="col-md-5" style="text-align: right;">
+            <a href="{% url 'classes:nepaliclass_add' %}" class="btn btn-primary"><i class="material-icons">Add Class</i></a>
+          </div>
+          <div class="col-md-5" style="text-align: center;">
+            <div class="search--document">
+              <form id="searchform" action="{% url 'classes:nepaliclass_list' %}" method="get" accept-charset="utf-8" style="display: inline;">
+                <div class="search-form search-form--light">
+                  <div class="container" style="display: flex;">
+                    <input type="text" class="form-control" placeholder="Search..." id="searchSample03" name="q" style="margin-right: 10px;" value="{{query}}">
+                    <button class="btn btn-primary" type="submit" role="button"><i class="material-icons">search</i></button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          
+          <div class="col-sm-12 document-table-space">
+            <table class="table w-full no-footer" role="grid" >
+              <thead class="table-space-top-bottom">
+                <tr role="row">
+                  <th>S.N.</th>
+                  <th>Name</th>
+                  <th>Attachment</th>
+                  <th>Submission Date</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                   {% for object in object_list %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td><a href="">{{ object.topic }}</a></td>
+                  <td>
+                    {% if object.file %}
+                      <a href="{{ object.file.url }}" class="btn btn-secondary" download>Download File</a>
+                    {% else %}
+                     <span class="">No Attachment</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ object.deadline }} </td>
+                  
+                </tr>
+                {% endfor %}   
+              </tbody>
+            </table>
+          </div>
+          {% include 'layouts/pagination.html' %}
+        </div>
+      </div>
+  
+    </div>
+
     <div class="modal" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -125,11 +194,14 @@
           </div>
         </div>
       </div>
+
+
+      
     
       <script>
         $(document).ready(function () {
           // Add a click event handler to the delete button
-          $(".btn-danger").on("click", function (event) {
+          $("#btn-danger").on("click", function (event) {
             event.preventDefault(); // Prevent the link from navigating
       
             // Show the confirmation modal

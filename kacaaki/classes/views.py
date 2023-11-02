@@ -106,6 +106,7 @@ class NepaliClassListView(NepaliTeacherMixin,LoginRequiredMixin,ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['query'] = self.request.GET.get('q', '')  # Pass the query to the context
+        
         return context
                 
         
@@ -173,10 +174,36 @@ class NepaliClassDetailView(LoginRequiredMixin,TeacherInNepaliClass,View):
     
     def get(self,request,*args,**kwargs):
         np_class = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
+        assignments = Assignment.objects.filter(nepali_class=np_class).all()
         context = {
             'np_class':np_class,
+            'object_list':assignments,
         }
         return render(request, self.template_name, context)
 
     
 
+
+
+class AssignmentAddView(LoginRequiredMixin,View):
+    template_name = 'classes/nepaliAssignment/assignment_add.html'
+    def get(self,request,*args,**kwargs):
+        form = AssignmentForm()
+        context = {
+            'form':form,
+        }
+        return render(request, self.template_name, context)
+    
+    def post(self,request,*args,**kwargs):
+        form = AssignmentForm(request.POST, request.FILES)
+        if form.is_valid():
+            assignment = form.save(commit=False)
+            nepali_class = NepaliClass.objects.get(pk=request.POST.get('class'))
+            assignment.nepali_class = nepali_class
+            assignment.save()
+            messages.success(request, 'Assignment added successfully')
+            return redirect('classes:nepaliclass_detail', pk=nepali_class.pk)
+        else:
+            messages.error(request, 'Assignment not added')
+            print(form.errors)
+            return render(request, self.template_name, {'form':form})

@@ -58,7 +58,10 @@ class NepaliClass(models.Model):
 
 class Assignment(models.Model):
     topic = models.CharField(max_length=250)
+    file = models.FileField("File", upload_to='files/', blank=True, null=True)
     nepali_class = models.ForeignKey(NepaliClass, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    deadline = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.topic
@@ -66,16 +69,13 @@ class Assignment(models.Model):
 
 
 class AssignmentSubmission(models.Model):
-    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
-    
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE) 
     student = models.ForeignKey(NepaliStudent, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
 
     def __str__(self):
         return self.assignment.topic + ' - ' + self.student.user.full_name
-
-
 
     class Meta:
         unique_together = ('assignment', 'student',)
@@ -90,7 +90,7 @@ class AssignmentSubmission(models.Model):
 
 class AssignmentFile(models.Model):
     assignment_submission = models.ForeignKey(AssignmentSubmission, on_delete=models.CASCADE)
-    a_file = models.FileField(upload_to='assignments/')
+    a_file = models.FileField("Homework File",upload_to='assignments/')
 
     def __str__(self):
         return self.assignment_submission.assignment.topic + ' - ' + self.assignment_submission.student.user.full_name

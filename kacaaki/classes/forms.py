@@ -33,4 +33,24 @@ class NepaliClassForm(forms.ModelForm):
     
             
     
+
+class AssignmentForm(forms.ModelForm):
+    deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
+    class Meta:
+        model = Assignment
+        exclude = ['created_at','nepali_class']
+        
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        for field in iter(self.fields):
+            if field == "deadline":
+                self.fields[field].widget.attrs.update({
+                    'class': 'form-control datetimepicker',
+                
+                    
+                })
+            else:
+                self.fields[field].widget.attrs.update({
+                    'class': 'form-control'
+                })
         
