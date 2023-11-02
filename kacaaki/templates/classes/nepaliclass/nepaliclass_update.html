@@ -31,7 +31,7 @@
                         <div class="row justify-content-center">
                             <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                                 
-                                <form class="" method="post" action="{% url 'classes:nepaliclass_add' %}">
+                                <form class="" method="post" action="{% url 'classes:nepaliclass_update' pk=form.instance.pk %}">
                                     {% csrf_token %}
                                     
                                     {% for field in form %}
@@ -47,9 +47,10 @@
                                         </div>
                                         
                                     {% endfor %}
+                                    <input type="hidden" name="where" value="{{ request.GET.where }}">
                                     <div id="student-error-message" style="color: red;"></div>
                                     <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                        <button id="submit-button" type="submit" class="btn btn-primary btn-lg">Add Nepali Class</button>
+                                        <button id="submit-button" type="submit" class="btn btn-primary btn-lg">Update Nepali Class</button>
                                     </div>
                                 </form>
                             </div>  

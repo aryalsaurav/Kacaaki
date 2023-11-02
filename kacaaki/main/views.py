@@ -80,7 +80,8 @@ class LoginView(View):
             else:
                 return HttpResponseRedirect(reverse('main:home'))
         else:
-            return HttpResponse("Invalid username or password.")
+            messages.error(request,"Invalid username or password")
+            return HttpResponseRedirect(reverse('main:login'))
         
 
 def logout_view(request):

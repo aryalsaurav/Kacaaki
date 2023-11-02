@@ -13,7 +13,7 @@ class NepaliClassForm(forms.ModelForm):
     # teacher = forms.ModelChoiceField(queryset=Teacher.objects.filter(teacher_type='Nepali Teacher'))
     class Meta:
         model = NepaliClass
-        fields = ('name',"day","time", 'teacher', 'students',)
+        fields = ('name',"day","time",'class_type', 'teacher', 'students',)
         # widgets = {
         #     'name': forms.TextInput(attrs={'class':'form-control'}),
         #     'teacher': forms.Select(attrs={'class':'form-control'}),

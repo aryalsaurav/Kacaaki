@@ -13,6 +13,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from dal import autocomplete
+from main.permissions import *
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -36,8 +38,8 @@ class StudentsAutocomplete(autocomplete.Select2QuerySetView):
         print("no qs")
         return qs
 
-class NepaliClassAddView(LoginRequiredMixin,View):
-    template_name = 'classes/nepaliclass_add.html'
+class NepaliClassAddView(NepaliTeacherMixin,LoginRequiredMixin,View):
+    template_name = 'classes/nepaliclass/nepaliclass_add.html'
     login_url = '/login/'
     def get(self, request, *args, **kwargs):
         form = NepaliClassForm()
@@ -54,9 +56,12 @@ class NepaliClassAddView(LoginRequiredMixin,View):
             if students.count() > 5:
                 messages.error(request, 'You cannot add more than 4 students')
                 return HttpResponseRedirect(reverse('classes:nepaliclass_add'))
+            
+            np_class.save()
+            np_class.students.add(*students)
             np_class.save()
             messages.success(request, 'Class added successfully')
-            return redirect('/')
+            return redirect('classes:nepaliclass_list')
         else:
             messages.error(request, 'Class not added')
             return redirect('classes:nepaliclass_list')
@@ -64,22 +69,114 @@ class NepaliClassAddView(LoginRequiredMixin,View):
         
 
 
-class NepaliClassListView(LoginRequiredMixin,ListView):
-    template_name = 'classes/nepaliclass_list.html'
+class NepaliClassListView(NepaliTeacherMixin,LoginRequiredMixin,ListView):
+    template_name = 'classes/nepaliclass/nepaliclass_list.html'
     login_url = '/login/'
     model = NepaliClass
+    paginate_by = 10
     
     def get_queryset(self):
-        return super().get_queryset()
+        
+        if self.request.GET.get('q'):
+            query = self.request.GET.get('q')
+        else:
+            query = ''
+        classes = super().get_queryset()
+        
+        if self.request.user.is_superuser or self.request.user.is_staff:
+            queryset = classes.filter(
+                    Q(name__icontains=query) |
+                    Q(day__icontains=query) |
+                    Q(time__icontains=query) |
+                    Q(teacher__user__full_name__icontains=query)|
+                    Q(students__user__full_name__icontains=query)
+                ).distinct()
+        else:
+            queryset =  classes.filter(teacher=self.request.user.teacher).filter(
+                    Q(name__icontains=query) |
+                    Q(day__icontains=query) |
+                    Q(time__icontains=query) |
+                    Q(teacher__user__full_name__icontains=query)|
+                    Q(students__user__full_name__icontains=query)
+                ).distinct()
+        
+        
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')  # Pass the query to the context
+        return context
+                
+        
+        
+        # paginator = Paginator(np_classes, self.paginate_by)
+        # page_number = request.GET.get('page')
+        
+        
 
-class NepaliClassUpdateView(LoginRequiredMixin,View):
-    template_name = "classes/nepaliclass_update.html"
+class NepaliClassUpdateView(LoginRequiredMixin,TeacherInNepaliClass,View):
+    template_name = "classes/nepaliclass/nepaliclass_update.html"
     login_url = '/login/'
     
-    def get(self,rquest,*args,**kwargs):
-        form = NepaliClassForm()
+    def get(self,request,*args,**kwargs):
+        np_classes = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
+        form = NepaliClassForm(instance=np_classes)
         context = {
             'form':form,
         }
         return render(request, self.template_name, context)
     
+    def post(self,request,*args,**kwargs):
+        np_classes = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
+        detail = request.POST.get('where')
+        form = NepaliClassForm(request.POST, instance=np_classes)
+        if form.is_valid():
+            np_class = form.save(commit=False)
+            students = form.cleaned_data['students']
+            if students.count() > 5:
+                messages.error(request, 'You cannot add more than 4 students')
+                return HttpResponseRedirect(reverse('classes:nepaliclass_add'))
+            np_class.save()
+            np_class.students.add(*students)
+            np_class.save()
+            messages.success(request, 'Class updated successfully')
+            if detail:
+                
+                return HttpResponseRedirect(reverse('classes:nepaliclass_detail', kwargs={'pk':self.kwargs['pk']}))
+            else:
+                return redirect('classes:nepaliclass_list')
+        else:
+            print(form.errors)
+            messages.error(request, 'Class not updated')
+            return redirect('classes:nepaliclass_list')
+        
+
+
+
+
+class NepaliClassDeleteView(LoginRequiredMixin,TeacherInNepaliClass, View):
+    
+    def get(self,request,*args,**kwargs):
+        np_class = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
+        np_class.delete()
+        messages.success(request, 'Class deleted successfully')
+        return redirect('classes:nepaliclass_list')
+    
+    
+    
+
+class NepaliClassDetailView(LoginRequiredMixin,TeacherInNepaliClass,View):
+    template_name = 'classes/nepaliclass/nepaliclass_detail.html'
+    login_url = '/login/'
+    model = NepaliClass
+    
+    def get(self,request,*args,**kwargs):
+        np_class = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
+        context = {
+            'np_class':np_class,
+        }
+        return render(request, self.template_name, context)
+
+    
+

@@ -1,0 +1,108 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load is_staff_or_teacher %}
+{% block title %}Class - {{ np_class.name }}{% endblock %}
+
+{% block head %}
+
+<style>
+    tbody, td, tfoot, th, thead, tr {
+        border-color: inherit;
+        border-style: none;
+        border-width: 0;
+    }
+
+
+    .card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 0px solid rgba(0,0,0,.125); 
+        border-radius: 0.25rem;
+    }
+
+
+    img, svg {
+        vertical-align: middle;
+        max-height: 76px;
+        max-width: 70px;
+    }
+
+    .student-name{
+        font-size: 16px;
+        font-weight: 500;
+    
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-xxl py-5 card mt-5">
+        <div class="container border" >
+            <div>
+                <div class="row mt-2">
+                    <div class="col-md-10" style="text-align: center;">
+                        <h1>{{ np_class.name }}</h1>
+                    </div>
+                    {% if request.user|is_staff_or_teacher %}
+                    <div class="col-md-2 mt-2" >
+                        <a href="{% url 'classes:nepaliclass_update' np_class.id %}?where=detail" class="btn btn-primary me-3">Update</a>
+                        <a href="{% url 'classes:nepaliclass_delete' np_class.id %}" class="btn btn-danger">Delete</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row border-top">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="table">
+                            <table class="table">
+                                <thead></thead>
+                                <tbody>
+                                    <tr>
+                                        <th>Day</th>
+                                        <td>{{ np_class.day }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Time</th>
+                                        <td>{{ np_class.time }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Class Type</th>
+                                        <td>{{ np_class.class_type }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Teacher</th>
+                                        <td>{{ np_class.teacher }}</td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="row">
+                            {% for student in np_class.students.all %}
+                            <div class="col-sm-4 mb-2">
+                                <div class="card mb-2">
+                                    <img class="card-img-top rounded-circle mb-2 mt-1" src="{{ student.user.imageURL }}" alt="Card image cap">
+                                    <span class="student-name">{{ student.user.full_name }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -18,7 +18,7 @@
             <a href="{% url 'main:about_us' %}" {% if request.resolver_match.url_name == 'main:about_us' %}class="nav-item nav-link active"{% else %}class="nav-item nav-link"{% endif %}>About US</a>
             <a href="{% url 'users:teachers_list' %}" {% if request.resolver_match.url_name == 'users:teachers_list' %}class="nav-item nav-link active"{% else %}class="nav-item nav-link"{% endif %}>Our Teachers</a>
             {% if request.user.teacher.is_teacher and request.user.teacher.teacher_type == "Nepali Teacher" %}
-            <a href="{% url 'classes:nepaliclass_add' %}" {% if request.resolver_match.url_name == 'classes:nepaliclass_add' %}class="nav-item nav-link active"{% else %}class="nav-item nav-link"{% endif %}>Add Class</a>
+            <a href="{% url 'classes:nepaliclass_list' %}" {% if request.resolver_match.url_name == 'classes:nepaliclass_add' %}class="nav-item nav-link active"{% else %}class="nav-item nav-link"{% endif %}>Classes</a>
             {% elif request.user.teacher.is_teacher and request.user.teacher.teacher_type == "Dance Teacher" %}
             <a href="{% url 'main:testomonials' %}" {% if request.resolver_match.url_name == 'main:testomonials' %}class="nav-item nav-link active"{% else %}class="nav-item nav-link"{% endif %}>Testomonials</a>
             {% endif %}

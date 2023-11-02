@@ -1,5 +1,4 @@
 {% extends "layouts/base.html" %} 
-
 {% load static %}
 
 
@@ -17,7 +16,28 @@
 {% block content %}
 	<div class="container-xxl py-5 card mt-5">
 		<div class="container ">
+			<div class="row mb-2">
+				<div class="col-md-4">
+					
+				</div>
+				<div class="col-md-4" style="text-align: right;">
+					<a href="{% url 'classes:nepaliclass_add' %}" class="btn btn-primary"><i class="material-icons">Add Class</i></a>
+				</div>
+				<div class="col-md-4" style="text-align: center;">
+					<div class="search--document">
+						<form id="searchform" action="{% url 'classes:nepaliclass_list' %}" method="get" accept-charset="utf-8" style="display: inline;">
+							<div class="search-form search-form--light">
+								<div class="container" style="display: flex; align-items: center;">
+									<input type="text" class="form-control" placeholder="Search..." id="searchSample03" name="q" style="margin-right: 10px;" value="{{query}}">
+									<button class="btn btn-primary" type="submit" role="button"><i class="material-icons">search</i></button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
 			<div class="row">
+				
 				<div class="col-sm-12 document-table-space">
 					<table class="table w-full no-footer" role="grid" >
 						<thead class="table-space-top-bottom">
@@ -34,7 +54,7 @@
 							   {% for object in object_list %}
 							<tr>
 								<td>{{ forloop.counter }}</td>
-								<td><a href="">{{ object.name }}</a></td>
+								<td><a href="{% url 'classes:nepaliclass_detail' object.id %}">{{ object.name }}</a></td>
 								<td>{{ object.day }}</td>
 								<td>{{ object.time }} </td>
 								<td>{{ object.teacher }}</td>
@@ -44,17 +64,17 @@
 										  Action
 										</button>
 											<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-											<a href="" class="btn-sm dropdown-item btn btn-success-space">
+											<a href="{% url 'classes:nepaliclass_detail' object.id %}" class="btn-sm dropdown-item btn btn-success-space">
 												<i class="fas fa-info"></i>&nbsp; Detail
 											</a> 
-										  {% if object.is_editable %}                                                   
-										  <a href="" class="btn-sm dropdown-item btn btn-success-space">
+										                                                     
+										  <a href="{% url 'classes:nepaliclass_update' object.id %}" class="btn-sm dropdown-item btn btn-success-space">
 											  <i class="fa fa-pencil-alt"></i> Modify
 										  </a>
-										  <a href="" class="btn-sm dropdown-item btn btn-danger a-delete">
+										  <a href="{% url 'classes:nepaliclass_delete' object.id %}" class="btn-sm dropdown-item btn btn-danger a-delete">
 											  <i class="far fa-trash-alt"></i> Delete
 										  </a>
-										  {% endif %}
+										  
 
 									  </div>
 								  </div>
@@ -64,6 +84,7 @@
 						</tbody>
 					</table>
 				</div>
+				{% include 'layouts/pagination.html' %}
 			</div>
 		</div>
 
