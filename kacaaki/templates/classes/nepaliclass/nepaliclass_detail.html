@@ -52,9 +52,10 @@
                     {% if request.user|is_staff_or_teacher %}
                     <div class="col-md-2 mt-2" >
                         <a href="{% url 'classes:nepaliclass_update' np_class.id %}?where=detail" class="btn btn-primary me-3">Update</a>
-                        <a href="{% url 'classes:nepaliclass_delete' np_class.id %}" class="btn btn-danger">Delete</a>
+                        <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmationModal" >Delete</a>
                     </div>
                     {% endif %}
+                    
                 </div>
             </div>
             
@@ -104,5 +105,50 @@
             </div>
         </div>
     </div>
+
+    <div class="modal" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to delete?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <a href="{% url 'classes:nepaliclass_delete' np_class.id %}" class="btn btn-danger">Yes, delete</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <script>
+        $(document).ready(function () {
+          // Add a click event handler to the delete button
+          $(".btn-danger").on("click", function (event) {
+            event.preventDefault(); // Prevent the link from navigating
+      
+            // Show the confirmation modal
+            $("#confirmationModal").modal("show");
+          });
+          $(".close").on("click", function () {
+            $("#confirmationModal").modal("hide");
+          });
+          // Add a click event handler to the "Cancel" button in the modal to close it
+          $(".btn-secondary").on("click", function () {
+            $("#confirmationModal").modal("hide");
+          });
+      
+          // Add a click event handler to the "Yes, delete" button in the modal
+          $(".modal-footer .btn-danger").on("click", function () {
+            // Redirect to the delete URL
+            window.location.href = $(this).attr("href");
+          });
+        });
+      </script>
 
 {% endblock %}
