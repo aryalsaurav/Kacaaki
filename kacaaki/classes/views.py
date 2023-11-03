@@ -171,10 +171,11 @@ class NepaliClassDetailView(LoginRequiredMixin,TeacherInNepaliClass,View):
     template_name = 'classes/nepaliclass/nepaliclass_detail.html'
     login_url = '/login/'
     model = NepaliClass
+    paginate_by = 1
     
     def get(self,request,*args,**kwargs):
         np_class = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
-        assignments = Assignment.objects.filter(nepali_class=np_class).all()
+        assignments = Assignment.objects.filter(nepali_class=np_class).order_by('-created_at')[:10]
         context = {
             'np_class':np_class,
             'object_list':assignments,

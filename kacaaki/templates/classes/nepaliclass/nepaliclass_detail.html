@@ -38,6 +38,10 @@
         font-weight: 500;
     
     }
+    a{
+        text-decoration: none;
+    
+    }
 </style>
 {% endblock %}
 
@@ -115,32 +119,25 @@
     </div>
 
 
-    <div class="container-xxl py-5 card mt-2 ">
-      <div class="container  ms-5 ">
+    <div class="container-xxl py-5 card  ">
+      <div class="container  border ">
+        <div style="text-align: center;">
+          <a href="" style="font-size: 18px;">Assignments</a>
+        </div>
+        
         <div class="row mb-2">
-          <div class="col-md-2">
+          <div class="col-md-6">
             
           </div>
           <div class="col-md-5" style="text-align: right;">
-            <a href="{% url 'classes:nepaliclass_add' %}" class="btn btn-primary"><i class="material-icons">Add Class</i></a>
+            <a href="{% url 'classes:assignment_add' %}?class={{ np_class.id }}" class="btn btn-primary"><i class="material-icons">Add Assignment</i></a>
           </div>
-          <div class="col-md-5" style="text-align: center;">
-            <div class="search--document">
-              <form id="searchform" action="{% url 'classes:nepaliclass_list' %}" method="get" accept-charset="utf-8" style="display: inline;">
-                <div class="search-form search-form--light">
-                  <div class="container" style="display: flex;">
-                    <input type="text" class="form-control" placeholder="Search..." id="searchSample03" name="q" style="margin-right: 10px;" value="{{query}}">
-                    <button class="btn btn-primary" type="submit" role="button"><i class="material-icons">search</i></button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
+          
         </div>
         <div class="row">
           
           <div class="col-sm-12 document-table-space">
-            <table class="table w-full no-footer" role="grid" >
+            <table class="table w-full no-footer ms-5" role="grid" >
               <thead class="table-space-top-bottom">
                 <tr role="row">
                   <th>S.N.</th>
@@ -157,9 +154,8 @@
                   <td><a href="">{{ object.topic }}</a></td>
                   <td>
                     {% if object.file %}
-                      <a href="{{ object.file.url }}" class="btn btn-secondary" download>Download File</a>
+                      <a href="{{ object.file.url }}" class="btn btn-secondary" download><i class="bi bi-download"></i> Download File</a>
                     {% else %}
-                     <span class="">No Attachment</span>
                     {% endif %}
                   </td>
                   <td>{{ object.deadline }} </td>
@@ -169,6 +165,7 @@
               </tbody>
             </table>
           </div>
+          
           {% include 'layouts/pagination.html' %}
         </div>
       </div>
