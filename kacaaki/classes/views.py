@@ -10,12 +10,12 @@ from users.models import *
 from .models import *
 from .forms import *
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.views import View
 from dal import autocomplete
 from main.permissions import *
 from django.core.paginator import Paginator
-
+from django.core.exceptions import PermissionDenied
 # Create your views here.
 
 
@@ -38,7 +38,7 @@ class StudentsAutocomplete(autocomplete.Select2QuerySetView):
         print("no qs")
         return qs
 
-class NepaliClassAddView(NepaliTeacherMixin,LoginRequiredMixin,View):
+class NepaliClassAddView(LoginRequiredMixin,View):
     template_name = 'classes/nepaliclass/nepaliclass_add.html'
     login_url = '/login/'
     def get(self, request, *args, **kwargs):
@@ -69,11 +69,14 @@ class NepaliClassAddView(NepaliTeacherMixin,LoginRequiredMixin,View):
         
 
 
-class NepaliClassListView(NepaliTeacherMixin,LoginRequiredMixin,ListView):
+class NepaliClassListView(LoginRequiredMixin,TeacherOrAdminMixin,ListView):
     template_name = 'classes/nepaliclass/nepaliclass_list.html'
+    
     login_url = '/login/'
     model = NepaliClass
     paginate_by = 10
+    
+    
     
     def get_queryset(self):
         
@@ -82,23 +85,38 @@ class NepaliClassListView(NepaliTeacherMixin,LoginRequiredMixin,ListView):
         else:
             query = ''
         classes = super().get_queryset()
-        
-        if self.request.user.is_superuser or self.request.user.is_staff:
-            queryset = classes.filter(
+        queryset = []
+        try:
+            if self.request.user.is_superuser or self.request.user.is_staff:
+                queryset = classes.filter(
+                        Q(name__icontains=query) |
+                        Q(day__icontains=query) |
+                        Q(time__icontains=query) |
+                        Q(teacher__user__full_name__icontains=query)|
+                        Q(students__user__full_name__icontains=query)
+                    ).distinct()
+            elif self.request.user.teacher:
+                
+                queryset =  classes.filter(teacher=self.request.user.teacher).filter(
+                        Q(name__icontains=query) |
+                        Q(day__icontains=query) |
+                        Q(time__icontains=query) |
+                        Q(teacher__user__full_name__icontains=query)|
+                        Q(students__user__full_name__icontains=query)
+                    ).distinct()
+        except:
+            pass
+        try:
+            queryset = classes.filter(students__in= [self.request.user.nepali_student]).filter(
                     Q(name__icontains=query) |
                     Q(day__icontains=query) |
                     Q(time__icontains=query) |
                     Q(teacher__user__full_name__icontains=query)|
                     Q(students__user__full_name__icontains=query)
                 ).distinct()
-        else:
-            queryset =  classes.filter(teacher=self.request.user.teacher).filter(
-                    Q(name__icontains=query) |
-                    Q(day__icontains=query) |
-                    Q(time__icontains=query) |
-                    Q(teacher__user__full_name__icontains=query)|
-                    Q(students__user__full_name__icontains=query)
-                ).distinct()
+        except:
+            pass
+            
         
         
         return queryset
@@ -116,7 +134,7 @@ class NepaliClassListView(NepaliTeacherMixin,LoginRequiredMixin,ListView):
         
         
 
-class NepaliClassUpdateView(LoginRequiredMixin,TeacherInNepaliClass,View):
+class NepaliClassUpdateView(LoginRequiredMixin,TeacherOrAdminMixin,View):
     template_name = "classes/nepaliclass/nepaliclass_update.html"
     login_url = '/login/'
     
@@ -156,7 +174,7 @@ class NepaliClassUpdateView(LoginRequiredMixin,TeacherInNepaliClass,View):
 
 
 
-class NepaliClassDeleteView(LoginRequiredMixin,TeacherInNepaliClass, View):
+class NepaliClassDeleteView(LoginRequiredMixin,TeacherOrAdminMixin,View):
     
     def get(self,request,*args,**kwargs):
         np_class = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
@@ -167,7 +185,7 @@ class NepaliClassDeleteView(LoginRequiredMixin,TeacherInNepaliClass, View):
     
     
 
-class NepaliClassDetailView(LoginRequiredMixin,TeacherInNepaliClass,View):
+class NepaliClassDetailView(LoginRequiredMixin,InClassOrAdminMixin,View):
     template_name = 'classes/nepaliclass/nepaliclass_detail.html'
     login_url = '/login/'
     model = NepaliClass
@@ -187,7 +205,7 @@ class NepaliClassDetailView(LoginRequiredMixin,TeacherInNepaliClass,View):
 
 
 class AssignmentAddView(LoginRequiredMixin,View):
-    template_name = 'classes/nepaliAssignment/assignment_add.html'
+    template_name = 'classes/nepaliclass/assignment/assignment_add.html'
     def get(self,request,*args,**kwargs):
         form = AssignmentForm()
         context = {
@@ -208,3 +226,13 @@ class AssignmentAddView(LoginRequiredMixin,View):
             messages.error(request, 'Assignment not added')
             print(form.errors)
             return render(request, self.template_name, {'form':form})
+        
+
+
+class AssignmentListView(LoginRequiredMixin,ListView):
+    template_name = 'classes/nepaliclass/assignment/assignment_list.html'
+    model = Assignment
+    paginate_by = 10
+    
+    def get_queryset(self):
+        return super().get_queryset().filter(Q(nepali_class__teacher__user=self.request.user) | Q(nepali_class__students__user=self.request.user)).order_by('-created_at')

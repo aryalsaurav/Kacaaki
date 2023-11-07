@@ -1,0 +1,77 @@
+{% extends "layouts/base.html" %} 
+{% load static %}
+
+
+{% block title %}Assignments{% endblock %}
+
+{% block subtitle %}Assignments List{% endblock %}
+
+{% block head %}
+
+
+{% endblock %} 
+
+
+
+{% block content %}
+	<div class="container-xxl py-5 card mt-5">
+		<div class="container ">
+			<div class="row mb-2">
+				<div class="col-md-4">
+					
+				</div>
+				<div class="col-md-4" style="text-align: right;">
+					<a href="{% url 'classes:nepaliclass_add' %}" class="btn btn-primary"><i class="material-icons">Add Class</i></a>
+				</div>
+				<div class="col-md-4" style="text-align: center;">
+					<div class="search--document">
+						<form id="searchform" action="{% url 'classes:nepaliclass_list' %}" method="get" accept-charset="utf-8" style="display: inline;">
+							<div class="search-form search-form--light">
+								<div class="container" style="display: flex; align-items: center;">
+									<input type="text" class="form-control" placeholder="Search..." id="searchSample03" name="q" style="margin-right: 10px;" value="{{query}}">
+									<button class="btn btn-primary" type="submit" role="button"><i class="material-icons">search</i></button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				
+				<div class="col-sm-12 document-table-space">
+					<table class="table w-full no-footer" role="grid" >
+						<thead class="table-space-top-bottom">
+							<tr role="row">
+								<th>S.N.</th>
+                                <th>Name</th>
+                                <th>Attachment</th>
+                                <th>Submission Date</th>
+							</tr>
+						</thead>
+						<tbody>
+                            {% for object in object_list %}
+                            <tr>
+                              <td>{{ forloop.counter }}</td>
+                              <td><a href="">{{ object.topic }}</a></td>
+                              <td>
+                                {% if object.file %}
+                                  <a href="{{ object.file.url }}" class="btn btn-secondary" download><i class="bi bi-download"></i> Download File</a>
+                                {% else %}
+                                {% endif %}
+                              </td>
+                              <td>{{ object.deadline }} </td>
+                              
+                            </tr>
+                            {% endfor %}     
+						</tbody>
+					</table>
+				</div>
+				{% include 'layouts/pagination.html' %}
+			</div>
+		</div>
+
+	</div>
+
+	
+
+{% endblock %}
