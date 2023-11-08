@@ -1,0 +1,136 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load is_staff_or_teacher %}
+{% block title %}Class - {{ np_class.name }}{% endblock %}
+
+{% block head %}
+
+<style>
+    tbody#table1, td, tfoot, th, thead, tr {
+        border-color: inherit;
+        border-style: none;
+        border-width: 0;
+    }
+
+
+    .card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 0px solid rgba(0,0,0,.125); 
+        border-radius: 0.25rem;
+    }
+
+
+    img, svg {
+        vertical-align: middle;
+        max-height: 76px;
+        max-width: 70px;
+    }
+
+    .student-name{
+        font-size: 16px;
+        font-weight: 500;
+    
+    }
+    a{
+        text-decoration: none;
+    
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-xxl py-5 card mt-5">
+        <div class="container border" >
+            <div class="row m-auto p-1">
+                <table class="table">
+                    <thead class="border-bottom">
+                        <tr >
+                            <td>Topic:<b> {{ assignment.topic }}</b> </td>
+                            <td>Deadline:<b> {{ assignment.deadline }}</b> </td>
+                            <td>
+                                {% if object.file %}
+                                <a href="{{ object.file.url }}" class="btn btn-secondary" download><i class="bi bi-download"></i> Download File</a>
+                                {% else %}
+                                <a href="{{ object.file.url }}" class="btn btn-secondary" download><i class="bi bi-download"></i> Download File</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <table class=" table border-top mt-3">
+                            <span style="text-align: center; font-weight:600;">Assignment Submission</span>
+                            <thead>
+                                <tr>
+                                    <th>S.N.</th>
+                                    <th>Name</th>
+                                    <th>Attachment</th>
+                                    <th>Submission Date</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    
+
+    <div class="modal" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to delete?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <a href="" class="btn btn-danger">Yes, delete</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      
+    
+      <script>
+        $(document).ready(function () {
+          // Add a click event handler to the delete button
+          $("#btn-danger").on("click", function (event) {
+            event.preventDefault(); // Prevent the link from navigating
+      
+            // Show the confirmation modal
+            $("#confirmationModal").modal("show");
+          });
+          $(".close").on("click", function () {
+            $("#confirmationModal").modal("hide");
+          });
+          // Add a click event handler to the "Cancel" button in the modal to close it
+          $(".btn-secondary").on("click", function () {
+            $("#confirmationModal").modal("hide");
+          });
+      
+          // Add a click event handler to the "Yes, delete" button in the modal
+          $(".modal-footer .btn-danger").on("click", function () {
+            // Redirect to the delete URL
+            window.location.href = $(this).attr("href");
+          });
+        });
+      </script>
+
+{% endblock %}

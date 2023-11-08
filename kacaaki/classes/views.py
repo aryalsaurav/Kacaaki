@@ -236,3 +236,15 @@ class AssignmentListView(LoginRequiredMixin,ListView):
     
     def get_queryset(self):
         return super().get_queryset().filter(Q(nepali_class__teacher__user=self.request.user) | Q(nepali_class__students__user=self.request.user)).order_by('-created_at')
+    
+    
+
+class AssignmentDetailView(View):
+    template_name = 'classes/nepaliclass/assignment/assignment_detail.html'
+    def get(self,request,*args,**kwargs):
+        assignment = get_object_or_404(Assignment, pk=self.kwargs['pk'])
+        context = {
+            'assignment':assignment,
+        }
+        return render(request, self.template_name, context)
+    

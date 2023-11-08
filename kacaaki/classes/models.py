@@ -72,6 +72,7 @@ class AssignmentSubmission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE) 
     student = models.ForeignKey(NepaliStudent, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now_add=True)
+    accepted = models.BooleanField(default=False)
 
 
     def __str__(self):
