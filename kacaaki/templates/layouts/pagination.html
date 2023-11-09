@@ -18,9 +18,9 @@
                 {% if page_obj.number == page %}
                 <li class="page-item active"><a class="page-link" href="#">{{ page }}</a></li>
                 {% elif request.GET.q %}
-                <li class="page-item"><a class="page-link" href="?q={{request.GET.q}}&amp;page={{ page }}">{{ page }}</a></li>
-                {% elif request.GET.value%}
-                <li class="page-item"><a class="page-link" href="?key={{request.GET.key}}&amp;value={{request.GET.value}}&amp;type={{request.GET.type}}&amp;page={{ page }}">{{ page }}</a></li>
+                <li class="page-item"><a class="page-link" href="?q={{request.GET.q}}&amp;value={{request.GET.uid}}&amp;page={{ page }}">{{ page }}</a></li>
+                {% elif request.GET.uid%}
+                <li class="page-item"><a class="page-link" href="?key={{request.GET.key}}&amp;value={{request.GET.uid}}&amp;type={{request.GET.type}}&amp;page={{ page }}">{{ page }}</a></li>
                 {% else %}
                 <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
                 {% endif %}

@@ -21,14 +21,15 @@
 					
 				</div>
 				<div class="col-md-4" style="text-align: right;">
-					<a href="{% url 'classes:nepaliclass_add' %}" class="btn btn-primary"><i class="material-icons">Add Class</i></a>
+					<a href="{% url 'classes:assignment_add' %}" class="btn btn-primary"><i class="material-icons">Add Assignment</i></a>
 				</div>
 				<div class="col-md-4" style="text-align: center;">
 					<div class="search--document">
-						<form id="searchform" action="{% url 'classes:nepaliclass_list' %}" method="get" accept-charset="utf-8" style="display: inline;">
+						<form id="searchform" action="{% url 'classes:assignment_list' %}" method="get" accept-charset="utf-8" style="display: inline;">
 							<div class="search-form search-form--light">
 								<div class="container" style="display: flex; align-items: center;">
 									<input type="text" class="form-control" placeholder="Search..." id="searchSample03" name="q" style="margin-right: 10px;" value="{{query}}">
+									<input type="text" hidden value="{{request.GET.uid}}" name="uid">
 									<button class="btn btn-primary" type="submit" role="button"><i class="material-icons">search</i></button>
 								</div>
 							</div>

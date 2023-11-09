@@ -1,0 +1,103 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Nepali Class Add{% endblock %}
+
+{% block head %}
+
+<style>
+    .dropdown-item {
+        text-decoration: none !important;
+    }
+
+    .select2-container .select2-selection--single {
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        height: 37px;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-12 col-xl-11">
+                <div class="card text-black" style="border-radius: 25px;">
+                    <div class="card-body p-md-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+                                
+                                <form class="" method="post" action="">
+                                    {% csrf_token %}
+                                    
+                                    {% for field in form %}
+                                    
+                                        <div class="form-group">
+                                            {% if field == "students" %}
+
+                                            {{ field|as_crispy_field }}
+                                            
+                                            {% else %}
+                                            {{ field|as_crispy_field }}
+                                            {% endif %}
+                                        </div>
+                                        
+                                    {% endfor %}
+                                    <input type="hidden" name="where" value="{{ request.GET.where }}">
+                                    <div id="student-error-message" style="color: red;"></div>
+                                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                                        <button id="submit-button" type="submit" class="btn btn-primary btn-lg">Update Nepali Class</button>
+                                    </div>
+                                </form>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script type="text/javascript">
+        $("select#id_students").select2({
+              width: '100%',
+              
+          });
+        
+          $("select#id_teacher").select2({
+            width: '100%',
+            
+        });
+
+          $('.timepicker').timepicker({
+            showMeridian: false, // Optionally, you can configure the time format
+        });
+        </script>
+        <script type="text/javascript">
+            // Listen for changes in the student selection field
+            $('select#id_students').on('change', function () {
+                // Get the number of selected students
+                var selectedCount = $('select#id_students option:selected').length;
+        
+                // Define the maximum allowed students
+                var maxAllowedStudents = 5;
+        
+                // Check if the selected count exceeds the maximum
+                if (selectedCount > maxAllowedStudents) {
+                    // Show an error message
+                    $('#student-error-message').text('Not allowed to select more than ' + maxAllowedStudents + ' students');
+                    $('#submit-button').prop('disabled', true);
+                } else {
+                    // Clear the error message
+                    $('#student-error-message').text('');
+                    $('#submit-button').prop('disabled', false);
+                }
+            });
+        </script>
+    
+
+{% endblock %}

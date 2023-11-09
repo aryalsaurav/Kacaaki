@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect,HttpResponseRedirect,get_list_or_404, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.urls import reverse
+from django.urls import reverse,reverse_lazy
 from django.http import HttpResponse
 from django.db.models import Q
 from django.core.exceptions import ValidationError
@@ -148,7 +148,7 @@ class NepaliClassUpdateView(LoginRequiredMixin,TeacherOrAdminMixin,View):
     
     def post(self,request,*args,**kwargs):
         np_classes = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
-        detail = request.POST.get('where')
+        detail = request.POST.get('uid')
         form = NepaliClassForm(request.POST, instance=np_classes)
         if form.is_valid():
             np_class = form.save(commit=False)
@@ -160,7 +160,7 @@ class NepaliClassUpdateView(LoginRequiredMixin,TeacherOrAdminMixin,View):
             np_class.students.add(*students)
             np_class.save()
             messages.success(request, 'Class updated successfully')
-            if detail:
+            if detail == 'detail':
                 
                 return HttpResponseRedirect(reverse('classes:nepaliclass_detail', kwargs={'pk':self.kwargs['pk']}))
             else:
@@ -215,9 +215,15 @@ class AssignmentAddView(LoginRequiredMixin,View):
     
     def post(self,request,*args,**kwargs):
         form = AssignmentForm(request.POST, request.FILES)
+        class_id = request.POST.get('uid')
         if form.is_valid():
             assignment = form.save(commit=False)
-            nepali_class = NepaliClass.objects.get(pk=request.POST.get('class'))
+            nepali_class = NepaliClass.objects.get(pk=class_id)
+            try:
+                if not request.user.nepali_student in nepali_class.students.all():
+                    raise PermissionDenied
+            except:
+                pass
             assignment.nepali_class = nepali_class
             assignment.save()
             messages.success(request, 'Assignment added successfully')
@@ -235,7 +241,31 @@ class AssignmentListView(LoginRequiredMixin,ListView):
     paginate_by = 10
     
     def get_queryset(self):
-        return super().get_queryset().filter(Q(nepali_class__teacher__user=self.request.user) | Q(nepali_class__students__user=self.request.user)).order_by('-created_at')
+        class_id = self.request.GET.get('uid')
+        if class_id:
+            queryset =  super().get_queryset().filter(Q(nepali_class__teacher__user=self.request.user) | Q(nepali_class__students__user=self.request.user) |Q(nepali_class__id=class_id)).order_by('-created_at')
+            if self.request.GET.get('q'):
+                query = self.request.GET.get('q')
+                return queryset.filter(
+                        Q(topic__icontains=query) 
+                    )
+            return queryset
+        else:
+            return Assignment.objects.none()
+        
+    
+    def get(self,*args,**kwargs):
+        values = self.request.GET.get('uid')
+        if not values:
+            return HttpResponseRedirect(reverse_lazy('classes:nepaliclass_list'))
+        else:
+            return super().get(*args,**kwargs)
+    
+    def get_context_data(self,*args,**kwargs):
+        context = super().get_context_data(*args,**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        context['value'] = self.request.GET.get('uid', '')
+        return context
     
     
 
@@ -243,8 +273,34 @@ class AssignmentDetailView(View):
     template_name = 'classes/nepaliclass/assignment/assignment_detail.html'
     def get(self,request,*args,**kwargs):
         assignment = get_object_or_404(Assignment, pk=self.kwargs['pk'])
+        assignment_submissions = AssignmentSubmission.objects.filter(assignment=assignment)
         context = {
             'assignment':assignment,
+            'assignment_submissions':assignment_submissions,
         }
         return render(request, self.template_name, context)
+    
+    
+class AssignmentUpdateView(View):
+    template_name = 'classes/nepaliclass/assignment/assignment_update.html'
+    def get(self,request,*args,**kwargs):
+        assignment = get_object_or_404(Assignment, pk=self.kwargs['pk'])
+        form = AssignmentForm(instance=assignment)
+        context = {
+            'form':form,
+        }
+        return render(request, self.template_name, context)
+    
+    def post(self,request,*args,**kwargs):
+        assignment = get_object_or_404(Assignment, pk=self.kwargs['pk'])
+        form = AssignmentForm(request.POST, request.FILES, instance=assignment)
+        if form.is_valid():
+            assignment = form.save(commit=False)
+            assignment.save()
+            messages.success(request, 'Assignment updated successfully')
+            return redirect('classes:assignment_detail', pk=assignment.pk)
+        else:
+            messages.error(request, 'Assignment not updated')
+            print(form.errors)
+            return render(request, self.template_name, {'form':form})
     

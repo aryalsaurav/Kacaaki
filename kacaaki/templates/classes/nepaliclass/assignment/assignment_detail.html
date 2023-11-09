@@ -61,20 +61,66 @@
                                 <a href="{{ object.file.url }}" class="btn btn-secondary" download><i class="bi bi-download"></i> Download File</a>
                                 {% endif %}
                             </td>
+                            {% if request.user|is_staff_or_teacher %}
+                                <td>
+                                    <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Action
+                                    </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a href="{% url 'classes:assignment_update' assignment.id %}" class="btn-sm dropdown-item btn btn-success-space">
+                                        <i class="fas fa-info"></i>&nbsp; Update
+                                        </a> 
+                                                                                        
+                                        <a href="" class="btn-sm dropdown-item btn btn-success-space" data-toggle="modal" data-target="#confirmationModal" id="btn-danger" >
+                                        <i class="fa fa-pencil-alt"></i> Delete
+                                        </a>
+                                
+                
+                                    </div>
+                                    </div>
+                                </td>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
                         
                         <table class=" table border-top mt-3">
-                            <span style="text-align: center; font-weight:600;">Assignment Submission</span>
+                            <span style="text-align: center; font-weight:600;">Submitted Assignment</span>
                             <thead>
                                 <tr>
                                     <th>S.N.</th>
-                                    <th>Name</th>
-                                    <th>Attachment</th>
-                                    <th>Submission Date</th>
+                                    <th>Student</th>
+                                    <th>Attachments</th>
+                                    <th>Submitted At</th>
+                                    <th>Approval State</th>
+                                    {% if request.user|is_staff_or_teacher %}
+                                    <th>Action</th>
+                                    {% endif %}
                                 </tr>
                             </thead>
+                            <tbody>
+                                {% for object in assignment_submissions %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><a href="">{{ object.student }}</a></td>
+                                    <td>
+                                        {% if object.assignment_files.all %}
+                                        {% for file in object.assignment_files.all %}
+                                        <a href="{{ file.a_file.url }}" class="btn btn-secondary download-link" download><i class="bi bi-download"></i></a>
+                                    {% endfor %}
+                                        {% else %}
+                                            <h1>Hello</h1>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ object.submitted_at }}</td>
+                                    <td>{{ object.approval }}</td>
+                                    {% if request.user|is_staff_or_teacher %}
+                                    <td></td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
                         </table>
                     </tbody>
                 </table>

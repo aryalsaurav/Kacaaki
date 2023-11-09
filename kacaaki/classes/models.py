@@ -72,7 +72,7 @@ class AssignmentSubmission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE) 
     student = models.ForeignKey(NepaliStudent, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now_add=True)
-    accepted = models.BooleanField(default=False)
+    approval = models.CharField(max_length=15, choices=(('Approved','Approved'),('Rejected','Rejected'),('Submitted','Submitted')), default='Submitted')
 
 
     def __str__(self):
@@ -90,7 +90,7 @@ class AssignmentSubmission(models.Model):
 
 
 class AssignmentFile(models.Model):
-    assignment_submission = models.ForeignKey(AssignmentSubmission, on_delete=models.CASCADE)
+    assignment_submission = models.ForeignKey(AssignmentSubmission, on_delete=models.CASCADE,related_name='assignment_files')
     a_file = models.FileField("Homework File",upload_to='assignments/')
 
     def __str__(self):

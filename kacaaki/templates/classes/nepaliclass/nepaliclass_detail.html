@@ -60,8 +60,8 @@
                             Actions
                           </a>
                           <ul class="dropdown-menu" aria-labelledby="updateDropdown">
-                            <li><a class="dropdown-item" href="{% url 'classes:assignment_add' %}?class={{ np_class.id }}">Assignments Add</a></li>
-                            <li><a class="dropdown-item" href="{% url 'classes:nepaliclass_update' np_class.id %}?where=detail">Update</a></li>
+                            <li><a class="dropdown-item" href="{% url 'classes:assignment_add' %}?uid={{ np_class.id }}">Assignments Add</a></li>
+                            <li><a class="dropdown-item" href="{% url 'classes:nepaliclass_update' np_class.id %}?uid=detail">Update</a></li>
                             <li><a class="dropdown-item " href="#" data-toggle="modal" data-target="#confirmationModal" id="btn-danger">Delete</a></li>
                           </ul>
                         </div>
@@ -122,7 +122,7 @@
     <div class="container-xxl py-5 card  ">
       <div class="container  border ">
         <div style="text-align: center;">
-          <a href="{% url 'classes:assignment_list' %}" style="font-size: 18px;">Assignments</a>
+          <a href="{% url 'classes:assignment_list' %}?uid={{ np_class.id }}" style="font-size: 18px;">Assignments</a>
         </div>
         
         <div class="row mb-2">
@@ -131,7 +131,7 @@
           </div>
           {% if request.user|is_staff_or_teacher %}
           <div class="col-md-5" style="text-align: right;">
-            <a href="{% url 'classes:assignment_add' %}?class={{ np_class.id }}" class="btn btn-primary"><i class="material-icons">Add Assignment</i></a>
+            <a href="{% url 'classes:assignment_add' %}?uid={{ np_class.id }}" class="btn btn-primary"><i class="material-icons">Add Assignment</i></a>
           </div>
           {% endif %}
         </div>
