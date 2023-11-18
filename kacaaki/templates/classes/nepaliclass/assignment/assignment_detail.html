@@ -109,6 +109,7 @@
                                         {% for file in object.assignment_files.all %}
                                         <a href="{{ file.a_file.url }}" class="btn btn-secondary download-link" download><i class="bi bi-download"></i></a>
                                     {% endfor %}
+                                    <button id="zipFilesButton" class="btn btn-primary">Zip Files</button>
                                         {% else %}
                                             <h1>Hello</h1>
                                         {% endif %}
@@ -178,5 +179,41 @@
           });
         });
       </script>
+
+
+      <script>
+        $(document).ready(function () {
+            // Function to trigger file zipping using jQuery
+            function zipFiles() {
+                var zip = new JSZip();
+
+                // Loop through each file link and add it to the zip
+                $('.download-link').each(function () {
+                    var fileUrl = $(this).attr('href');
+                    var fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+                    
+                    // You might need to fetch the file content using AJAX if needed
+                    // For simplicity, assuming the content is available in the href attribute
+
+                    zip.file(fileName, fileUrl);
+                });
+
+                // Generate the zip file
+                zip.generateAsync({ type: "blob" })
+                    .then(function (blob) {
+                        // Trigger a download of the zip file
+                        var link = document.createElement("a");
+                        link.href = URL.createObjectURL(blob);
+                        link.download = "combined.zip";
+                        link.click();
+                    });
+            }
+
+            // Attach the zipFiles function to the click event of the button
+            $('#zipFilesButton').on('click', function () {
+                zipFiles();
+            });
+        });
+    </script>
 
 {% endblock %}

@@ -53,7 +53,7 @@
                             {% for object in object_list %}
                             <tr>
                               <td>{{ forloop.counter }}</td>
-                              <td><a href="">{{ object.topic }}</a></td>
+                              <td><a href="{% url 'classes:assignment_detail' object.id %}">{{ object.topic }}</a></td>
                               <td>
                                 {% if object.file %}
                                   <a href="{{ object.file.url }}" class="btn btn-secondary" download><i class="bi bi-download"></i> Download File</a>
