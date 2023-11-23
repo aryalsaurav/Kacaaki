@@ -13,5 +13,4 @@ urlpatterns = [
     path('nepali/assignment/list/', views.AssignmentListView.as_view(), name='assignment_list'),
     path('nepali/assignment/<int:pk>/detail/', views.AssignmentDetailView.as_view(), name='assignment_detail'),
     path('nepali/assignment/<int:pk>/update/', views.AssignmentUpdateView.as_view(), name='assignment_update'),
-    path('nepalistudent/autocomplete/',views.StudentsAutocomplete.as_view(), name='nepali-student-autocomplete'),
 ]

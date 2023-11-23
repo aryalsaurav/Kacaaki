@@ -10,25 +10,25 @@ from dal import autocomplete
 class NepaliClassForm(forms.ModelForm):
     time = forms.CharField(widget=forms.TextInput(attrs={'type': 'time'}))
     students = forms.ModelMultipleChoiceField(queryset=NepaliStudent.objects.all())
-    # teacher = forms.ModelChoiceField(queryset=Teacher.objects.filter(teacher_type='Nepali Teacher'))
+    
     class Meta:
         model = NepaliClass
-        fields = ('name',"day","time",'class_type', 'teacher', 'students',)
-        # widgets = {
-        #     'name': forms.TextInput(attrs={'class':'form-control'}),
-        #     'teacher': forms.Select(attrs={'class':'form-control'}),
-        #     'students': autocomplete.ModelSelect2Multiple(url='classes:nepali-student-autocomplete')
-        # }
+        fields = ('name',"day","time",'class_type','teacher','students',)
         
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
         super(NepaliClassForm, self).__init__(*args, **kwargs)
         # self.fields['teacher'].queryset = Teacher.objects.filter(teacher_type='Nepali Teacher')
 
         for field in iter(self.fields):
-            
             self.fields[field].widget.attrs.update({
                 'class': 'form-control'
             })
+        
+        if user and (user.is_superuser or user.is_staff):
+            self.fields['teacher'].queryset = Teacher.objects.filter(teacher_type='Nepali Teacher')
+        else:
+            del self.fields['teacher']
             
     
             

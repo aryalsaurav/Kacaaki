@@ -12,7 +12,6 @@ from .forms import *
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.views import View
-from dal import autocomplete
 from main.permissions import *
 from django.core.paginator import Paginator
 from django.core.exceptions import PermissionDenied
@@ -20,43 +19,30 @@ from django.core.exceptions import PermissionDenied
 
 
 
-class StudentsAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        print("is this function being executed?")
-        # Don't forget to filter out results depending on the visitor !
-        if not self.request.user.is_authenticated:
-            print("none user")
-            return NepaliStudent.objects.none()
 
-        qs = NepaliStudent.objects.filter(students__user__is_active=True)
-
-        if self.q:
-            qs = qs.filter(students__user__full_name__icontains=self.q)
-        print("hello ")
-
-        print(qs)
-        print("no qs")
-        return qs
 
 class NepaliClassAddView(LoginRequiredMixin,View):
     template_name = 'classes/nepaliclass/nepaliclass_add.html'
     login_url = '/login/'
     def get(self, request, *args, **kwargs):
-        form = NepaliClassForm()
+        form = NepaliClassForm(user=request.user)
         context = {
             'form':form,
         }
         return render(request, self.template_name, context)
     
     def post(self,request,*args,**kwargs):
-        form = NepaliClassForm(request.POST)
+        form = NepaliClassForm(request.POST, user=request.user)
         if form.is_valid():
             np_class = form.save(commit=False)
             students = form.cleaned_data['students']
             if students.count() > 5:
                 messages.error(request, 'You cannot add more than 4 students')
                 return HttpResponseRedirect(reverse('classes:nepaliclass_add'))
-            
+            try:
+                np_class.teacher = request.user.teacher
+            except:
+                raise PermissionDenied
             np_class.save()
             np_class.students.add(*students)
             np_class.save()
@@ -69,7 +55,7 @@ class NepaliClassAddView(LoginRequiredMixin,View):
         
 
 
-class NepaliClassListView(LoginRequiredMixin,TeacherOrAdminMixin,ListView):
+class NepaliClassListView(LoginRequiredMixin,ListView):
     template_name = 'classes/nepaliclass/nepaliclass_list.html'
     
     login_url = '/login/'
@@ -134,7 +120,7 @@ class NepaliClassListView(LoginRequiredMixin,TeacherOrAdminMixin,ListView):
         
         
 
-class NepaliClassUpdateView(LoginRequiredMixin,TeacherOrAdminMixin,View):
+class NepaliClassUpdateView(LoginRequiredMixin,View):
     template_name = "classes/nepaliclass/nepaliclass_update.html"
     login_url = '/login/'
     
@@ -174,7 +160,7 @@ class NepaliClassUpdateView(LoginRequiredMixin,TeacherOrAdminMixin,View):
 
 
 
-class NepaliClassDeleteView(LoginRequiredMixin,TeacherOrAdminMixin,View):
+class NepaliClassDeleteView(LoginRequiredMixin,View):
     
     def get(self,request,*args,**kwargs):
         np_class = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
@@ -216,6 +202,7 @@ class AssignmentAddView(LoginRequiredMixin,View):
     def post(self,request,*args,**kwargs):
         form = AssignmentForm(request.POST, request.FILES)
         class_id = request.POST.get('uid')
+        print(class_id)
         if form.is_valid():
             assignment = form.save(commit=False)
             nepali_class = NepaliClass.objects.get(pk=class_id)

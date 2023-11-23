@@ -35,8 +35,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'dal',
-    'dal_select2',
+    # 'dal',
+    # 'dal_select2',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -118,10 +118,11 @@ WSGI_APPLICATION = 'kacaaki.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'kacaaki_dev',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'kakaaki_dev',
         'USER': 'postgres',
         'PASSWORD': 'HelloWorld',
         # 'HOST': '172.24.0.2',

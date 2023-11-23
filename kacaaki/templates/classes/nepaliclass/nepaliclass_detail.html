@@ -47,7 +47,7 @@
 
 {% block content %}
     <div class="container-xxl py-5 card mt-5">
-        <div class="container border" >
+        <div class="container custom-box border" >
             <div>
                 <div class="row mt-2">
                     <div class="col-md-10" style="text-align: center;">
@@ -120,17 +120,18 @@
 
 
     <div class="container-xxl py-5 card  ">
-      <div class="container  border ">
-        <div style="text-align: center;">
-          <a href="{% url 'classes:assignment_list' %}?uid={{ np_class.id }}" style="font-size: 18px;">Assignments</a>
-        </div>
+      <div style="text-align: center;">
+        <a href="{% url 'classes:assignment_list' %}?uid={{ np_class.id }}" style="font-size: 40px;">Assignments</a>
+      </div>
+      <div class="container custom-box  border ">
+        
         
         <div class="row mb-2">
           <div class="col-md-6">
             
           </div>
           {% if request.user|is_staff_or_teacher %}
-          <div class="col-md-5" style="text-align: right;">
+          <div class="col-md-5 py-2" style="text-align: right;">
             <a href="{% url 'classes:assignment_add' %}?uid={{ np_class.id }}" class="btn btn-primary"><i class="material-icons">Add Assignment</i></a>
           </div>
           {% endif %}
