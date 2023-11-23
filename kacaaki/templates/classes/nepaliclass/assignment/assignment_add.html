@@ -1,7 +1,7 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
-{% block title %}Nepali Class Add{% endblock %}
+{% block title %}Assignment Add{% endblock %}
 
 {% block head %}
 
@@ -18,6 +18,7 @@
         user-select: none;
         -webkit-user-select: none;
     }
+
 </style>
 
 {% endblock %}
@@ -33,20 +34,15 @@
                     {% for field in form %}
                     
                         <div class="form-group">
-                            {% if field == "students" %}
-
-                            {{ field|as_crispy_field }}
                             
-                            {% else %}
                             {{ field|as_crispy_field }}
-                            {% endif %}
                         </div>
                         
                     {% endfor %}
                     <input type="hidden" name="uid" value="{{ request.GET.uid }}">
                     <div id="student-error-message" style="color: red;"></div>
                     <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                        <button id="submit-button" type="submit" class="btn btn-primary btn-lg">Add Nepali Class</button>
+                        <button id="submit-button" type="submit" class="btn btn-primary btn-lg">Add Assignment</button>
                     </div>
                 </form>
             </div>

@@ -126,7 +126,7 @@ class NepaliClassUpdateView(LoginRequiredMixin,View):
     
     def get(self,request,*args,**kwargs):
         np_classes = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
-        form = NepaliClassForm(instance=np_classes)
+        form = NepaliClassForm(instance=np_classes, user=request.user)
         context = {
             'form':form,
         }
@@ -135,7 +135,7 @@ class NepaliClassUpdateView(LoginRequiredMixin,View):
     def post(self,request,*args,**kwargs):
         np_classes = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
         detail = request.POST.get('uid')
-        form = NepaliClassForm(request.POST, instance=np_classes)
+        form = NepaliClassForm(request.POST, instance=np_classes, user=request.user)
         if form.is_valid():
             np_class = form.save(commit=False)
             students = form.cleaned_data['students']

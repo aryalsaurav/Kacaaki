@@ -23,43 +23,36 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-lg-12 col-xl-11">
-                <div class="card text-black" style="border-radius: 25px;">
-                    <div class="card-body p-md-5">
-                        <div class="row justify-content-center">
-                            <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
-                                
-                                <form class="" method="post" action="{% url 'classes:nepaliclass_update' pk=form.instance.pk %}">
-                                    {% csrf_token %}
-                                    
-                                    {% for field in form %}
-                                    
-                                        <div class="form-group">
-                                            {% if field == "students" %}
+<div class="container  mt-5">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-sm-6 py-5 custom-box m-2">
+            <div class="col-lg-6 mx-auto">
+                <form class="" method="post" action="{% url 'classes:nepaliclass_add' %}">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                    
+                        <div class="form-group">
+                            {% if field == "students" %}
 
-                                            {{ field|as_crispy_field }}
-                                            
-                                            {% else %}
-                                            {{ field|as_crispy_field }}
-                                            {% endif %}
-                                        </div>
-                                        
-                                    {% endfor %}
-                                    <input type="hidden" name="where" value="{{ request.GET.where }}">
-                                    <div id="student-error-message" style="color: red;"></div>
-                                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                        <button id="submit-button" type="submit" class="btn btn-primary btn-lg">Update Nepali Class</button>
-                                    </div>
-                                </form>
-                            </div>  
+                            {{ field|as_crispy_field }}
+                            
+                            {% else %}
+                            {{ field|as_crispy_field }}
+                            {% endif %}
                         </div>
+                        
+                    {% endfor %}
+                    <div id="student-error-message" style="color: red;"></div>
+                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                        <button id="submit-button" type="submit" class="btn btn-primary btn-lg">Update Class</button>
                     </div>
-                </div>
+                </form>
             </div>
+            
         </div>
     </div>
+</div>
 
     
     <script type="text/javascript">
