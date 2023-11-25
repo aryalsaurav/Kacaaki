@@ -7,10 +7,13 @@ from dal import autocomplete
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
     password2 = forms.CharField(widget=forms.PasswordInput(),label="Confirm Password")
+    age = forms.IntegerField(required=True)
     class Meta:
         model = User
         fields = ['email','full_name','password','password2','phone','age','gender','photo','city','state','zip_code','country']
-
+        extra_kwargs = {
+            'age': {'required': True},
+        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -27,9 +30,15 @@ class UserRegistrationForm(forms.ModelForm):
         super().__init__(*args,**kwargs)
         self.helper = FormHelper()
         for field in iter(self.fields):
-            self.fields[field].widget.attrs.update({
-                'class':'form-control'
-            })
+            if field == "age":
+                self.fields[field].widget.attrs.update({
+                    'class':'form-control',
+                    'required': True,
+                })
+            else:
+                self.fields[field].widget.attrs.update({
+                    'class':'form-control'
+                })
 
 
 
@@ -60,9 +69,15 @@ class NepaliStudentRegistrationForm(forms.ModelForm):
         super().__init__(*args,**kwargs)
         self.helper = FormHelper()
         for field in iter(self.fields):
-            self.fields[field].widget.attrs.update({
-                'class':'form-control'
-            })
+            if field == "listening":
+                self.fields[field].widget.attrs.update({
+                    'class':'form-control',
+                    'label': 'Listening Skills',
+                })
+            else:
+                self.fields[field].widget.attrs.update({
+                    'class':'form-control'
+                })
 
 
 class DanceStudentRegistrationForm(forms.ModelForm):

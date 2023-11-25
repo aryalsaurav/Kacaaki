@@ -15,13 +15,20 @@ from django.views import View
 from main.permissions import *
 from django.core.paginator import Paginator
 from django.core.exceptions import PermissionDenied
+from .mixins import (
+    SuperUserRequiredMixin,
+    StaffRequiredMixin,
+    TeacherRequiredMixin,
+    StaffOrNepaliTeacherRequiredMixin,
+    NepaliTeacherOrStudentRequiredMixin,
+)
 # Create your views here.
 
 
 
 
 
-class NepaliClassAddView(LoginRequiredMixin,View):
+class NepaliClassAddView(LoginRequiredMixin,StaffOrNepaliTeacherRequiredMixin, View):
     template_name = 'classes/nepaliclass/nepaliclass_add.html'
     login_url = '/login/'
     def get(self, request, *args, **kwargs):
@@ -55,7 +62,7 @@ class NepaliClassAddView(LoginRequiredMixin,View):
         
 
 
-class NepaliClassListView(LoginRequiredMixin,ListView):
+class NepaliClassListView(LoginRequiredMixin,NepaliTeacherOrStudentRequiredMixin,ListView):
     template_name = 'classes/nepaliclass/nepaliclass_list.html'
     
     login_url = '/login/'
@@ -81,7 +88,7 @@ class NepaliClassListView(LoginRequiredMixin,ListView):
                         Q(teacher__user__full_name__icontains=query)|
                         Q(students__user__full_name__icontains=query)
                     ).distinct()
-            elif self.request.user.teacher:
+            elif self.request.user.user_type == 'Nepali Teacher':
                 
                 queryset =  classes.filter(teacher=self.request.user.teacher).filter(
                         Q(name__icontains=query) |
@@ -90,10 +97,9 @@ class NepaliClassListView(LoginRequiredMixin,ListView):
                         Q(teacher__user__full_name__icontains=query)|
                         Q(students__user__full_name__icontains=query)
                     ).distinct()
-        except:
-            pass
-        try:
-            queryset = classes.filter(students__in= [self.request.user.nepali_student]).filter(
+            
+            elif self.request.user.user_type == 'Nepali Student':
+                queryset = classes.filter(students__in= [self.request.user.nepali_student]).filter(
                     Q(name__icontains=query) |
                     Q(day__icontains=query) |
                     Q(time__icontains=query) |
@@ -101,10 +107,7 @@ class NepaliClassListView(LoginRequiredMixin,ListView):
                     Q(students__user__full_name__icontains=query)
                 ).distinct()
         except:
-            pass
-            
-        
-        
+            return classes.none()
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -120,7 +123,7 @@ class NepaliClassListView(LoginRequiredMixin,ListView):
         
         
 
-class NepaliClassUpdateView(LoginRequiredMixin,View):
+class NepaliClassUpdateView(LoginRequiredMixin,StaffOrNepaliTeacherRequiredMixin, View):
     template_name = "classes/nepaliclass/nepaliclass_update.html"
     login_url = '/login/'
     
@@ -171,7 +174,7 @@ class NepaliClassDeleteView(LoginRequiredMixin,View):
     
     
 
-class NepaliClassDetailView(LoginRequiredMixin,InClassOrAdminMixin,View):
+class NepaliClassDetailView(LoginRequiredMixin,View):
     template_name = 'classes/nepaliclass/nepaliclass_detail.html'
     login_url = '/login/'
     model = NepaliClass

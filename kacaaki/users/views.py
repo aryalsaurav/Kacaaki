@@ -53,10 +53,10 @@ class NepaliStudentRegisterView(View):
         if user_form.is_valid() and nepali_student_form.is_valid():
             user = user_form.save(commit=False)
             user.set_password(user.password)
+            user.user_type = "Nepali Student"
             user.save()
             nepali_student = nepali_student_form.save(commit=False)
             nepali_student.user = user
-            nepali_student.is_nepali_student = True
             nepali_student.save()
             messages.success(request,"Your account has been created successfully")
             return HttpResponseRedirect('/')
@@ -86,10 +86,10 @@ class DanceStudentRegisterView(View):
         if user_form.is_valid() and dance_student_form.is_valid():
             user = user_form.save(commit=False)
             user.set_password(user.password)
+            user.user_type = "Dance Student"
             user.save()
             dance_student = dance_student_form.save(commit=False)
             dance_student.user = user
-            dance_student.is_dance_student = True
             dance_student.save()
             messages.success(request,"Your account has been created successfully")
             return HttpResponseRedirect('/')

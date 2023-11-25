@@ -24,12 +24,12 @@ gender_choices = [
     ]
 
 skills = [
-        ('0','0'),
-        ('1','1'),
-        ('2','2'),
-        ('3','3'),
-        ('4','4'),
-        ('5','5'),
+        ('0','0 (None)'),
+        ('1','1 (Low)'),
+        ('2','2 (Medium)'),
+        ('3','3 (Good)'),
+        ('4','4 (Very Good)'),
+        ('5','5 (Well)'),
     ]
 
 session_choices=[
@@ -56,6 +56,15 @@ class ClassTime(models.TextChoices):
         Saturday_Morning = 'Saturday Morning', 'Saturday Morning'
         Saturday_Evening = 'Saturday Evening', 'Saturday Evening'
 
+
+user_type_choices = (
+        ('Nepali Student','Nepali Student'),
+        ('Dance Student','Dance Student'),
+        ('Nepali Teacher','Nepali Teacher'),
+        ('Dance Teacher','Dance Teacher'),
+        ('Admin','Admin'),
+)
+
 class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
@@ -69,7 +78,9 @@ class User(AbstractUser):
     state = models.CharField(max_length=20)
     zip_code = models.CharField("Zip Code",max_length=20,null=True,blank=True)
     country = models.CharField(max_length=20)
+    user_type = models.CharField(max_length=20,null=True,blank=True,choices=user_type_choices)
     created_at = models.DateTimeField(default=timezone.now, blank=True)
+    deleted_at = models.DateTimeField(null=True,blank=True)
     REQUIRED_FIELDS = []
     objects = UserManager()
 
@@ -123,8 +134,7 @@ class NepaliStudent(models.Model):
     goal_for_class = models.TextField(null=True)
     special_request = models.TextField(null=True,blank=True)
     hear_from = models.CharField(max_length=30)
-    other_classes = MultiSelectField(max_length=50,choices=NepaliExtraClasses.choices,max_choices=2)
-    is_nepali_student = models.BooleanField(default=True)
+    other_classes = MultiSelectField(max_length=50,choices=NepaliExtraClasses.choices,max_choices=2,blank=True,null=True)
     
 
     def __str__(self):
@@ -161,8 +171,7 @@ class DanceStudent(models.Model):
     goal_for_class = models.TextField(null=True)
     special_request = models.TextField(null=True,blank=True)
     hear_from = models.CharField(max_length=30)
-    other_classes = MultiSelectField(max_length=50,choices=DanceExtraClasses.choices,max_choices=2)
-    is_dance_student = models.BooleanField(default=True)
+    other_classes = MultiSelectField(max_length=50,choices=DanceExtraClasses.choices,max_choices=2,blank=True,null=True)
 
     def __str__(self):
         return self.user.full_name
@@ -183,7 +192,6 @@ class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     teacher_type = models.CharField(max_length=20,choices=teacher_choices)
     zoom_link = models.URLField(max_length=250)
-    is_teacher = models.BooleanField(default=True)
     
 
     def __str__(self):
