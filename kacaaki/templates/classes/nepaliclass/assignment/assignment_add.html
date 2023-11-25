@@ -24,7 +24,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="container  mt-5">
+<div class="p-3">
+	<a href="#" class="btn btn-secondary" onclick="goBack()">
+	  <i class="fas fa-arrow-left"></i>  Back
+	</a>
+  </div>
+<div class="container ">
     <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-sm-6 py-5 custom-box m-2">
             <div class="col-lg-6 mx-auto">
@@ -82,5 +87,11 @@
             });
         </script>
     
+
+        <script>
+            function goBack() {
+              window.history.back();
+            }
+          </script>
 
 {% endblock %}

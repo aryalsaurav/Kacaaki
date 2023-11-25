@@ -27,7 +27,7 @@
     <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-sm-6 py-5 custom-box m-2">
             <div class="col-lg-6 mx-auto">
-                <form class="" method="post" action="{% url 'classes:nepaliclass_add' %}">
+                <form class="" method="post" action="{% url 'classes:nepaliclass_update' form.instance.id %}">
                     {% csrf_token %}
                     
                     {% for field in form %}

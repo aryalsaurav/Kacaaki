@@ -21,6 +21,7 @@ from .mixins import (
     TeacherRequiredMixin,
     StaffOrNepaliTeacherRequiredMixin,
     NepaliTeacherOrStudentRequiredMixin,
+    NeapliTeacherOrStudentInClassRequiredMixin,
 )
 # Create your views here.
 
@@ -113,7 +114,6 @@ class NepaliClassListView(LoginRequiredMixin,NepaliTeacherOrStudentRequiredMixin
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['query'] = self.request.GET.get('q', '')  # Pass the query to the context
-        
         return context
                 
         
@@ -146,25 +146,25 @@ class NepaliClassUpdateView(LoginRequiredMixin,StaffOrNepaliTeacherRequiredMixin
                 messages.error(request, 'You cannot add more than 4 students')
                 return HttpResponseRedirect(reverse('classes:nepaliclass_add'))
             np_class.save()
-            np_class.students.add(*students)
+            np_class.students.set(students)
             np_class.save()
             messages.success(request, 'Class updated successfully')
             if detail == 'detail':
-                
                 return HttpResponseRedirect(reverse('classes:nepaliclass_detail', kwargs={'pk':self.kwargs['pk']}))
             else:
                 return redirect('classes:nepaliclass_list')
         else:
-            print(form.errors)
+
+            print(form.errors,"33333333333333")
             messages.error(request, 'Class not updated')
-            return redirect('classes:nepaliclass_list')
+            return HttpResponseRedirect(reverse('classes:nepaliclass_list'))
         
 
 
 
 
-class NepaliClassDeleteView(LoginRequiredMixin,View):
-    
+class NepaliClassDeleteView(LoginRequiredMixin,StaffOrNepaliTeacherRequiredMixin,View):
+    login_url = '/login/'
     def get(self,request,*args,**kwargs):
         np_class = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
         np_class.delete()
@@ -174,7 +174,7 @@ class NepaliClassDeleteView(LoginRequiredMixin,View):
     
     
 
-class NepaliClassDetailView(LoginRequiredMixin,View):
+class NepaliClassDetailView(LoginRequiredMixin,NeapliTeacherOrStudentInClassRequiredMixin,View):
     template_name = 'classes/nepaliclass/nepaliclass_detail.html'
     login_url = '/login/'
     model = NepaliClass
@@ -225,7 +225,7 @@ class AssignmentAddView(LoginRequiredMixin,View):
         
 
 
-class AssignmentListView(LoginRequiredMixin,ListView):
+class AssignmentListView(LoginRequiredMixin,NeapliTeacherOrStudentInClassRequiredMixin,ListView):
     template_name = 'classes/nepaliclass/assignment/assignment_list.html'
     model = Assignment
     paginate_by = 10
