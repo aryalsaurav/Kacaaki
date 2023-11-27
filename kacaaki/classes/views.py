@@ -217,7 +217,8 @@ class AssignmentAddView(LoginRequiredMixin,View):
             assignment.nepali_class = nepali_class
             assignment.save()
             messages.success(request, 'Assignment added successfully')
-            return redirect('classes:nepaliclass_detail', pk=nepali_class.pk)
+            redirect_url = reverse('classes:assignment_list') + f'?uid={class_id}'
+            return HttpResponseRedirect(redirect_url)
         else:
             messages.error(request, 'Assignment not added')
             print(form.errors)
@@ -228,12 +229,13 @@ class AssignmentAddView(LoginRequiredMixin,View):
 class AssignmentListView(LoginRequiredMixin,NeapliTeacherOrStudentInClassRequiredMixin,ListView):
     template_name = 'classes/nepaliclass/assignment/assignment_list.html'
     model = Assignment
-    paginate_by = 10
+    paginate_by = 1
     
     def get_queryset(self):
         class_id = self.request.GET.get('uid')
         if class_id:
-            queryset =  super().get_queryset().filter(Q(nepali_class__teacher__user=self.request.user) | Q(nepali_class__students__user=self.request.user) |Q(nepali_class__id=class_id)).order_by('-created_at')
+            queryset =  super().get_queryset().filter(nepali_class__pk=class_id).order_by('-created_at')
+            queryset =  queryset.filter(Q(nepali_class__teacher__user=self.request.user) | Q(nepali_class__students__user=self.request.user)).order_by('-created_at')
             if self.request.GET.get('q'):
                 query = self.request.GET.get('q')
                 return queryset.filter(

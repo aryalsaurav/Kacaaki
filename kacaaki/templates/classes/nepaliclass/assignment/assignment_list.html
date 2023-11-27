@@ -26,14 +26,17 @@
 	  <i class="fas fa-arrow-left"></i>  Class
 	</a>
   </div>
+  <h3 style="text-align: center;">All Assignments</h3>
 	<div class="container-xxl py-3 ">
+		
 		<div class="container py-3 custom-box">
+			
 			<div class="row mb-2">
 				<div class="col-md-4">
 					
 				</div>
 				<div class="col-md-4" style="text-align: right;">
-					<a href="{% url 'classes:assignment_add' %}" class="btn btn-primary"><i class="material-icons">Add Assignment</i></a>
+					<a href="{% url 'classes:assignment_add' %}?uid={{request.GET.uid}}" class="btn btn-primary"><i class="material-icons">Add Assignment</i></a>
 				</div>
 				<div class="col-md-4" style="text-align: center;">
 					<div class="search--document">
@@ -80,7 +83,7 @@
 						</tbody>
 					</table>
 				</div>
-				{% include 'layouts/pagination.html' %}
+				{% include 'layouts/pagination.html'  %}
 			</div>
 		</div>
 
