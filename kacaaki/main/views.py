@@ -49,6 +49,8 @@ class TestomonialListView(View):
         }
         return render(request,self.template_name,context)
     
+    
+
 
 
 

@@ -1,0 +1,124 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load is_staff_or_teacher %}
+{% block title %}{{ user.full_name }}{% endblock %}
+
+{% block head %}
+
+<style>
+    .profile-card {
+        padding: 20px;
+        margin: 20px 0px 20px 0px;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .profile-image {
+        max-width: 100px;
+        max-height: 100px;
+        border-radius: 60%;
+        object-fit: cover;
+        
+    }
+
+    .course-card {
+        padding: 20px;
+        margin: 20px 0px 20px 0px;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .course-card a {
+        text-decoration: none;
+        color: rgb(156, 144, 238);
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container p-3 mt-4">
+    <div class="row">
+        <div class="col-lg-3">
+                <div class="profile-card">
+                    {% if user.imageURL %}
+                    <img class="profile-image mx-auto d-flex" src="{{ user.imageURL }}">
+                    {% else %}
+                    <img class="profile-image mx-auto d-flex" src="{% static 'img/about.jpg' %}">
+                    {% endif %}
+                    <p><strong>Name:</strong> {{ user.full_name }}{% if user.age %} ({{ user.age }})  {% endif %}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    {% if user.user_type == 'Nepali Student' %}
+                    <p><strong>Parent's Name:</strong> {{ user.nepali_student.parents_name }}</p>
+                    {% elif user.user_type == 'Dance Student' %}
+                    <p><strong>Parent's Name:</strong> {{ user.dance_student.parents_name }}</p>
+                    {% endif %}
+                    <p><strong>Phone No:</strong> {{ user.phone }}</p>
+                    <p><strong>Enrollment Date:</strong> {{ user.created_at|date }}</p>
+                    <a href="" class="btn btn-primary">Edit Profile</a>
+                    <!-- Add more profile information as needed -->
+                </div>
+        </div>
+        <div class="col-lg-8">
+                {% if request.user|nepali_student or request.user|nepali_teacher %}
+                <div class="course-card card ">
+                    <a href="{% url 'classes:nepaliclass_list' %}"><h2 style="text-align: center;">Nepali Classes</h2></a>
+                    <table>
+                        <tr>
+                            <th>S.N.</th>
+                            <th>Class Name</th>
+                            <th>Teacher Name</th>
+                            <th>Class Day</th>
+                            <th>Class Time</th>
+                        </tr>
+                        {% for class in nepali_classes %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ class.name }}</td>
+                            <td>{{ class.teacher.user.full_name }}</td>
+                            <td>{{ class.class_type }}</td>
+                            <td>{{ class.time }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    <!-- Add more course information as needed -->
+                </div>
+            {% endif %}
+            {% if request.user|dance_student or request.user|dance_teacher %}
+                <div class="course-card card">
+                    <a href=""><h2 style="text-align: center;">Dance Classes</h2></a>
+                    <table>
+                        <tr>
+                            <th>S.N.</th>
+                            <th>Class Name</th>
+                            <th>Teacher Name</th>
+                            <th>Class Day</th>
+                            <th>Class Time</th>
+                        </tr>
+                        {% for class in dance_classes %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ class.name }}</td>
+                            <td>{{ class.teacher.user.full_name }}</td>
+                            <td>{{ class.class_type }}</td>
+                            <td>{{ class.class_time }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    <!-- Add more course information as needed -->
+                </div>
+            {% endif %}
+
+            
+                
+        </div>
+        
+        
+    </div>
+</div>
+{% endblock %}

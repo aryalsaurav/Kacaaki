@@ -33,7 +33,7 @@ class StaffOrNepaliTeacherRequiredMixin(object):
     def dispatch(self, request, *args, **kwargs):
         try:
 
-            if request.user.is_staff or request.user.user_type == "Nepali Teacher":
+            if request.user.is_staff or "Nepali Teacher" in request.user.user_type:
                 return super().dispatch(request, *args, **kwargs)
             return redirect('/')
         except Exception as e:
@@ -45,7 +45,7 @@ class StaffOrNepaliTeacherRequiredMixin(object):
 class NepaliTeacherOrStudentRequiredMixin(object):
     def dispatch(self, request, *args, **kwargs):
         try:
-            if request.user.is_staff or request.user.user_type == "Nepali Teacher" or request.user.user_type == "Nepali Student":
+            if request.user.is_staff or   "Nepali Teacher" in request.user.user_type or   "Nepali Student" in request.user.user_type:
                 return super().dispatch(request, *args, **kwargs)
             return redirect('/')
         except Exception as e:
@@ -61,13 +61,13 @@ class NeapliTeacherOrStudentInClassRequiredMixin(object):
         else:
             pk = kwargs['pk']
         try:
-            if request.user.is_staff or request.user.user_type == "Nepali Teacher" or request.user.user_type == "Nepali Student":
-                if request.user.user_type == "Nepali Student":
+            if request.user.is_staff or   "Nepali Teacher" in request.user.user_type or  "Nepali Student" in request.user.user_type:
+                if  "Nepali Student" in request.user.user_type:
                     if request.user.nepali_student.nepaliclass_set.filter(pk=pk).exists():
                         return super().dispatch(request, *args, **kwargs)
                     else:
                         return redirect('/')
-                elif request.user.user_type == "Nepali Teacher":
+                elif "Nepali Teacher" in request.user.user_type:
                     if request.user.teacher.nepaliclass_set.filter(pk=pk).exists():
                         return super().dispatch(request, *args, **kwargs)
                     else:

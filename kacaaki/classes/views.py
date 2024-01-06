@@ -89,7 +89,7 @@ class NepaliClassListView(LoginRequiredMixin,NepaliTeacherOrStudentRequiredMixin
                         Q(teacher__user__full_name__icontains=query)|
                         Q(students__user__full_name__icontains=query)
                     ).distinct()
-            elif self.request.user.user_type == 'Nepali Teacher':
+            elif 'Nepali Teacher' in self.request.user.user_type :
                 
                 queryset =  classes.filter(teacher=self.request.user.teacher).filter(
                         Q(name__icontains=query) |
@@ -99,7 +99,7 @@ class NepaliClassListView(LoginRequiredMixin,NepaliTeacherOrStudentRequiredMixin
                         Q(students__user__full_name__icontains=query)
                     ).distinct()
             
-            elif self.request.user.user_type == 'Nepali Student':
+            elif 'Nepali Student' in self.request.user.user_type:
                 queryset = classes.filter(students__in= [self.request.user.nepali_student]).filter(
                     Q(name__icontains=query) |
                     Q(day__icontains=query) |
@@ -229,7 +229,7 @@ class AssignmentAddView(LoginRequiredMixin,View):
 class AssignmentListView(LoginRequiredMixin,NeapliTeacherOrStudentInClassRequiredMixin,ListView):
     template_name = 'classes/nepaliclass/assignment/assignment_list.html'
     model = Assignment
-    paginate_by = 1
+    paginate_by = 10
     
     def get_queryset(self):
         class_id = self.request.GET.get('uid')
@@ -296,3 +296,35 @@ class AssignmentUpdateView(View):
             print(form.errors)
             return render(request, self.template_name, {'form':form})
     
+    
+class AssignmentSubmissionView(LoginRequiredMixin,View):
+    template_name = 'classes/nepaliclass/assignment/assignment_submission.html'
+    def get(self,request,*args,**kwargs):
+        return render(request, self.template_name)
+    
+    def post(self,request,*args,**kwargs):
+        files = request.FILES.getlist('file')
+        print(files)
+        assignment_id = request.POST.get('uid')
+        try:
+            assignment = Assignment.objects.get(pk=assignment_id)
+            if not request.user.nepali_student in assignment.nepali_class.students.all():
+                raise PermissionDenied
+            assignment_submission,_ = AssignmentSubmission.objects.get_or_create(assignment=assignment, student=request.user.nepali_student)
+            assignment_file = AssignmentFile.objects.filter(assignment_submission=assignment_submission)
+            if assignment_file.count() >= 6:
+                messages.error(request, 'You cannot add more than 6 files')
+                return HttpResponseRedirect(reverse('classes:assignment_detail', kwargs={'pk':assignment.pk}))
+            if assignment_file.count() + len(files) > 6:
+                messages.error(request, 'You cannot add more than 6 files')
+                return HttpResponseRedirect(reverse('classes:assignment_detail', kwargs={'pk':assignment.pk}))
+            for file in files:
+                print('kna aayena ta??')
+                AssignmentFile.objects.create(assignment_submission=assignment_submission, a_file=file)
+            messages.success(request, 'Assignment submitted successfully')
+            return HttpResponseRedirect(reverse('classes:assignment_detail', kwargs={'pk':assignment.pk}))
+        except Exception as e:
+            print(e,'errorrrrrrrr')
+            messages.error(request, 'Assignment not submitted')
+            return HttpResponseRedirect(reverse('classes:assignment_detail', kwargs={'pk':assignment_id}))
+        

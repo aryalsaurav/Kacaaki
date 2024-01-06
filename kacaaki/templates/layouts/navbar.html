@@ -27,7 +27,7 @@
         
         {% if request.user.is_authenticated %}
         <a href="{% url 'main:logout' %}" class="nav-item nav-link">Logout</a>
-        <a href="" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">My Profile<i class="fa fa-arrow-right ms-3"></i></a>
+        <a href="{% url 'users:user-profile' %}" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">My Profile<i class="fa fa-arrow-right ms-3"></i></a>
         {% else %}
         <a href="{% url 'main:login' %}" class="nav-item nav-link">Login</a>
         <button class="btn btn-primary py-4 px-lg-5 d-none d-lg-block" id="join-now" onclick="openJoinModal()">Join Now<i class="fa fa-arrow-right ms-3"></i></button>

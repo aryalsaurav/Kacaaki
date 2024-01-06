@@ -13,6 +13,16 @@
         border-width: 0;
     }
 
+    .container-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: right;
+        padding: 0px;
+    }
+
+    .center-text {
+        text-align: right;
+    }
 
     .card {
         position: relative;
@@ -90,43 +100,77 @@
                     </thead>
                     <tbody>
                         
-                        <table class=" table border-top mt-3">
-                            <span style="text-align: center; font-weight:600;">Submitted Assignment</span>
-                            <thead>
+                        <table>
+                            <thead class="border-bottom mb-2">
                                 <tr>
-                                    <th>S.N.</th>
-                                    <th>Student</th>
-                                    <th>Attachments</th>
-                                    <th>Submitted At</th>
-                                    <th>Approval State</th>
-                                    {% if request.user|is_staff_or_teacher %}
-                                    <th>Action</th>
+                                    <td style="text-align: center;">
+                                        <span style="font-weight: 600;"> Submitted Assignments</span>
+                                    </td>
+                                    {% if request.user.user_type == "Nepali Student" %}
+                                    <td class="ms-auto" style="text-align: right;">
+                                        <a href="{% url 'classes:assignment_submission' %}?uid={{ assignment.id }}">
+                                            <i class="fas fa-plus-circle"></i> Add Submission
+                                        </a>
+                                    </td>
                                     {% endif %}
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for object in assignment_submissions %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td><a href="">{{ object.student }}</a></td>
-                                    <td>
-                                        {% if object.assignment_files.all %}
-                                        {% for file in object.assignment_files.all %}
-                                        <a href="{{ file.a_file.url }}" class="btn btn-secondary download-link" download><i class="bi bi-download"></i></a>
-                                    {% endfor %}
-                                    <button id="zipFilesButton" class="btn btn-primary">Zip Files</button>
-                                        {% else %}
-                                            <h1>Hello</h1>
+                                <table class="mt-2">
+                                    <thead>
+                                        <tr>
+                                            <th>S.N.</th>
+                                            <th>Student</th>
+                                            <th>Attachments</th>
+                                            <th>Submitted At</th>
+                                            <th>Approval State</th>
+                                            {% if request.user|is_staff_or_teacher %}
+                                            <th>Action</th>
+                                            {% endif %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for object in assignment_submissions %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td><a href="">{{ object.student }}</a></td>
+                                        <td>
+                                            {% if object.assignment_files.all %}
+                                            {% for file in object.assignment_files.all %}
+                                            <a href="{{ file.a_file.url }}" class="btn btn-secondary download-link" download><i class="bi bi-download"></i></a>
+                                        {% endfor %}
+                                        <button id="zipFilesButton" class="btn btn-primary">Zip Files</button>
+                                            {% else %}
+                                                <h1>Hello</h1>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ object.submitted_at }}</td>
+                                        <td>{{ object.approval }}</td>
+                                        {% if request.user|is_staff_or_teacher %}
+                                        <td>
+                                            <div class="dropdown">
+                                              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Action
+                                              </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <a href="{% url 'classes:assignment_detail' object.id %}" class="btn-sm dropdown-item btn btn-success-space">
+                                                  <i class="fas fa-info"></i>&nbsp; Detail
+                                                </a> 
+                                                                                                   
+                                                <a href="{% url 'classes:assignment_update' object.id %}" class="btn-sm dropdown-item btn btn-success-space">
+                                                  <i class="fa fa-pencil-alt"></i> Modify
+                                                </a>
+                                          
+                          
+                                            </div>
+                                              </div>
+                                          </td>
                                         {% endif %}
-                                    </td>
-                                    <td>{{ object.submitted_at }}</td>
-                                    <td>{{ object.approval }}</td>
-                                    {% if request.user|is_staff_or_teacher %}
-                                    <td></td>
-                                    {% endif %}
-                                </tr>
-                                {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
                             </tbody>
+                            
                         </table>
                     </tbody>
                 </table>

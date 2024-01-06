@@ -13,4 +13,5 @@ urlpatterns = [
     path('nepali/assignment/list/', views.AssignmentListView.as_view(), name='assignment_list'),
     path('nepali/assignment/<int:pk>/detail/', views.AssignmentDetailView.as_view(), name='assignment_detail'),
     path('nepali/assignment/<int:pk>/update/', views.AssignmentUpdateView.as_view(), name='assignment_update'),
+    path('nepali/assignment/submission/',views.AssignmentSubmissionView.as_view(),name='assignment_submission'),
 ]

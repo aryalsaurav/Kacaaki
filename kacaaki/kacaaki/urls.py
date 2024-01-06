@@ -25,6 +25,7 @@ urlpatterns = [
     path('',include('main.urls',namespace='main')),
     path('user/',include('users.urls',namespace='users')),
     path('class/',include('classes.urls',namespace='classes')),
+    path('chat/',include('chat.urls',namespace='chat')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views import View
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-
+from classes.models import *
 
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from .models import User,NepaliStudent,DanceStudent,Teacher
@@ -53,7 +53,7 @@ class NepaliStudentRegisterView(View):
         if user_form.is_valid() and nepali_student_form.is_valid():
             user = user_form.save(commit=False)
             user.set_password(user.password)
-            user.user_type = "Nepali Student"
+            user.user_type = ["Nepali Student"]
             user.save()
             nepali_student = nepali_student_form.save(commit=False)
             nepali_student.user = user
@@ -86,7 +86,7 @@ class DanceStudentRegisterView(View):
         if user_form.is_valid() and dance_student_form.is_valid():
             user = user_form.save(commit=False)
             user.set_password(user.password)
-            user.user_type = "Dance Student"
+            user.user_type = ["Dance Student"]
             user.save()
             dance_student = dance_student_form.save(commit=False)
             dance_student.user = user
@@ -100,3 +100,36 @@ class DanceStudentRegisterView(View):
             'dance_student':dance_student_form,
             }
             return render(request,self.template_name,context)
+        
+        
+        
+class ProfileView(View):
+    template_name = "users/profile.html"
+
+    def get(self,request):
+        if request.user.is_authenticated:
+            user = request.user
+            nepali_classes = None
+            dance_classes = None
+            if  "Nepali Student" in user.user_type :
+                nepali_student = NepaliStudent.objects.get(user=user)
+                nepali_classes = NepaliClass.objects.filter(students=nepali_student).all()
+            elif "Dance Student" in user.user_type:
+                dance_student = DanceStudent.objects.get(user=user)
+                dance_classes = DanceClass.objects.filter(students=dance_student).all()
+            elif "Nepali Teacher" in user.user_type:
+                teacher = Teacher.objects.get(user=user)
+                nepali_classes = NepaliClass.objects.filter(teacher=teacher).all()
+            elif "Dance Teacher" in user.user_type:
+                teacher = Teacher.objects.get(user=user)
+                dance_classes = DanceClass.objects.filter(teacher=teacher).all()
+            print(nepali_classes,'nepali_classes')
+            context = {
+                'user':user,
+                'nepali_classes':nepali_classes,
+                'dance_classes':dance_classes,
+                
+            }
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect('/login')

@@ -37,6 +37,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     # 'dal',
     # 'dal_select2',
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,7 +45,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
+    
     'classes',
+    'chat',
     
     'multiselectfield',
     'rest_framework',
@@ -106,8 +109,18 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = 'kacaaki.wsgi.application'
+# WSGI_APPLICATION = 'kacaaki.wsgi.application'
+ASGI_APPLICATION = "kacaaki.asgi.application"
 
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases

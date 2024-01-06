@@ -78,7 +78,7 @@ class User(AbstractUser):
     state = models.CharField(max_length=20)
     zip_code = models.CharField("Zip Code",max_length=20,null=True,blank=True)
     country = models.CharField(max_length=20)
-    user_type = models.CharField(max_length=20,null=True,blank=True,choices=user_type_choices)
+    user_type = ArrayField(models.CharField(max_length=255,choices=user_type_choices),null=True,blank=True)
     created_at = models.DateTimeField(default=timezone.now, blank=True)
     deleted_at = models.DateTimeField(null=True,blank=True)
     REQUIRED_FIELDS = []
