@@ -267,6 +267,12 @@
             overflow-x: auto
         }
     }
+
+    .scrollable-list {
+        max-height: 500px; /* Adjust the height as needed */
+        overflow-y: auto;
+        border: 1px solid #ddd; /* Optional: Add a border for clarity */
+    }
 </style>
 
     
@@ -276,6 +282,8 @@
 
 
 {% block content %}
+
+
 
 <div class="container mt-5 p-2 shadow">
     <div class="row">
@@ -301,8 +309,20 @@
                     </div>
                 </div>
                 <div class="chat-history">
-                    <ul class="m-b-0">
-                        
+                    <ul class="m-b-0 scrollable-list">
+                        {% for message in chat_messages %}
+                        <li class="clearfix">
+                            {% if message.user == request.user %}
+                            <div class="message other-message float-right"> {{ message.message}} </div>
+                            {% else %}
+                            <div class="message-data text-right">
+                                <span class="message-data-time">{{ message.timestamp}}</span>
+                                <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="avatar">
+                            </div>
+                            <div class="message other-message float-left"> {{ message.message}} </div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
                     </ul>
                 </div>
                 <div class="chat-message clearfix">
@@ -341,29 +361,19 @@
             const room_id = data['room_id'];
             const current_user = {{request.user.id}};
             const messageList = $('.chat-history ul');
-            const alignmentClass = current_user === user ? 'my-message' : 'other-message';
-            console.log(alignmentClass);
             const messageData = `
                 <li>
                     <div class="message-data">
                         <span class="message-data-name"><i class="fa fa-circle online"></i> ${user}</span>
                         <span class="message-data-time">${new Date().toLocaleTimeString()}</span>
                     </div>
-                    {% if request.user.id == user %}
-                        <div class="message my-message float-right">
-                            ${message}
-                        </div>
-                    {% else %}
-                        <div class="message my-message float-left">
-                            ${message}
-                        </div>
-                    {% endif %}
-                    
+                    <div class="message my-message float-right">
+                        ${message}
+                    </div>
                 </li>
             `;
             messageList.append(messageData);
-            
-            
+
             
         }
 
