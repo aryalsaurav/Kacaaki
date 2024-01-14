@@ -6,10 +6,7 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 
 <style>
-    body{
-        background-color: #f4f7f6;
-        margin-top:20px;
-    }
+    
     .card {
         background: #fff;
         transition: .5s;
@@ -262,6 +259,30 @@
             overflow-x: auto
         }
     }
+
+    #search-overlay {
+        position: absolute;
+        top: 100%; /* Position it below the input field */
+        left: 0;
+        width: 100%;
+        max-height: 200px; /* Adjust as needed */
+        overflow-y: auto;
+        border: 0px;
+        list-style-type: none;
+        padding: 2px;
+        margin: 0;
+        background-color: #fff;
+        box-shadow: 5px 2px 4px rgba(0, 0, 0, 0.1);
+        display: none;
+    }
+    
+    #search-results a {
+        padding: 5px 10px;
+        border-radius: 40px;
+        display: block;
+        color: #000;
+        text-decoration: none;
+    }
 </style>
 
 {% endblock %}
@@ -270,24 +291,31 @@
 
 {% block content %}
 
-<div class="container">
+<div class="container mt-5 shadow">
 <div class="row clearfix">
     <div class="col-lg-12">
         <div class="card chat-app">
             <div id="plist" class="people-list">
                 <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                    <input type="text" id="live-search" class="form-control" placeholder="Search...">
+                    <div id="search-overlay" class="list-group list-group-flush">
+                        <ul id="search-results"></ul>
                     </div>
-                    <input type="text" class="form-control" placeholder="Search...">
                 </div>
+                
+                
                 <ul class="list-unstyled chat-list mt-2 mb-0">
                     {% for chat in chat_rooms %}
                     <li class="clearfix">
                         <a href="{% url 'chat:chatting-room' chat.id %}">
                             <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar">
                             <div class="about">
-                                <div class="name">{{ chat.name }}</div>
+                                <div class="name">{% if chat.name %} {{ chat.name }}{% else %}{% for user in chat.users.all %}
+                                    {% if user != request.user %}
+                                    {{ user.full_name }}
+                                    {% endif %}
+                                    {% endfor %}{% endif %}</div>
+                                    
                                 <div class="status"> <i class="fa fa-circle offline"></i> left 7 mins ago </div>                                            
                             </div>
                         </a>
@@ -296,7 +324,7 @@
                     
                 </ul>
             </div>
-            <div class="chat">
+            <div class="chat ">
                 <div class="chat-header clearfix">
                     <div class="row">
                         <div class="col-lg-6">
@@ -317,34 +345,39 @@
                     </div>
                 </div>
                 <div class="chat-history">
-                    <ul class="m-b-0">
+                    <ul class="m-b-0 scrollable-list">
+                        {% for message in chat_messages %}
                         <li class="clearfix">
-                            <div class="message-data text-right">
-                                <span class="message-data-time">10:10 AM, Today</span>
-                                <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="avatar">
+                            {% if message.user == request.user %}
+                            <div class="message other-message float-right">
+                                <div class="message-text" style="font-size:16px;">
+                                    {{ message.message}}
+                                </div>
+                                <div class="timestamp" style="font-size:10px;" >
+                                    {{ message.timestamp|time }}
+                                </div>
                             </div>
-                            <div class="message other-message float-right"> Hi Aiden, how are you? How is the project coming along? </div>
+                            {% else %}
+                            <div class="message other-message float-left">
+                                
+                                <div class="message-text" style="font-size:16px;">
+                                    {{ message.message}}
+                                </div>
+                                <div class="timestamp" style="font-size:10px;" >
+                                    {{ message.timestamp|time }}
+                                </div>
+                            </div>
+                            {% endif %}
                         </li>
-                        <li class="clearfix">
-                            <div class="message-data">
-                                <span class="message-data-time">10:12 AM, Today</span>
-                            </div>
-                            <div class="message my-message">Are we meeting today?</div>                                    
-                        </li>                               
-                        <li class="clearfix">
-                            <div class="message-data">
-                                <span class="message-data-time">10:15 AM, Today</span>
-                            </div>
-                            <div class="message my-message">Project has been already finished and I have results to show you.</div>
-                        </li>
+                        {% endfor %}
                     </ul>
                 </div>
                 <div class="chat-message clearfix">
                     <div class="input-group mb-0">
+                        <input type="text" id="sending-message" class="form-control" placeholder="Enter text here...">                                    
                         <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fa fa-send"></i></span>
+                            <button type="button" class="btn btn-outline-primary m-2"><span class="send-message"><i class="fa fa-send"></i></span></button>
                         </div>
-                        <input type="text" class="form-control" placeholder="Enter text here...">                                    
                     </div>
                 </div>
             </div>
@@ -354,20 +387,70 @@
 </div>
 
 
+
+
+
 <script>
-    function fetchMessages(chatRoomId) {
-        // Implement your logic to fetch messages for the given chat room
-        // You may use AJAX or any other method to fetch data from the server
-        // Update the chat area content based on the fetched messages
-        $('#chat-area .chat-history').html('<p>Loading messages...</p>');
-        // Use AJAX or other methods to fetch and display messages
-    }
+    $(document).ready(function() {
+        var delayTimer;
+        var resultsContainer = $('#search-results');
+        var overlay = $('#search-overlay');
     
-    // Attach a click event to each chat room link to update the chat area content
-    $('.people-list a').on('click', function (event) {
-        event.preventDefault();
-        var chatRoomId = $(this).attr('href').split('/').pop(); // Extract the chat room id from the link
-        fetchMessages(chatRoomId);
+        $('#live-search').on('input', function() {
+            clearTimeout(delayTimer);
+    
+            delayTimer = setTimeout(function() {
+                var searchTerm = $('#live-search').val().toLowerCase();
+    
+                if (searchTerm.length > 0) {
+                    $.ajax({
+                        url: "{% url 'chat:live-user-search' %}",
+                        type: "GET",
+                        data: {
+                            'name': searchTerm
+                        },
+                        success: function(data) {
+                            displaySearchResults(data);
+                            overlay.show(); // Show the overlay
+                        }
+                    });
+                } else {
+                    overlay.hide(); // Hide the overlay if the search term is empty
+                }
+            }, 1000);
+        });
+    
+        function displaySearchResults(data) {
+            overlay.empty();
+    
+            for (var i = 0; i < data.users.length; i++) {
+                var fullName = data.users[i].full_name;
+                var userId = data.users[i].id;
+    
+                var listItem = $('<a href="#" class="list-group-item list-group-item-action border-0 " data-user-id="' + userId + '">' + fullName + '</a>');
+    
+                overlay.append(listItem);
+            }
+    
+            // Add click event listener to the list items
+            overlay.find('a').on('click', function(e) {
+                e.preventDefault();
+                var selectedUserId = $(this).data('user-id');
+                $.ajax({
+                    url: "{% url 'chat:room-get-create' %}",
+                    type: "GET",
+                    data: {
+                        'user_id': selectedUserId
+                    },
+                    success: function(data) {
+                        window.location.href = data.room_id;
+                    }
+                });
+            });
+        }
     });
+    
+    
+    
 </script>
 {% endblock %}

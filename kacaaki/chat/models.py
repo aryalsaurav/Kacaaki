@@ -4,7 +4,7 @@ from users.models import User
 # Create your models here.
 
 class ChatRoom(models.Model):
-    name = models.CharField('Room Name', max_length=50)
+    name = models.CharField('Room Name', max_length=50,blank=True,null=True)
     users = models.ManyToManyField(User, related_name='chat_rooms',null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -13,7 +13,10 @@ class ChatRoom(models.Model):
     
     
     def __str__(self):
-        return self.name
+        if self.name:
+            return self.name
+        else:
+            return str(self.id)
     
     
 
