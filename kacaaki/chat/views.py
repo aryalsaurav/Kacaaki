@@ -72,4 +72,26 @@ def room_get_create(request):
         chat_room.users.add(logged_user,search_user)
         chat_room.save()
     return JsonResponse({'room_id':chat_room.id}, safe=False)
+
+
+
+def room_detail(request,pk):
+    room = ChatRoom.objects.get(id=pk)
+    messages = ChatMessage.objects.filter(room=room).order_by('-timestamp')[:10]
+    if not room.name:
+        all_users = room.users.all()
+        logged_user = request.user
+        user = all_users.exclude(id=logged_user.id)[0]
+        room_name = user.full_name
+    else:
+        room_name = room.name
+    room_data = serializers.serialize('json', [room,])
+    messages_data = serializers.serialize('json', (messages))
+    context = {
+        'room_data':room_data,
+        'messages_data':messages_data,
+        'room_name':room_name,
+        'message_len':len(messages),
+    }
+    return JsonResponse(context, safe=False)
     
