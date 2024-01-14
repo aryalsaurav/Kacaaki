@@ -291,9 +291,7 @@
                             </div>
                             {% else %}
                             <div class="message other-message float-left">
-                                <div class="username">
-                                    {{ message.user.full_name }}
-                                </div>
+                                
                                 <div class="message-text" style="font-size:16px;">
                                     {{ message.message}}
                                 </div>
@@ -310,7 +308,7 @@
                     <div class="input-group mb-0">
                         <input type="text" id="sending-message" class="form-control" placeholder="Enter text here...">                                    
                         <div class="input-group-prepend">
-                            <button type="button" class="btn btn-outline-primary m-2"><span class="input-group-text"><i class="fa fa-send"></i></span></button>
+                            <button type="button" class="btn btn-outline-primary m-2"><span class="send-message"><i class="fa fa-send"></i></span></button>
                         </div>
                     </div>
                 </div>
@@ -390,14 +388,26 @@
         $('#sending-message').keydown(function(e){
             if (e.which === 13 && !e.shiftKey) {
                 e.preventDefault(); // Prevents a newline in the input field
-                const message = $(this).val();
-                socket.send(JSON.stringify({
-                    'message': message,
-                    'user' : {{request.user.id}},
-                    'room_id' : {{chat_room.id}}
-                }));
-                $(this).val('');
+                sendMessage();
             }
+        });
+
+        function sendMessage() {
+            const message = $('#sending-message').val();
+            if (message.length === 0) {
+                return;
+            }
+            socket.send(JSON.stringify({
+                'message': message,
+                'user' : {{request.user.id}},
+                'room_id' : {{chat_room.id}}
+            }));
+            // Clear the input field after sending the message
+            $('#sending-message').val('');
+        }
+
+        $('.send-message').on('click', function () {
+            sendMessage();
         });
 
 
@@ -440,9 +450,7 @@
                                         </div>
                                     </div>` :
                                     `<div class="message other-message float-left">
-                                        <div class="username">
-                                            ${message.user.username}
-                                        </div>
+                                        
                                         <div class="message-text" style="font-size:16px;">
                                             ${message.message}
                                         </div>
