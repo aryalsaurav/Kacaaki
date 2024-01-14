@@ -352,4 +352,22 @@
     </div>
 </div>
 </div>
+
+
+<script>
+    function fetchMessages(chatRoomId) {
+        // Implement your logic to fetch messages for the given chat room
+        // You may use AJAX or any other method to fetch data from the server
+        // Update the chat area content based on the fetched messages
+        $('#chat-area .chat-history').html('<p>Loading messages...</p>');
+        // Use AJAX or other methods to fetch and display messages
+    }
+    
+    // Attach a click event to each chat room link to update the chat area content
+    $('.people-list a').on('click', function (event) {
+        event.preventDefault();
+        var chatRoomId = $(this).attr('href').split('/').pop(); // Extract the chat room id from the link
+        fetchMessages(chatRoomId);
+    });
+</script>
 {% endblock %}

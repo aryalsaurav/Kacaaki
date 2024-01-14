@@ -11,10 +11,7 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 
 <style>
-    body{
-        background-color: #f4f7f6;
-        margin-top:20px;
-    }
+    
     .card {
         background: #fff;
         transition: .5s;
@@ -25,65 +22,15 @@
         width: 100%;
         box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
     }
-    .chat-app .people-list {
-        width: 280px;
-        position: absolute;
-        left: 0;
-        top: 0;
-        padding: 20px;
-        z-index: 7
-    }
     
-    .chat-app .chat {
-        margin-left: 280px;
-        border-left: 1px solid #eaeaea
-    }
     
-    .people-list {
-        -moz-transition: .5s;
-        -o-transition: .5s;
-        -webkit-transition: .5s;
-        transition: .5s
-    }
+   
     
-    .people-list .chat-list li {
-        padding: 10px 15px;
-        list-style: none;
-        border-radius: 3px
-    }
+   
     
-    .people-list .chat-list li:hover {
-        background: #efefef;
-        cursor: pointer
-    }
+   
     
-    .people-list .chat-list li.active {
-        background: #efefef
-    }
     
-    .people-list .chat-list li .name {
-        font-size: 15px
-    }
-    
-    .people-list .chat-list img {
-        width: 45px;
-        border-radius: 50%
-    }
-    
-    .people-list img {
-        float: left;
-        border-radius: 50%
-    }
-    
-    .people-list .about {
-        float: left;
-        padding-left: 8px
-    }
-    
-    .people-list .status {
-        color: #999;
-        font-size: 13px
-    }
     
     .chat .chat-header {
         padding: 15px 20px;
@@ -272,6 +219,27 @@
         max-height: 500px; /* Adjust the height as needed */
         overflow-y: auto;
         border: 1px solid #ddd; /* Optional: Add a border for clarity */
+    
+        /* Hide scrollbar for WebKit browsers (Chrome, Safari) */
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+    
+        /* Hide scrollbar for other browsers */
+        &::-webkit-scrollbar {
+            width: 0.2em;
+        }
+    
+        &::-webkit-scrollbar-thumb {
+            background-color: transparent;
+        }
+    }
+    
+
+    .timestamp {
+        display: block;
+        float: right;
+        clear: both; /* Ensure it clears any floating elements */
+        margin-top: 5px; /* Adjust this value as needed for spacing */
     }
 </style>
 
@@ -313,13 +281,26 @@
                         {% for message in chat_messages %}
                         <li class="clearfix">
                             {% if message.user == request.user %}
-                            <div class="message other-message float-right"> {{ message.message}} </div>
-                            {% else %}
-                            <div class="message-data text-right">
-                                <span class="message-data-time">{{ message.timestamp}}</span>
-                                <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="avatar">
+                            <div class="message other-message float-right">
+                                <div class="message-text" style="font-size:16px;">
+                                    {{ message.message}}
+                                </div>
+                                <div class="timestamp" style="font-size:10px;" >
+                                    {{ message.timestamp|time }}
+                                </div>
                             </div>
-                            <div class="message other-message float-left"> {{ message.message}} </div>
+                            {% else %}
+                            <div class="message other-message float-left">
+                                <div class="username">
+                                    {{ message.user.full_name }}
+                                </div>
+                                <div class="message-text" style="font-size:16px;">
+                                    {{ message.message}}
+                                </div>
+                                <div class="timestamp" style="font-size:10px;" >
+                                    {{ message.timestamp|time }}
+                                </div>
+                            </div>
                             {% endif %}
                         </li>
                         {% endfor %}
@@ -361,18 +342,38 @@
             const room_id = data['room_id'];
             const current_user = {{request.user.id}};
             const messageList = $('.chat-history ul');
-            const messageData = `
-                <li>
-                    <div class="message-data">
-                        <span class="message-data-name"><i class="fa fa-circle online"></i> ${user}</span>
-                        <span class="message-data-time">${new Date().toLocaleTimeString()}</span>
-                    </div>
-                    <div class="message my-message float-right">
-                        ${message}
+            var messageData;
+            if (current_user == user){
+                messageData = `
+                <li class="clearfix">
+                    <div class="message other-message float-right">
+                        <div class="message-text" style="font-size: 16px;">
+                            ${message}
+                        </div>
+                        <div class="timestamp" style="font-size: 10px;">
+                            ${new Date().toLocaleTimeString()}
+                        </div>
                     </div>
                 </li>
             `;
+            }else{
+                messageData = `
+                <li class="clearfix">
+                    <div class="message other-message float-left">
+                        <div class="message-text" style="font-size: 16px;">
+                            ${message}
+                        </div>
+                        <div class="timestamp" style="font-size: 10px;">
+                            ${new Date().toLocaleTimeString()}
+                        </div>
+                    </div>
+                </li>
+            `;
+            }
+            
+
             messageList.append(messageData);
+            messageList.scrollTop(messageList.prop('scrollHeight'));
 
             
         }
@@ -406,6 +407,74 @@
     
 
 </script>
+
+<script>
+    $(document).ready(function(){
+        const messageList = $('.chat-history ul');
+        messageList.scrollTop(messageList.prop('scrollHeight'));
+        var room_id = {{ chat_room.id }};
+        var offset = 10;
+        chatHistory = $('.chat-history ul');
+
+        function loadMoreMessages() {
+            $.ajax({
+                url: '{% url "chat:load-more-messages" %}',
+                data: {'room_id': room_id, 'offset': offset},
+                dataType: 'json',
+                success: function (data) {
+                    const parsedMessages = JSON.parse(data.messages);
+
+                    // Loop through the new messages and append them to the chat container
+                    for (let i = 0; i < parsedMessages.length; i++) {
+                        let message = parsedMessages[i].fields;
+                        
+                        let messageHtml = `
+                            <li class="clearfix">
+                                ${message.user == {{ request.user.id }} ?
+                                    `<div class="message other-message float-right">
+                                        <div class="message-text" style="font-size:16px;">
+                                            ${message.message}
+                                        </div>
+                                        <div class="timestamp" style="font-size:10px;">
+                                            ${formatTimestamp(message.timestamp)}
+                                        </div>
+                                    </div>` :
+                                    `<div class="message other-message float-left">
+                                        <div class="username">
+                                            ${message.user.username}
+                                        </div>
+                                        <div class="message-text" style="font-size:16px;">
+                                            ${message.message}
+                                        </div>
+                                        <div class="timestamp" style="font-size:10px;">
+                                            ${formatTimestamp(message.timestamp)}
+                                        </div>
+                                    </div>`
+                                }
+                            </li>
+                        `;
+
+                        chatHistory.prepend(messageHtml);
+                            
+                    }
+
+                    offset += 10;  // Increase the offset for the next request
+                }
+            });
+        }
+        function formatTimestamp(timestamp) {
+            const timeOptions = { hour: 'numeric', minute: 'numeric' };
+            return new Date(timestamp).toLocaleTimeString(undefined, timeOptions);
+        }
+
+        $('.scrollable-list').scroll(function(){
+            if ($(this).scrollTop() === 0){
+                loadMoreMessages();
+            }
+        });
+    });
+</script>
+
 
 
 
