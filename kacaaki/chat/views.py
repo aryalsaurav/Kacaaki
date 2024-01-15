@@ -7,12 +7,13 @@ from .models import ChatRoom,ChatMessage
 from django.core import serializers
 from django.db.models import Count,Max,F
 import json
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # Create your views here.
 
 
-class ChatRoomListView(View):
+class ChatRoomListView(LoginRequiredMixin,View):
     
 
     template_name = 'chat/chatroom.html'
@@ -116,7 +117,7 @@ def chat_with_id(request,pk):
     context = {
         'room_data':room,
         'chat_rooms':chat_rooms,
-        'messages_data':messages,
+        'messages_data':reversed(messages),
         'room_name':room_name,
         'message_len':len(messages),
     }

@@ -172,7 +172,7 @@
 							<div class="chat-message-right pb-4">
 								<div>
 									<img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
-									<div class="text-muted small text-nowrap mt-2">{{message.timestamp|time}}</div>
+									<div class="text-muted small text-nowrap mt-2">{{message.timestamp|date:"g:i A"}}</div>
 								</div>
 								<div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
 									<div class="font-weight-bold mb-1">You</div>
@@ -183,7 +183,7 @@
                             <div class="chat-message-left pb-4">
 								<div>
 									<img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
-									<div class="text-muted small text-nowrap mt-2">{{message.timestamp|time}}</div>
+									<div class="text-muted small text-nowrap mt-2">{{message.timestamp|date:"g:i A"}}</div>
 								</div>
 								<div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
 									<div class="font-weight-bold mb-1">{{ message.user.full_name}}</div>
@@ -199,8 +199,8 @@
 
 					<div class="flex-grow-0 py-3 px-4 border-top">
 						<div class="input-group">
-							<input type="text" class="form-control" placeholder="Type your message">
-							<button class="btn btn-primary">Send</button>
+							<input type="text" class="form-control" placeholder="Type your message" id="sending-message">
+							<button class="btn btn-primary send-message">Send</button>
 						</div>
 					</div>
 
@@ -350,8 +350,11 @@
                     var dateObject = new Date(timestamp);
                     var timeString = dateObject.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
 
+                    
+
+
                     if (user.toString() === logged_in_user){
-                        console.log('user is logged in user');
+                        
                         message_data = `
                         <div class="chat-message-right pb-4">
                             <div>
@@ -366,7 +369,7 @@
                         `
                     }
                     else{
-                        console.log('user is not logged in user');
+                        
                         message_data = `
                         <div class="chat-message-left pb-4">
                             <div>
@@ -404,4 +407,122 @@
         
     })
 </script>
+
+
+<script>
+
+    const currentLocation = window.location;
+    let socket;
+
+    room_id = "{{room_data.id}}";
+    if (room_id){
+        socketConnection(room_id);
+    }
+    $('.chat-link').on('click', function(e){
+        e.preventDefault();
+        room_id = $(this).data('chat-id');
+        socketConnection(room_id);
+
+    });
+
+
+
+    function socketConnection(room_id){
+        socket = new WebSocket(`ws://${currentLocation.host}/ws/chat/${room_id}/`);
+
+        socket.onopen = function(e){
+            console.log('Chat socket connected');
+        }
+
+        
+
+        socket.onmessage = function(e){
+            const data = JSON.parse(e.data);
+            const message = data['message'];
+            const user = data['user'];
+            const room_id = data['room_id'];
+            const current_user = {{request.user.id}};
+            const messageList = $('.chat-messages');
+            const currentTime = new Date();
+            const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+
+            const formattedTime = currentTime.toLocaleTimeString([], options);
+            var messageData;
+            if (current_user == user){
+                messageData = `
+                <div class="chat-message-right pb-4">
+                    <div>
+                        <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
+                        <div class="text-muted small text-nowrap mt-2">${formattedTime}</div>
+                    </div>
+                    <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
+                        <div class="font-weight-bold mb-1">You</div>
+                        ${message}
+                    </div>
+                </div>
+            `;
+            }else{
+                messageData = `
+                <div class="chat-message-left pb-4">
+                    <div>
+                        <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
+                        <div class="text-muted small text-nowrap mt-2">${formattedTime}</div>
+                    </div>
+                    <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
+                        <div class="font-weight-bold mb-1">You</div>
+                        ${message}
+                    </div>
+                </div>
+            `;
+            }
+            
+
+            messageList.append(messageData);
+            messageList.scrollTop(messageList.prop('scrollHeight'));
+
+            
+        }
+
+
+        
+
+        socket.onclose = function(e){
+            setTimeout(function () {
+                socketConnection(); // Reconnect
+            }, 3000);
+        }
+
+        $('#sending-message').keydown(function(e){
+            if (e.which === 13 && !e.shiftKey) {
+                e.preventDefault(); // Prevents a newline in the input field
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const message = $('#sending-message').val();
+            if (message.length === 0) {
+                return;
+            }
+            socket.send(JSON.stringify({
+                'message': message,
+                'user' : "{{request.user.id}}",
+                'room_id' : room_id
+        }));
+            // Clear the input field after sending the message
+            $('#sending-message').val('');
+        };
+
+        $('.send-message').on('click', function () {
+            sendMessage();
+        });
+
+
+    }
+
+    
+    
+
+</script>
+
 {% endblock %}
