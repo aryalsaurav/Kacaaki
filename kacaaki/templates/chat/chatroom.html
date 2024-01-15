@@ -395,6 +395,13 @@
     $(document).ready(function(){
         var chat_messages = $('.chat-messages');
         chat_messages.scrollTop(chat_messages.prop("scrollHeight"));
+        room_id = "{{room_data.id}}";
+        if (room_id ===""|| room_id === null){
+            room_id = $('.chat-link').first().data('chat-id');
+            console.log(room_id);
+        }
+        
+        
     })
 </script>
 {% endblock %}
