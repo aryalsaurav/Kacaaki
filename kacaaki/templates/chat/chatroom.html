@@ -145,11 +145,13 @@
 				<div class="col-12 col-lg-7 col-xl-9 ">
 					<div class="py-2 px-4 border-bottom d-none d-lg-block user-detail">
 						<div class="d-flex align-items-center py-1">
+                            {% if room_name %}
 							<div class="position-relative">
 								<img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
 							</div>
+                            
 							<div class="flex-grow-1 pl-3">
-								<strong>Sharon Lessman</strong>
+								<strong>{{room_name}}</strong>
 								<div class="text-muted small"><em>Typing...</em></div>
 							</div>
 							<div>
@@ -157,23 +159,39 @@
 								<button class="btn btn-info btn-lg mr-1 px-3 d-none d-md-inline-block"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-video feather-lg"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></button>
 								<button class="btn btn-light border btn-lg px-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal feather-lg"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
 							</div>
+                            {% endif %}
 						</div>
 					</div>
 
 					<div class="position-relative">
 						<div class="chat-messages p-4">
 
+                            {% for message in messages_data %}
+                            
+                            {% if message.user == request.user  %}
 							<div class="chat-message-right pb-4">
 								<div>
 									<img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
-									<div class="text-muted small text-nowrap mt-2">2:33 am</div>
+									<div class="text-muted small text-nowrap mt-2">{{message.timestamp|time}}</div>
 								</div>
 								<div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
 									<div class="font-weight-bold mb-1">You</div>
-									Lorem ipsum dolor sit amet, vis erat denique in, dicunt prodesset te vix.
+									{{message.message}}
 								</div>
 							</div>
-
+                            {% else %}
+                            <div class="chat-message-left pb-4">
+								<div>
+									<img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
+									<div class="text-muted small text-nowrap mt-2">{{message.timestamp|time}}</div>
+								</div>
+								<div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
+									<div class="font-weight-bold mb-1">{{ message.user.full_name}}</div>
+									{{message.message}}
+								</div>
+							</div>
+                            {% endif %}
+                            {% endfor %}
 							
 
 						</div>
@@ -282,7 +300,6 @@
                         history.pushState(null, null, room_id);
                     }
                     displayMessages(data);
-                   
 
                 }
             });
@@ -329,13 +346,17 @@
                 
                 for (let i=0; i<messages.length; i++){
                     user = messages[i].fields.user;
+                    timestamp = messages[i].fields.timestamp;
+                    var dateObject = new Date(timestamp);
+                    var timeString = dateObject.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+
                     if (user.toString() === logged_in_user){
                         console.log('user is logged in user');
                         message_data = `
                         <div class="chat-message-right pb-4">
                             <div>
                                 <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
-                                <div class="text-muted small text-nowrap mt-2">2:33 am</div>
+                                <div class="text-muted small text-nowrap mt-2">${timeString}</div>
                             </div>
                             <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
                                 <div class="font-weight-bold mb-1">You</div>
@@ -350,22 +371,30 @@
                         <div class="chat-message-left pb-4">
                             <div>
                                 <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
-                                <div class="text-muted small text-nowrap mt-2">2:33 am</div>
+                                <div class="text-muted small text-nowrap mt-2">${timeString}</div>
                             </div>
                             <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-                                <div class="font-weight-bold mb-1">You</div>
+                                <div class="font-weight-bold mb-1">${messages[i].fields.user_name}</div>
                                 ${messages[i].fields.message}
                             </div>
                         </div>
                         `
                     }
                     
-                    chat_messages.append(message_data);
+                    chat_messages.prepend(message_data);
+                    chat_messages.scrollTop(chat_messages.prop("scrollHeight"));
                 }
                 
             }
 
         });
     });
+</script>
+
+<script>
+    $(document).ready(function(){
+        var chat_messages = $('.chat-messages');
+        chat_messages.scrollTop(chat_messages.prop("scrollHeight"));
+    })
 </script>
 {% endblock %}

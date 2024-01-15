@@ -5,7 +5,8 @@ from django.http import JsonResponse
 from users.models import User
 from .models import ChatRoom,ChatMessage
 from django.core import serializers
-from django.db.models import Count,Max
+from django.db.models import Count,Max,F
+import json
 
 
 # Create your views here.
@@ -77,7 +78,9 @@ def room_get_create(request):
 
 def room_detail(request,pk):
     room = ChatRoom.objects.get(id=pk)
-    messages = ChatMessage.objects.filter(room=room).order_by('-timestamp')[:10]
+    non_message = ChatMessage.objects.filter(room=room).order_by('-timestamp')[:10]
+    messages = non_message.annotate(user_name=F('user__full_name'))
+    messages_list = [{'id': message.id, 'fields': {'user_name': message.user_name,'user':message.user.id, 'message': message.message,'timestamp':message.timestamp.isoformat()}} for message in messages]
     if not room.name:
         all_users = room.users.all()
         logged_user = request.user
@@ -86,7 +89,7 @@ def room_detail(request,pk):
     else:
         room_name = room.name
     room_data = serializers.serialize('json', [room,])
-    messages_data = serializers.serialize('json', (messages))
+    messages_data = json.dumps( messages_list)
     context = {
         'room_data':room_data,
         'messages_data':messages_data,
@@ -102,6 +105,7 @@ def chat_with_id(request,pk):
         last_message_time=Max('chatmessage__timestamp')).order_by('-last_message_time')
     room = ChatRoom.objects.get(id=pk)
     messages = ChatMessage.objects.filter(room=room).order_by('-timestamp')[:10]
+    
     if not room.name:
         all_users = room.users.all()
         logged_user = request.user
