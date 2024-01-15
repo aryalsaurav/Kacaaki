@@ -398,14 +398,78 @@
     $(document).ready(function(){
         var chat_messages = $('.chat-messages');
         chat_messages.scrollTop(chat_messages.prop("scrollHeight"));
-        room_id = "{{room_data.id}}";
-        if (room_id ===""|| room_id === null){
-            room_id = $('.chat-link').first().data('chat-id');
-            console.log(room_id);
+        offset = 10;
+
+        $('.chat-messages').scroll(function(){
+            if ($(this).scrollTop() === 0){
+                let currentUrl = window.location.href;
+                let match = currentUrl.match(/\/chat\/room\/(\d*)/);
+                let url_split = match[0].split('/');
+                let room_id = url_split.slice(-1)[0];
+                loadMoreMessages(room_id);
+            }          
+        });
+
+        function loadMoreMessages(room_id) {
+            $.ajax({
+                url: '{% url "chat:load-more-messages" %}',
+                data: {'room_id': room_id, 'offset': offset},
+                dataType: 'json',
+                success: function (data) {
+                    const parsedMessages = JSON.parse(data.messages);
+
+                    // Loop through the new messages and append them to the chat container
+                    for (let i = 0; i < parsedMessages.length; i++) {
+                        let message = parsedMessages[i].fields;
+                        timestamp = message.timestamp;
+                        var dateObject = new Date(timestamp);
+                        var timeString = dateObject.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+
+                        
+                        let messageHtml = `
+                            
+                                ${message.user == {{ request.user.id }} ?
+                                    `
+                                    <div class="chat-message-right pb-4">
+                                        <div>
+                                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
+                                            <div class="text-muted small text-nowrap mt-2">${timeString}</div>
+                                        </div>
+                                        <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
+                                            <div class="font-weight-bold mb-1">You</div>
+                                            ${message.message}
+                                        </div>
+                                    </div>
+                                    ` :
+                                    `
+                                    <div class="chat-message-left pb-4">
+                                        <div>
+                                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
+                                            <div class="text-muted small text-nowrap mt-2">${timeString}</div>
+                                        </div>
+                                        <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
+                                            <div class="font-weight-bold mb-1">You</div>
+                                            ${message.message}
+                                        </div>
+                                    </div>
+                                    `
+                                }
+                            
+                        `;
+
+                        chat_messages.prepend(messageHtml);
+                            
+                    }
+
+                    offset += 10;  // Increase the offset for the next request
+                }
+            });
         }
-        
-        
-    })
+        function formatTimestamp(timestamp) {
+            const timeOptions = { hour: 'numeric', minute: 'numeric' };
+            return new Date(timestamp).toLocaleTimeString(undefined, timeOptions);
+        }
+    });
 </script>
 
 
