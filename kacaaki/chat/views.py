@@ -94,4 +94,27 @@ def room_detail(request,pk):
         'message_len':len(messages),
     }
     return JsonResponse(context, safe=False)
+
+
+def chat_with_id(request,pk):
+    user = request.user
+    chat_rooms = ChatRoom.objects.filter(users=user).annotate(
+        last_message_time=Max('chatmessage__timestamp')).order_by('-last_message_time')
+    room = ChatRoom.objects.get(id=pk)
+    messages = ChatMessage.objects.filter(room=room).order_by('-timestamp')[:10]
+    if not room.name:
+        all_users = room.users.all()
+        logged_user = request.user
+        user = all_users.exclude(id=logged_user.id)[0]
+        room_name = user.full_name
+    else:
+        room_name = room.name
+    context = {
+        'room_data':room,
+        'chat_rooms':chat_rooms,
+        'messages_data':messages,
+        'room_name':room_name,
+        'message_len':len(messages),
+    }
+    return render(request,'chat/chatroom.html',context)
     

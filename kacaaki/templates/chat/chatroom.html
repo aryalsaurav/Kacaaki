@@ -263,24 +263,43 @@
         $('.chat-link').on('click', function(e){
             e.preventDefault();
             var room_id = $(this).data('chat-id');
+            let currentUrl = window.location.href;
+            let match = currentUrl.match(/\/chat\/room\/(\d*)/);
+
             var url = "{% url 'chat:room-detail' 0 %}".replace('0', room_id);
             $.ajax({
                 url: url,
                 type: 'GET',
                 success: function(data){
-                    if (data.message_len > 0){
-
-                        displayMessages(data);
-                    }else{
-                        return
+                    if (match && match[1]) {
+                        // If room ID is present, replace it with the new one
+                        let newUrl = currentUrl.replace(/\/chat\/room\/(\d*)/, `/chat/room/${room_id}`);
+                        history.replaceState(null, null, newUrl);
+                    } else {
+                        // If room ID is not present, append the new one
+                        let separator = currentUrl.includes('?') ? '&' : '?';
+                        let newUrl = `${currentUrl}${separator}room=${room_id}`;
+                        history.pushState(null, null, room_id);
                     }
+                    displayMessages(data);
+                   
 
                 }
             });
 
+            function getRoomIdFromUrl() {
+                let url = window.location.href;
+                let match = url.match(/\/chat\/room\/(\d+)/);
+            
+                if (match && match[1]) {
+                    return parseInt(match[1], 10);
+                } else {
+                    return null;
+                }
+            }
+
             function displayMessages(data){
                 var messages = JSON.parse(data.messages_data);
-                console.log(messages);
                 room_name = data.room_name;
                 var user_detail = $('.user-detail');
                 var chat_messages = $('.chat-messages');
@@ -308,24 +327,25 @@
 
                 
                 
-                for (let i=0; i<=messages.length; i++){
+                for (let i=0; i<messages.length; i++){
                     user = messages[i].fields.user;
-                    console.log(user,'ussss');
-                    if (user === logged_in_user){
+                    if (user.toString() === logged_in_user){
+                        console.log('user is logged in user');
                         message_data = `
-                    <div class="chat-message-right pb-4">
-                        <div>
-                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
-                            <div class="text-muted small text-nowrap mt-2">2:33 am</div>
+                        <div class="chat-message-right pb-4">
+                            <div>
+                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
+                                <div class="text-muted small text-nowrap mt-2">2:33 am</div>
+                            </div>
+                            <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
+                                <div class="font-weight-bold mb-1">You</div>
+                                ${messages[i].fields.message}
+                            </div>
                         </div>
-                        <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-                            <div class="font-weight-bold mb-1">You</div>
-                            ${messages[i].fields.message}
-                        </div>
-                    </div>
-                    `
+                        `
                     }
                     else{
+                        console.log('user is not logged in user');
                         message_data = `
                         <div class="chat-message-left pb-4">
                             <div>
