@@ -20,11 +20,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
     
     
     async def disconnect(self,close_code):
-        print(f"WebSocket disconnected: {close_code}")
-        pass
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
     
-    
-    
+    async def close(self,code=3000):
+        await super().close(code)
     
     async def receive(self,text_data):
         text_data_json = json.loads(text_data)

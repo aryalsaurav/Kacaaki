@@ -8,6 +8,7 @@ from django.core import serializers
 from django.db.models import Count,Max,F
 import json
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -100,6 +101,8 @@ def room_detail(request,pk):
     return JsonResponse(context, safe=False)
 
 
+
+@login_required
 def chat_with_id(request,pk):
     user = request.user
     chat_rooms = ChatRoom.objects.filter(users=user).annotate(

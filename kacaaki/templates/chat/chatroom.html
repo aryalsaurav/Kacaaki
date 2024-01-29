@@ -477,22 +477,31 @@
 
     const currentLocation = window.location;
     let socket;
+    let clicked_room_id;
 
     room_id = "{{room_data.id}}";
     if (room_id){
-        socketConnection(room_id);
+        clicked_room_id = room_id;
+        socketConnection(clicked_room_id);
     }
     $('.chat-link').on('click', function(e){
         e.preventDefault();
-        room_id = $(this).data('chat-id');
-        socketConnection(room_id);
+        clicked_room_id = $(this).data('chat-id');
+        socketConnection(clicked_room_id);
 
     });
+    
 
 
 
     function socketConnection(room_id){
+
+        console.log(room_id,'clicked one')
+        console.log(clicked_room_id,'clicked two')
+        
         socket = new WebSocket(`ws://${currentLocation.host}/ws/chat/${room_id}/`);
+
+        
 
         socket.onopen = function(e){
             console.log('Chat socket connected');
@@ -504,7 +513,7 @@
             const data = JSON.parse(e.data);
             const message = data['message'];
             const user = data['user'];
-            const room_id = data['room_id'];
+            const room_ids = data['room_id'];
             const current_user = {{request.user.id}};
             const messageList = $('.chat-messages');
             const currentTime = new Date();
@@ -552,7 +561,8 @@
 
         socket.onclose = function(e){
             setTimeout(function () {
-                socketConnection(); // Reconnect
+                
+                socketConnection(room_id); // Reconnect
             }, 3000);
         }
 
@@ -563,26 +573,38 @@
             }
         });
 
+
         function sendMessage() {
             const message = $('#sending-message').val();
             if (message.length === 0) {
                 return;
             }
+            console.log(room_id,'clicked one')
+            console.log(clicked_room_id,'clicked two')
             socket.send(JSON.stringify({
                 'message': message,
                 'user' : "{{request.user.id}}",
-                'room_id' : room_id
-        }));
-            // Clear the input field after sending the message
+                'room_id' : clicked_room_id
+            }));
             $('#sending-message').val('');
-        };
+        }
+            
+            
+        
 
         $('.send-message').on('click', function () {
+            console.log('clicked');
             sendMessage();
         });
+        
+
+
+        
 
 
     }
+
+    
 
     
     
