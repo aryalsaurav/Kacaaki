@@ -419,6 +419,8 @@
             }          
         });
 
+        
+
         function loadMoreMessages(room_id) {
             $.ajax({
                 url: '{% url "chat:load-more-messages" %}',
@@ -431,9 +433,11 @@
                     for (let i = 0; i < parsedMessages.length; i++) {
                         let message = parsedMessages[i].fields;
                         timestamp = message.timestamp;
+                        let type = 'text' in message ? 'text' : 'file';
                         var dateObject = new Date(timestamp);
                         var timeString = dateObject.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
 
+                        console.log(type,'typeeeeeee')
                         
                         let messageHtml = `
                             
@@ -446,7 +450,7 @@
                                         </div>
                                         <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
                                             <div class="font-weight-bold mb-1">You</div>
-                                            ${message.message}
+                                            ${type === 'file' ? message.image_url : message}
                                         </div>
                                     </div>
                                     ` :
@@ -458,7 +462,7 @@
                                         </div>
                                         <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
                                             <div class="font-weight-bold mb-1">You</div>
-                                            ${message.message}
+                                            ${type === 'file' ? message.image_url : message}
                                         </div>
                                     </div>
                                     `
@@ -515,6 +519,31 @@
             console.log('Chat socket connected');
         }
 
+        function createImage(base64String){
+            var splitString = base64String.split(',');
+            var mimeType = splitString[0].split(':')[1];
+            var imageData = splitString[1];
+            var decodedData = atob(imageData);
+
+            // Create a Uint8Array from the decoded data
+            var arrayBuffer = new ArrayBuffer(decodedData.length);
+            var uint8Array = new Uint8Array(arrayBuffer);
+            for (var i = 0; i < decodedData.length; i++) {
+            uint8Array[i] = decodedData.charCodeAt(i);
+            }
+
+            // Create a Blob from the Uint8Array and convert it to a data URL
+            var blob = new Blob([uint8Array], { type: mimeType });
+            var imageUrl = URL.createObjectURL(blob);
+
+            // Create an Image element and set its source to the data URL
+            var image = new Image();
+            image.src = imageUrl;
+
+            // Append the image to the document or use it as needed
+            return image;
+
+        }
         
 
         socket.onmessage = function(e){
@@ -522,10 +551,20 @@
             const message = data['message'];
             const user = data['user'];
             const room_ids = data['room_id'];
+            const type = data['type'];
             const current_user = {{request.user.id}};
             const messageList = $('.chat-messages');
             const currentTime = new Date();
             const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+            var image;
+            if (type === 'file') {
+                image_created = createImage(message);
+                image = document.createElement('img');
+                image.src = image_created.src;
+                image.style.maxHeight = '300px';
+                image.style.maxWidth = '200px';
+
+            }
 
             const formattedTime = currentTime.toLocaleTimeString([], options);
             var messageData;
@@ -538,7 +577,8 @@
                     </div>
                     <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
                         <div class="font-weight-bold mb-1">You</div>
-                        ${message}
+
+                        ${type === 'file' ? image.outerHTML : message}
                     </div>
                 </div>
             `;
@@ -551,7 +591,7 @@
                     </div>
                     <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
                         <div class="font-weight-bold mb-1">You</div>
-                        ${message}
+                        ${type === 'file' ? image.outerHTML : message}
                     </div>
                 </div>
             `;
@@ -613,7 +653,6 @@
                 reader.onload = function (event) {
                     // Get the base64-encoded string from the result
                     const imageData = event.target.result;
-                    console.log(imageData,'imagedadtaaaaaaaaaaaa');
         
                     // Prepare file metadata and send to the server to initiate file transfer
                     const fileMetadata = {

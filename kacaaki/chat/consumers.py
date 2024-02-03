@@ -38,11 +38,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         room_id = text_data_json['room_id']
         if data_type == "file":
             file_name = text_data_json['file_name']
-            print(file_name,'file_name')
             file_data = message.split(';base64,')[1]
             file_content = base64.b64decode(file_data)
-            file = ContentFile(file_content)
-            print(file,'typeeeeeeeee')
             await sync_to_async(self.save_message)(file_content,user,room_id,data_type,file_name=file_name)
         else:
             await sync_to_async(self.save_message)(message,user,room_id,data_type)
@@ -50,7 +47,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.room_group_name,
             {
-                'type':'chat_message',
+                'type':data_type,
                 'message':message,
                 'user':user,
                 'room_id':room_id,
@@ -58,23 +55,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         
         
-    # async def send_message(self,text_data):
-    #     text_data_json = json.loads(text_data)
-    #     message = text_data_json['message']
-    #     user = text_data_json['user']
-    #     room_id = text_data_json['room_id']
+    
         
-    #     await self.channel_layer.group_send(
-    #         self.room_group_name,
-    #         {
-    #             'type':'chat_message',
-    #             'message':message,
-    #             'user':user,
-    #             'room_id':room_id,
-    #         })
+    
+    async def file(self,event):
+        message = event['message']
+        user = event['user']
+        room_id = event['room_id']
         
         
-    async def chat_message(self,event):
+        await self.send(text_data=json.dumps({
+            'message':message,
+            'user':user,
+            'room_id':room_id,
+            'type':'file',
+            
+        }))
+        
+        
+    async def text(self,event):
         message = event['message']
         user = event['user']
         room_id = event['room_id']
@@ -83,6 +82,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'message':message,
             'user':user,
             'room_id':room_id,
+            'type':'text',
         }))
         
         
