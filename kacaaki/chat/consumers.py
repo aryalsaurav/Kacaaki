@@ -43,7 +43,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await sync_to_async(self.save_message)(file_content,user,room_id,data_type,file_name=file_name)
         else:
             await sync_to_async(self.save_message)(message,user,room_id,data_type)
-        
         await self.channel_layer.group_send(
             self.room_group_name,
             {

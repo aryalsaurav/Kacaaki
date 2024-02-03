@@ -551,7 +551,6 @@
         
 
         socket.onmessage = function(e){
-            console.log('how many')
             const data = JSON.parse(e.data);
             const message = data['message'];
             const user = data['user'];
@@ -614,7 +613,7 @@
 
         socket.onclose = function(e){
             setTimeout(function () {
-                
+                console.log('Chat socket closed unexpectedly. Reconnecting...');
                 socketConnection(room_id); // Reconnect
             }, 3000);
         }
@@ -680,7 +679,6 @@
 
 
         $('#fileInput').on('change', function(e){
-            console.log('file input')
             const file = e.target.files[0];
             $('#fileInput').val('');
             if (file) {
