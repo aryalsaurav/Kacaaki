@@ -37,8 +37,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         user = text_data_json['user']
         room_id = text_data_json['room_id']
         if data_type == "file":
-            file_content = base64.b64decode(message)
-            await sync_to_async(self.save_message)(file_content,user,room_id,data_type)
+            file_name = text_data_json['file_name']
+            print(file_name,'file_name')
+            file_data = message.split(';base64,')[1]
+            file_content = base64.b64decode(file_data)
+            file = ContentFile(file_content)
+            print(file,'typeeeeeeeee')
+            await sync_to_async(self.save_message)(file_content,user,room_id,data_type,file_name=file_name)
         else:
             await sync_to_async(self.save_message)(message,user,room_id,data_type)
         
@@ -82,16 +87,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         
     @staticmethod   
-    def save_message(message,user,room_id,data_type):
+    def save_message(message,user,room_id,data_type,file_name=None):
         chat_room = ChatRoom.objects.get(id=room_id)
         user = User.objects.get(id=user)
         if data_type == "text":
             chat_message = ChatMessage.objects.create(room=chat_room,user=user,message=message)
         else:
-            file = ContentFile(message)
-            print(file.content_type,'typeeeeeeeee')
+            # file = ContentFile(message)
             chat_message = ChatMessage.objects.create(room=chat_room,user=user)
-            chat_message.image.save('img.jpg',ContentFile(message),save=True)
+            chat_message.image.save(file_name,ContentFile(message),save=True)
         chat_message.save()
     
     
