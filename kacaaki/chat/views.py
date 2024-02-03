@@ -49,10 +49,14 @@ def load_more_messages(request):
 
     room = ChatRoom.objects.get(id=room_id)
     messages = ChatMessage.objects.filter(room=room).order_by('-timestamp')[offset:offset + 10]
+    image_url = {}
+    if messages:
+        for message in messages:
+            image_url[message.id] = message.image_url()
 
     serialized_messages = serializers.serialize('json', messages)
     
-    return JsonResponse({'messages':serialized_messages}, safe=False)
+    return JsonResponse({'messages':serialized_messages,'images':image_url}, safe=False)
 
 
 
@@ -82,7 +86,7 @@ def room_detail(request,pk):
     room = ChatRoom.objects.get(id=pk)
     non_message = ChatMessage.objects.filter(room=room).order_by('-timestamp')[:10]
     messages = non_message.annotate(user_name=F('user__full_name'))
-    messages_list = [{'id': message.id, 'fields': {'user_name': message.user_name,'user':message.user.id, 'message': message.message,'timestamp':message.timestamp.isoformat()}} for message in messages]
+    messages_list = [{'id': message.id, 'fields': {'user_name': message.user_name,'user':message.user.id, 'message': message.message,'timestamp':message.timestamp.isoformat(),'image_url':message.image_url()}} for message in messages]
     if not room.name:
         all_users = room.users.all()
         logged_user = request.user

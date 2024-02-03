@@ -325,6 +325,7 @@
             }
 
             function displayMessages(data){
+                current_domain = window.location.origin;
                 var messages = JSON.parse(data.messages_data);
                 room_name = data.room_name;
                 var user_detail = $('.user-detail');
@@ -357,6 +358,8 @@
                     user = messages[i].fields.user;
                     timestamp = messages[i].fields.timestamp;
                     var dateObject = new Date(timestamp);
+                    const image_url = messages[i].fields.image_url;
+                    var image = `<img src="${current_domain}${image_url}" alt="avatar" style="max-height:300px; max-width:200px;">`;
                     var timeString = dateObject.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
 
                     
@@ -372,7 +375,7 @@
                             </div>
                             <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
                                 <div class="font-weight-bold mb-1">You</div>
-                                ${messages[i].fields.message}
+                                ${image_url ? image : messages[i].fields.message}
                             </div>
                         </div>
                         `
@@ -387,7 +390,7 @@
                             </div>
                             <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
                                 <div class="font-weight-bold mb-1">${messages[i].fields.user_name}</div>
-                                ${messages[i].fields.message}
+                                ${image_url ? image : messages[i].fields.message}
                             </div>
                         </div>
                         `
@@ -428,17 +431,18 @@
                 dataType: 'json',
                 success: function (data) {
                     const parsedMessages = JSON.parse(data.messages);
+                    const images = data.images;
+                    current_domain = window.location.origin;
 
                     // Loop through the new messages and append them to the chat container
                     for (let i = 0; i < parsedMessages.length; i++) {
                         let message = parsedMessages[i].fields;
                         timestamp = message.timestamp;
-                        let type = 'text' in message ? 'text' : 'file';
                         var dateObject = new Date(timestamp);
                         var timeString = dateObject.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-
-                        console.log(type,'typeeeeeee')
-                        
+                        id = parsedMessages[i].pk;
+                        image_url = images[id]
+                        var image = `<img src="${current_domain}${image_url}" alt="${message.image.name}" style="max-height:300px; max-width:200px;">`;
                         let messageHtml = `
                             
                                 ${message.user == {{ request.user.id }} ?
@@ -450,7 +454,7 @@
                                         </div>
                                         <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
                                             <div class="font-weight-bold mb-1">You</div>
-                                            ${type === 'file' ? message.image_url : message}
+                                            ${image_url ? image : message.message}
                                         </div>
                                     </div>
                                     ` :
@@ -462,7 +466,7 @@
                                         </div>
                                         <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
                                             <div class="font-weight-bold mb-1">You</div>
-                                            ${type === 'file' ? message.image_url : message}
+                                            ${image_url ? image : message.message}
                                         </div>
                                     </div>
                                     `
@@ -547,6 +551,7 @@
         
 
         socket.onmessage = function(e){
+            console.log('how many')
             const data = JSON.parse(e.data);
             const message = data['message'];
             const user = data['user'];
@@ -663,11 +668,10 @@
                         user: "{{request.user.id}}",
                         type: 'file'
                     };
-        
+                    console.log(fileMetadata);
                     socket.send(JSON.stringify(fileMetadata));
-                    $('#fileInput').val('');
+                    
                 };
-        
                 // Read the file as a data URL
                 reader.readAsDataURL(file);
             }
@@ -676,8 +680,13 @@
 
 
         $('#fileInput').on('change', function(e){
+            console.log('file input')
             const file = e.target.files[0];
-            sendFile(file);
+            $('#fileInput').val('');
+            if (file) {
+                sendFile(file);
+            }
+            
         });
         
 
