@@ -3,7 +3,9 @@ from channels.generic.websocket import WebsocketConsumer,AsyncWebsocketConsumer
 from .models import ChatRoom,ChatMessage
 from users.models import User
 from asgiref.sync import sync_to_async
-
+from django.core.files.base import ContentFile
+import base64
+import asyncio
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -30,11 +32,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
     
     async def receive(self,text_data):
         text_data_json = json.loads(text_data)
+        data_type = text_data_json['type']
         message = text_data_json['message']
         user = text_data_json['user']
         room_id = text_data_json['room_id']
-        
-        await sync_to_async(self.save_message)(message,user,room_id)
+        if data_type == "file":
+            file_content = base64.b64decode(message)
+            await sync_to_async(self.save_message)(file_content,user,room_id,data_type)
+        else:
+            await sync_to_async(self.save_message)(message,user,room_id,data_type)
         
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -76,10 +82,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         
     @staticmethod   
-    def save_message(message,user,room_id):
+    def save_message(message,user,room_id,data_type):
         chat_room = ChatRoom.objects.get(id=room_id)
         user = User.objects.get(id=user)
-        chat_message = ChatMessage.objects.create(room=chat_room,user=user,message=message)
+        if data_type == "text":
+            chat_message = ChatMessage.objects.create(room=chat_room,user=user,message=message)
+        else:
+            file = ContentFile(message)
+            print(file.content_type,'typeeeeeeeee')
+            chat_message = ChatMessage.objects.create(room=chat_room,user=user)
+            chat_message.image.save('img.jpg',ContentFile(message),save=True)
         chat_message.save()
     
     

@@ -199,6 +199,7 @@
 
 					<div class="flex-grow-0 py-3 px-4 border-top">
 						<div class="input-group">
+                            <input type="file" id="fileInput" accept=".jpeg, .jpg, .png">
 							<input type="text" class="form-control" placeholder="Type your message" id="sending-message">
 							<button class="btn btn-primary send-message">Send</button>
 						</div>
@@ -496,8 +497,7 @@
 
     function socketConnection(room_id){
 
-        console.log(room_id,'clicked one')
-        console.log(clicked_room_id,'clicked two')
+        
         
         socket = new WebSocket(`ws://${currentLocation.host}/ws/chat/${room_id}/`);
 
@@ -584,7 +584,8 @@
             socket.send(JSON.stringify({
                 'message': message,
                 'user' : "{{request.user.id}}",
-                'room_id' : clicked_room_id
+                'room_id' : clicked_room_id,
+                'type': 'text'
             }));
             $('#sending-message').val('');
         }
@@ -593,8 +594,42 @@
         
 
         $('.send-message').on('click', function () {
-            console.log('clicked');
             sendMessage();
+        });
+
+        function sendFile(file) {
+            if (file) {
+                const reader = new FileReader();
+        
+                // Handle the onload event to ensure the file data is ready
+                reader.onload = function (event) {
+                    // Get the base64-encoded string from the result
+                    const imageData = event.target.result;
+        
+                    // Prepare file metadata and send to the server to initiate file transfer
+                    const fileMetadata = {
+                        action: 'start',
+                        message: imageData,
+                        file_name: file.name,
+                        room_id: clicked_room_id,
+                        user: "{{request.user.id}}",
+                        type: 'file'
+                    };
+        
+                    socket.send(JSON.stringify(fileMetadata));
+                    $('#fileInput').val('');
+                };
+        
+                // Read the file as a data URL
+                reader.readAsDataURL(file);
+            }
+        }
+        
+
+
+        $('#fileInput').on('change', function(e){
+            const file = e.target.files[0];
+            sendFile(file);
         });
         
 
