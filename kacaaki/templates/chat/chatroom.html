@@ -102,6 +102,12 @@
 
 {% block content %}
 
+<div class="container">
+    <div class="connection-message">
+
+    </div>
+</div>
+
 <main class="content mt-5">
     <div class="container p-0">
 
@@ -627,11 +633,17 @@
             const codes = e.code;
             console.log(codes)
             if (codes !== 1000){
-                setTimeout(function () {
-                    console.log('Chat socket closed unexpectedly. Reconnecting...');
-                    socketConnection(clicked_room_id); // Reconnect
-                
-                }, 1000);
+                if (retried < 3){
+                    setTimeout(function () {
+                        console.log('Chat socket closed unexpectedly. Reconnecting...');
+                        socketConnection(clicked_room_id); // Reconnect
+                        retried += 1;
+                    
+                    }, 10000);
+                }else{
+                    // Show a message to the user that the connection is lost and refresh button
+                    document.querySelector('.connection-message').innerHTML = '<div class="alert alert-danger p-2 mt-3">Connection lost. Please refresh the page</div>';
+                }
             }
             
         }
