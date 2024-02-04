@@ -503,6 +503,10 @@
     }
     $('.chat-link').on('click', function(e){
         e.preventDefault();
+        socket_url = socket.url;
+        if (socket_url){
+            socket.close();
+        }
         clicked_room_id = $(this).data('chat-id');
         socketConnection(clicked_room_id);
 
@@ -520,6 +524,7 @@
         
 
         socket.onopen = function(e){
+            console.log(socket)
             console.log('Chat socket connected');
         }
 
@@ -614,7 +619,7 @@
         socket.onclose = function(e){
             setTimeout(function () {
                 console.log('Chat socket closed unexpectedly. Reconnecting...');
-                socketConnection(room_id); // Reconnect
+                socketConnection(clicked_room_id); // Reconnect
             }, 3000);
         }
 
@@ -631,8 +636,7 @@
             if (message.length === 0) {
                 return;
             }
-            console.log(room_id,'clicked one')
-            console.log(clicked_room_id,'clicked two')
+            
             socket.send(JSON.stringify({
                 'message': message,
                 'user' : "{{request.user.id}}",
