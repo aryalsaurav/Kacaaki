@@ -107,6 +107,10 @@
         transform: translateX(-50%);
     }
     
+    #chat-room-list {
+        max-height: 500px;
+        overflow-y: auto;
+    }
 
     
 </style>
@@ -123,13 +127,13 @@
     </div>
 </div>
 
-<main class="content mt-5">
+<main class="content mt-5" >
     <div class="container p-0">
 
 
 		<div class="card">
-			<div class="row g-0">
-				<div class="col-12 col-lg-5 col-xl-3 border-right">
+			<div class="row g-0" >
+				<div class="col-12 col-lg-5 col-xl-3 border-right"  >
 
 					<div class="px-4 d-none d-md-block">
                         <div class="d-flex align-items-center position-relative">
@@ -141,26 +145,30 @@
                             </div>
                         </div>
                     </div>
-                    {% for chat in chat_rooms %}
-					<a href="#" class="list-group-item list-group-item-action border-0 chat-link" data-chat-id="{{ chat.id }}">
-						<div class="badge bg-success float-right">5</div>
-						<div class="d-flex align-items-start">
-							<img src="https://bootdey.com/img/Content/avatar/avatar5.png" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
-							<div class="flex-grow-1 ml-3">
-								{% if chat.name %}{{chat.name}}{%else%}
-                                {% for user in chat.users.all %}
-                                {% if user != request.user %}
-                                {{user.full_name}}
-                                {% endif %}
-                                {% endfor %}
-                                {% endif %}
-								<div class="small"><span class="fas fa-circle chat-online"></span> Online</div>
-							</div>
-						</div>
-					</a>
-					{% endfor %}
+                        <div id="chat-room-list">
 
-					<hr class="d-block d-lg-none mt-1 mb-0">
+                        
+                        {% for chat in chat_rooms %}
+                        <a href="#" class="list-group-item list-group-item-action border-0 chat-link" data-chat-id="{{ chat.id }}">
+                            <div class="badge bg-success float-right">5</div>
+                            <div class="d-flex align-items-start">
+                                <img src="https://bootdey.com/img/Content/avatar/avatar5.png" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
+                                <div class="flex-grow-1 ml-3">
+                                    {% if chat.name %}{{chat.name}}{%else%}
+                                    {% for user in chat.users.all %}
+                                    {% if user != request.user %}
+                                    {{user.full_name}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% endif %}
+                                    <div class="small"><span class="fas fa-circle chat-online"></span> Online</div>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+
+                        <hr class="d-block d-lg-none mt-1 mb-0">
+                    </div>
 				</div>
 				<div class="col-12 col-lg-7 col-xl-9 ">
 					<div class="py-2 px-4 border-bottom d-none d-lg-block user-detail">
