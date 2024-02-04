@@ -505,7 +505,7 @@
         e.preventDefault();
         socket_url = socket.url;
         if (socket_url){
-            socket.close();
+            socket.close(close_code=1000, reason='User clicked on another chat room');
         }
         clicked_room_id = $(this).data('chat-id');
         socketConnection(clicked_room_id);
@@ -617,10 +617,13 @@
         
 
         socket.onclose = function(e){
-            setTimeout(function () {
-                console.log('Chat socket closed unexpectedly. Reconnecting...');
-                socketConnection(clicked_room_id); // Reconnect
-            }, 3000);
+            if (close_code !== 1000){
+                setTimeout(function () {
+                    console.log('Chat socket closed unexpectedly. Reconnecting...');
+                    socketConnection(clicked_room_id); // Reconnect
+                }, 3000);
+            }
+            
         }
 
         $('#sending-message').keydown(function(e){
