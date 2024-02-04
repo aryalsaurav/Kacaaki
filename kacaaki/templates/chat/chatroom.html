@@ -397,6 +397,14 @@
             let newUrl = `${currentUrls}${separator}room=${room_id}`;
             history.pushState(null, null, room_id);
         }
+        socket_check(socket);
+        
+        
+
+    });
+    
+
+    function socket_check(socket){
         if (socket){
             socket_url = socket.url;
             last_room_id = socket_url.split('/');
@@ -408,11 +416,7 @@
         }else{
             socketConnection(clicked_room_id);
         }
-        
-        
-
-    });
-    
+    }
 
 
 
@@ -439,19 +443,8 @@
                     'user_id': user_id
                 },
                 success: function(data) {
-                    console.log(data);
                     clicked_room_id = data.room_id;
-                    if (socket){
-                        socket_url = socket.url;
-                        last_room_id = socket_url.split('/');
-                        last_room_id = last_room_id.slice(-2)[0];
-                        if (last_room_id !== clicked_room_id.toString()){
-                            socket.close(code=1000, reason='User clicked on another chat room');
-                            socketConnection(clicked_room_id);
-                        }
-                    }else{
-                        socketConnection(clicked_room_id);
-                    }
+                    socket_check(socket);
                     // clear the search results
                     overlay.hide();
                     var url = "{% url 'chat:room-detail' 0 %}".replace('0', clicked_room_id);
