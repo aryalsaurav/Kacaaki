@@ -254,68 +254,7 @@
 
 
 
-<script>
-    $(document).ready(function() {
-        var delayTimer;
-        var resultsContainer = $('#search-results');
-        var overlay = $('#search-overlay');
-    
-        $('#live-search').on('input', function() {
-            clearTimeout(delayTimer);
-    
-            delayTimer = setTimeout(function() {
-                var searchTerm = $('#live-search').val().toLowerCase();
-    
-                if (searchTerm.length > 0) {
-                    $.ajax({
-                        url: "{% url 'chat:live-user-search' %}",
-                        type: "GET",
-                        data: {
-                            'name': searchTerm
-                        },
-                        success: function(data) {
-                            displaySearchResults(data);
-                            overlay.show(); // Show the overlay
-                        }
-                    });
-                } else {
-                    overlay.hide(); // Hide the overlay if the search term is empty
-                }
-            }, 1000);
-        });
-    
-        function displaySearchResults(data) {
-            overlay.empty();
-    
-            for (var i = 0; i < data.users.length; i++) {
-                var fullName = data.users[i].full_name;
-                var userId = data.users[i].id;
-    
-                var listItem = $('<a href="#" class="list-group-item list-group-item-action border-0 " data-user-id="' + userId + '">' + fullName + '</a>');
-    
-                overlay.append(listItem);
-            }
-    
-            // Add click event listener to the list items
-            overlay.find('a').on('click', function(e) {
-                e.preventDefault();
-                var selectedUserId = $(this).data('user-id');
-                $.ajax({
-                    url: "{% url 'chat:room-get-create' %}",
-                    type: "GET",
-                    data: {
-                        'user_id': selectedUserId
-                    },
-                    success: function(data) {
-                        window.location.href = data.room_id;
-                    }
-                });
-            });
-        }
-    });
-    
-    
-</script>
+
 <script>
     $(document).ready(function(){
         $('.chat-link').on('click', function(e){
@@ -343,6 +282,7 @@
 
                 }
             });
+        });
 
             function getRoomIdFromUrl() {
                 let url = window.location.href;
@@ -433,7 +373,7 @@
                 
             }
 
-        });
+
     });
 </script>
 
@@ -523,6 +463,36 @@
 
 <script>
 
+    var delayTimer;
+        var resultsContainer = $('#search-results');
+        var overlay = $('#search-overlay');
+    
+        $('#live-search').on('input', function() {
+            clearTimeout(delayTimer);
+    
+            delayTimer = setTimeout(function() {
+                var searchTerm = $('#live-search').val().toLowerCase();
+    
+                if (searchTerm.length > 0) {
+                    $.ajax({
+                        url: "{% url 'chat:live-user-search' %}",
+                        type: "GET",
+                        data: {
+                            'name': searchTerm
+                        },
+                        success: function(data) {
+                            displaySearchResults(data);
+                            overlay.show(); // Show the overlay
+                        }
+                    });
+                } else {
+                    overlay.hide(); // Hide the overlay if the search term is empty
+                }
+            }, 1000);
+        });
+    
+        
+    
     const currentLocation = window.location;
     let socket;
     let clicked_room_id;
@@ -554,6 +524,46 @@
 
 
 
+    function displaySearchResults(data) {
+        overlay.empty();
+
+        for (var i = 0; i < data.users.length; i++) {
+            var fullName = data.users[i].full_name;
+            var userId = data.users[i].id;
+            var listItem = $('<div class="search-list list-group-item list-group-item-action border-0" data-user-id="' + userId + '">' + fullName + '</div>');
+
+            overlay.append(listItem);
+        }
+        
+        $('.search-list').on('click', function(e){
+            console.log('clicked');
+            e.preventDefault();
+            var user_id = $(this).data('user-id');
+            console.log(user_id,'yeha samma ta ayo ni??');
+            $.ajax({
+                url: "{% url 'chat:room-get-create' %}",
+                type: "GET",
+                data: {
+                    'user_id': user_id
+                },
+                success: function(data) {
+                    console.log(data);
+                    clicked_room_id = data.room_id;
+                    socketConnection(clicked_room_id);
+                    // clear the search results
+                    overlay.hide();
+
+                },
+                error: function(error){
+                    console.log(error);
+                }
+                
+            });
+        });
+        // Add click event listener to the list items
+    }
+
+
     function socketConnection(room_id){
 
         
@@ -563,6 +573,7 @@
         
 
         socket.onopen = function(e){
+            console.log(socket)
             console.log('Chat socket connected');
         }
 
