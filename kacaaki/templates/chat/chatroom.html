@@ -495,7 +495,7 @@
     const currentLocation = window.location;
     let socket;
     let clicked_room_id;
-
+    var retried = 0;
     room_id = "{{room_data.id}}";
     if (room_id){
         clicked_room_id = room_id;
@@ -503,12 +503,20 @@
     }
     $('.chat-link').on('click', function(e){
         e.preventDefault();
-        socket_url = socket.url;
-        if (socket_url){
-            socket.close(close_code=1000, reason='User clicked on another chat room');
-        }
         clicked_room_id = $(this).data('chat-id');
-        socketConnection(clicked_room_id);
+        if (socket){
+            socket_url = socket.url;
+            last_room_id = socket_url.split('/');
+            last_room_id = last_room_id.slice(-2)[0];
+            if (last_room_id !== clicked_room_id.toString()){
+                socket.close(code=1000, reason='User clicked on another chat room');
+                socketConnection(clicked_room_id);
+            }
+        }else{
+            socketConnection(clicked_room_id);
+        }
+        
+        
 
     });
     
@@ -524,7 +532,6 @@
         
 
         socket.onopen = function(e){
-            console.log(socket)
             console.log('Chat socket connected');
         }
 
@@ -617,11 +624,14 @@
         
 
         socket.onclose = function(e){
-            if (close_code !== 1000){
+            const codes = e.code;
+            console.log(codes)
+            if (codes !== 1000){
                 setTimeout(function () {
                     console.log('Chat socket closed unexpectedly. Reconnecting...');
                     socketConnection(clicked_room_id); // Reconnect
-                }, 3000);
+                
+                }, 1000);
             }
             
         }
