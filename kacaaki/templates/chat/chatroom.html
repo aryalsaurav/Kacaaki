@@ -387,18 +387,42 @@
     $('.chat-link').on('click', function(e){
         e.preventDefault();
         clicked_room_id = $(this).data('chat-id');
+        
         if (match && match[1]) {
+            
             // If room ID is present, replace it with the new one
             let newUrl = currentUrls.replace(/\/chat\/room\/(\d*)/, `/chat/room/${clicked_room_id}`);
             history.replaceState(null, null, newUrl);
         } else {
             // If room ID is not present, append the new one
             let separator = currentUrls.includes('?') ? '&' : '?';
-            let newUrl = `${currentUrls}${separator}room=${room_id}`;
-            history.pushState(null, null, room_id);
+            let newUrl = `${currentUrls}${separator}room=${clicked_room_id}`;
+            history.replaceState(null, null, clicked_room_id);
         }
-        socket_check(socket);
-        
+        var socket_coon = socket_check(socket);
+        if (socket_coon === true){
+            socketConnection(clicked_room_id);
+            var url = "{% url 'chat:room-detail' 0 %}".replace('0', clicked_room_id);
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(data){
+                    console.log("hello??")
+                    if (match && match[1]) {
+                        // If room ID is present, replace it with the new one
+                        let newUrl = currentUrl.replace(/\/chat\/room\/(\d*)/, `/chat/room/${clicked_room_id}`);
+                        history.replaceState(null, null, newUrl);
+                    } else {
+                        // If room ID is not present, append the new one
+                        let separator = currentUrl.includes('?') ? '&' : '?';
+                        let newUrl = `${currentUrl}${separator}room=${clicked_room_id}`;
+                        history.pushState(null, null, clicked_room_id);
+                    }
+                    displayMessages(data);
+
+                }
+            });
+        }
         
 
     });
@@ -411,10 +435,11 @@
             last_room_id = last_room_id.slice(-2)[0];
             if (last_room_id !== clicked_room_id.toString()){
                 socket.close(code=1000, reason='User clicked on another chat room');
-                socketConnection(clicked_room_id);
+                return true;
+                
             }
         }else{
-            socketConnection(clicked_room_id);
+            return true;
         }
     }
 
