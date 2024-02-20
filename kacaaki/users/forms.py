@@ -63,7 +63,7 @@ class NepaliStudentRegistrationForm(forms.ModelForm):
     class_time = forms.MultipleChoiceField(widget=forms.SelectMultiple(attrs={'class':'form-control'}),choices=class_time_choices)
     class Meta:
         model = NepaliStudent
-        exclude = ['is_nepali_student','user']
+        exclude = ['is_nepali_student','user','current_status']
 
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)

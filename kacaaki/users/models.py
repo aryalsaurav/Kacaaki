@@ -63,6 +63,7 @@ user_type_choices = (
         ('Nepali Teacher','Nepali Teacher'),
         ('Dance Teacher','Dance Teacher'),
         ('Admin','Admin'),
+        ('Management','Management'),
 )
 
 class User(AbstractUser):
@@ -99,6 +100,16 @@ class User(AbstractUser):
 class NepaliExtraClasses(models.TextChoices):
     Dance_Classes = 'Dance Classes', 'Dance Classes'
     Music_Classes = 'Music Classes', 'Music Classes'
+    
+    
+CURRENT_STATUS_CHOICES = (
+    ("Enrolled","Enrolled"),
+    ("Paused","Paused"),
+    ("Dropped","Dropped"),
+    ("Not Enrolled","Not Enrolled"),
+    ("Not Interested","Not Interested"),
+    ("Other","Other"),
+)
 
 class NepaliStudent(models.Model):
     
@@ -135,7 +146,7 @@ class NepaliStudent(models.Model):
     special_request = models.TextField(null=True,blank=True)
     hear_from = models.CharField(max_length=30)
     other_classes = MultiSelectField(max_length=50,choices=NepaliExtraClasses.choices,max_choices=2,blank=True,null=True)
-    
+    current_status = models.CharField(max_length=15,null=True,blank=True,choices=CURRENT_STATUS_CHOICES,default='Not Enrolled')
 
     def __str__(self):
         return self.user.full_name

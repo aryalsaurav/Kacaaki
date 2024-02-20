@@ -59,12 +59,14 @@
                     <p><strong>Parent's Name:</strong> {{ user.dance_student.parents_name }}</p>
                     {% endif %}
                     <p><strong>Phone No:</strong> {{ user.phone }}</p>
-                    <p><strong>Enrollment Date:</strong> {{ user.created_at|date }}</p>
+                    {% if user.user_type == 'Nepali Student' %}
+                    <p><strong>Joined Date:</strong> {{ user.created_at|date }}</p>
+                    {% endif %}
                     <a href="" class="btn btn-primary">Edit Profile</a>
                     <!-- Add more profile information as needed -->
                 </div>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-8 ms-1">
                 {% if request.user|nepali_student or request.user|nepali_teacher %}
                 <div class="course-card card ">
                     <a href="{% url 'classes:nepaliclass_list' %}"><h2 style="text-align: center;">Nepali Classes</h2></a>
