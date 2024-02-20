@@ -59,9 +59,7 @@
                     <p><strong>Parent's Name:</strong> {{ user.dance_student.parents_name }}</p>
                     {% endif %}
                     <p><strong>Phone No:</strong> {{ user.phone }}</p>
-                    {% if user.user_type == 'Nepali Student' %}
                     <p><strong>Joined Date:</strong> {{ user.created_at|date }}</p>
-                    {% endif %}
                     <a href="" class="btn btn-primary">Edit Profile</a>
                     <!-- Add more profile information as needed -->
                 </div>
