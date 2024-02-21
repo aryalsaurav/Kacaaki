@@ -9,4 +9,5 @@ urlpatterns = [
     path('testomonials/',views.TestomonialListView.as_view(),name='testomonials'),
     path('login/',views.LoginView.as_view(),name='login'),
     path('logout/',views.logout_view,name='logout'),
+    path('dashboard/',views.DashboardView.as_view(),name='dashboard'),
 ]

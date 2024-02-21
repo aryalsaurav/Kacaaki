@@ -9,6 +9,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from .models import *
 
+from classes.models import NepaliClass
+
 # Create your views here.
 
 def home(request):
@@ -89,3 +91,20 @@ class LoginView(View):
 def logout_view(request):
     logout(request)
     return redirect("/")
+
+
+
+class DashboardView(View):
+    template_name = "layouts/dashboard.html"
+
+    def get(self,request):
+        context = {}
+        all_nepali_students = NepaliStudent.objects.all()
+        context['total_nepali_students'] = all_nepali_students.count()
+        context['total_enrolled_students'] = all_nepali_students.filter(current_status="Enrolled").count()
+        context['pending_students'] = all_nepali_students.filter(current_status="Not Enrolled").count()
+        context['paused_students'] = all_nepali_students.filter(current_status="Paused").count()
+        context['dropped_students'] = all_nepali_students.filter(current_status="Dropped").count()
+        context['total_nepali_classes'] = NepaliClass.objects.filter(deleted_at=None).count()
+        return render(request,self.template_name,context)
+        

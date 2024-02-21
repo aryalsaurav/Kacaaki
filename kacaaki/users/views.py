@@ -35,6 +35,34 @@ def teachers_list(request):
     }
     return render(request,template_name,context)
 
+##Nepali Student 
+
+
+class NepaliStudentListView(ListView):
+    model = NepaliStudent
+    template_name = "users/nepali_student_list.html"
+    context_object_name = 'nepali_students'
+
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        status = self.request.GET.get('status')
+        query = self.request.GET.get('search')
+        if status:
+            if status == 'enrolled':
+                queryset = queryset.filter(current_status='Enrolled')
+            elif status == 'not_enrolled':
+                queryset = queryset.filter(current_status='Not Enrolled')
+            elif status == 'dropped':
+                queryset = queryset.filter(current_status='Dropped')
+            elif status == 'paused':
+                queryset = queryset.filter(current_status='Paused')
+
+        if query:
+            queryset = queryset.filter(user__full_name__icontains=query)
+        return queryset
+
+
 
 class NepaliStudentRegisterView(View):
     template_name = "users/nepali_student_registration.html"
@@ -69,6 +97,9 @@ class NepaliStudentRegisterView(View):
             return render(request,self.template_name,context)
         
 
+
+
+#Dance Student
 class DanceStudentRegisterView(View):
     template_name = "users/dance_student_registration.html"
 

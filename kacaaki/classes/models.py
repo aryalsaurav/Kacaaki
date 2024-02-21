@@ -32,6 +32,7 @@ class NepaliClass(models.Model):
     students = models.ManyToManyField(NepaliStudent)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
 
     def __str__(self):
@@ -61,6 +62,8 @@ class Assignment(models.Model):
     file = models.FileField("File", upload_to='files/', blank=True, null=True)
     nepali_class = models.ForeignKey(NepaliClass, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
     deadline = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
@@ -73,7 +76,10 @@ class AssignmentSubmission(models.Model):
     student = models.ForeignKey(NepaliStudent, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now_add=True)
     approval = models.CharField(max_length=15, choices=(('Approved','Approved'),('Rejected','Rejected'),('Submitted','Submitted')), default='Submitted')
-
+    remarks = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.assignment.topic + ' - ' + self.student.user.full_name
@@ -92,6 +98,9 @@ class AssignmentSubmission(models.Model):
 class AssignmentFile(models.Model):
     assignment_submission = models.ForeignKey(AssignmentSubmission, on_delete=models.CASCADE,related_name='assignment_files')
     a_file = models.FileField("Homework File",upload_to='assignments/')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.assignment_submission.assignment.topic + ' - ' + self.assignment_submission.student.user.full_name
@@ -107,6 +116,7 @@ class DanceClass(models.Model):
     students = models.ManyToManyField(DanceStudent, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -120,6 +130,9 @@ class DanceClass(models.Model):
 class DanceAssignment(models.Model):
     topic = models.CharField(max_length=250)
     dance_class = models.ForeignKey(DanceClass, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
     
 
     def __str__(self):
