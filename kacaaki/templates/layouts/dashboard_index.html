@@ -53,9 +53,7 @@
             <hr class="sidebar-divider">
 
             <!-- Heading -->
-            <div class="sidebar-heading">
-                Interface
-            </div>
+            
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
@@ -99,9 +97,7 @@
             <hr class="sidebar-divider">
 
             <!-- Heading -->
-            <div class="sidebar-heading">
-                Addons
-            </div>
+            
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
@@ -129,6 +125,11 @@
                 <a class="nav-link" href="{% url 'users:dashboard-teacher-list' %}">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Teachers</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'classes:dashboard-nepali-class-list' %}">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Classes</span></a>
             </li>
 
             <!-- Nav Item - Tables -->
@@ -291,7 +292,7 @@
                                     Activity Log
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <a class="dropdown-item" href="{% url 'main:logout' %}" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
                                 </a>
@@ -347,7 +348,7 @@
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <a class="btn btn-primary" href="{% url 'main:logout' %}">Logout</a>
                 </div>
             </div>
         </div>

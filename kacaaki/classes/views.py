@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect,HttpResponseRedirect,get_list_or_404, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -60,7 +61,18 @@ class NepaliClassAddView(LoginRequiredMixin,StaffOrNepaliTeacherRequiredMixin, V
             messages.error(request, 'Class not added')
             return redirect('classes:nepaliclass_list')
         
-        
+
+
+
+class DashboardNepaliClassListView(LoginRequiredMixin,ListView):
+    template_name = 'classes/nepaliclass/dashboard_nepaliclass_list.html'
+    login_url = '/login/'
+    model = NepaliClass
+    
+    
+    def get_queryset(self):
+        queryset =  super().get_queryset().filter(deleted_at=None).order_by('-created_at')
+        return queryset
 
 
 class NepaliClassListView(LoginRequiredMixin,NepaliTeacherOrStudentRequiredMixin,ListView):
