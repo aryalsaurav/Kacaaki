@@ -45,7 +45,7 @@ class NepaliStudentListView(ListView):
 
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().filter(user__deleted_at=None).all()
         status = self.request.GET.get('status')
         query = self.request.GET.get('search')
         if status:
@@ -164,3 +164,20 @@ class ProfileView(View):
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect('/login')
+        
+        
+
+
+##Teachers
+class TeacherListView(ListView):
+    model = Teacher
+    template_name = "users/teacher_list.html"
+    context_object_name = 'teachers'
+
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(user__deleted_at=None).all()
+        query = self.request.GET.get('search')
+        if query:
+            queryset = queryset.filter(user__full_name__icontains=query)
+        return queryset

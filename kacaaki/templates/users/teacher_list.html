@@ -1,0 +1,70 @@
+{% extends 'layouts/dashboard_index.html' %}
+{% load static %}
+{% block content%}
+        
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-2 text-gray-800">Tables</h1>
+                    
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Teachers</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Date Joined</th>
+                                            <th>Teacher Type</th>
+                                            <th>Zoom Link</th>
+                                        </tr>
+                                    </thead>
+                                    
+                                    <tbody>
+                                        {% for object in object_list %}
+                                        <tr>
+                                            <td><a href="">{{ object.user.full_name}}</a></td>
+                                            <td>{{ object.user.email }}</td>
+                                            <td>{{object.user.phone}}</td>
+                                            <td>{{ object.user.created_at|date}}</td>
+                                            <td>{{object.teacher_type}}</td>
+                                            <td><a href="{{object.zoom_link}}">{{object.zoom_link}}</a></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            
+    <!-- Bootstrap core JavaScript-->
+
+
+
+    <!-- Core plugin JavaScript-->
+
+
+    <!-- Custom scripts for all pages-->
+
+
+    <!-- Page level plugins -->
+    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{% static 'js/demo/datatables-demo.js' %}"></script>
+
+
+{% endblock %}
