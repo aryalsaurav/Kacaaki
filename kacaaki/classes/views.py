@@ -70,8 +70,15 @@ class DashboardNepaliClassListView(LoginRequiredMixin,ListView):
     model = NepaliClass
     
     
-    def get_queryset(self):
+    def get_queryset(self,*args,**kwargs):
         queryset =  super().get_queryset().filter(deleted_at=None).order_by('-created_at')
+        teacher = self.request.GET.get('teacher',None)
+        class_type = self.request.GET.get('class_type',None)
+        student = self.request.GET.get('student',None)
+        time = self.request.GET.get('time',None)
+        query = (Q(teacher__id=teacher) if teacher else Q()) & (Q(class_type=class_type) if class_type else Q()) & (Q(students__id=student) if student else Q()) & (Q(time=time) if time else Q())
+        queryset = queryset.filter(query)
+        
         return queryset
     
     def get_context_data(self,*args,**kwargs):

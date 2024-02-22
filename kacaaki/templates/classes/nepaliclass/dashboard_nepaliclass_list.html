@@ -22,7 +22,7 @@
                                         <select name="teacher" id="id_teacher">
                                             <option value="">----</option>
                                             {% for teacher in teachers %}
-                                            <option value="{{ teacher.id }}">{{ teacher.user.full_name }}</option>
+                                            <option value="{{ teacher.id }}" {% if request.GET.teacher|stringformat:"s" == teacher.id|stringformat:"s" %} selected {% endif %}>{{ teacher.user.full_name }}</option>
                                             {% endfor %}
                                         </select>
 
@@ -33,19 +33,19 @@
                                     <div>
                                         <select name="class_type" id="id_class_type">
                                             <option value="">---</option>
-                                            <option value="one-one">One to One</option>
-                                            <option value="Group">Group</option>
+                                            <option value="One-One Class"{% if request.GET.class_type == "One-One Class" %} selected {% endif %}>One to One</option>
+                                            <option value="Group Class" {% if request.GET.class_type == "Group Class" %} selected {% endif %}>Group</option>
                                         </select>
 
                                     </div>
                                 </div>
-                                <div class="col-sm">
+                                <div class="col-sm" >
                                     <label for="id_student">Student:</label>
                                     <div>
-                                        <select name="student" id="id_student">
+                                        <select name="student" id="id_student" >
                                             <option value="">----</option>
                                             {% for student in students %}
-                                            <option value="{{ student.id }}">{{ student.user.full_name }}</option>
+                                            <option value="{{ student.id }}" {% if request.GET.student|stringformat:"s" == student.id|stringformat:"s" %} selected {% endif %}>{{ student.user.full_name }}</option>
                                             {% endfor %}
                                         </select>
 
@@ -54,7 +54,8 @@
                                 <div class="col-sm">
                                     <label for="id_time">Time:</label>
                                     <div>
-                                        <input type="time" id="id_time" placeholder="" class="">
+                                        <input type="time" name="time" id="id_time" class="" {% if request.GET.time %} value="{{ request.GET.time }}" {% endif %}>
+
                                     </div>
                                 </div>
                                 <div class="col-sm">
