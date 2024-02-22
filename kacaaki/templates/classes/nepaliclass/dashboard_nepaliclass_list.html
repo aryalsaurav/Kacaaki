@@ -1,6 +1,12 @@
 {% extends 'layouts/dashboard_index.html' %}
 {% load static %}
 
+
+
+{% block head %}
+{% endblock %}
+    
+
 {% block content %}
 
                 <!-- Begin Page Content -->
@@ -8,9 +14,55 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                        {% comment %} <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a> {% endcomment %}
+                        <form action="" method="GET" class="form">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="id_teacher">Teacher:</label>
+                                    <div>
+                                        <select name="teacher" id="id_teacher">
+                                            <option value="">----</option>
+                                            {% for teacher in teachers %}
+                                            <option value="{{ teacher.id }}">{{ teacher.user.full_name }}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <label for="id_class_type">Class Type:</label>
+                                    <div>
+                                        <select name="class_type" id="id_class_type">
+                                            <option value="">---</option>
+                                            <option value="one-one">One to One</option>
+                                            <option value="Group">Group</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <label for="id_student">Student:</label>
+                                    <div>
+                                        <select name="student" id="id_student">
+                                            <option value="">----</option>
+                                            {% for student in students %}
+                                            <option value="{{ student.id }}">{{ student.user.full_name }}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <label for="id_time">Time:</label>
+                                    <div>
+                                        <input type="time" id="id_time" placeholder="" class="">
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <label></label> <!-- Placeholder for the label alignment -->
+                                    <button class="btn btn-primary mt-4" type="submit">Filter</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
 
                     <!-- Content Row -->
@@ -60,5 +112,12 @@
 
                 
             <!-- End of Main Content -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+            <script>
+                $("select").select2({
+                    
+                });
+            </script>
 
 {% endblock %}

@@ -73,6 +73,12 @@ class DashboardNepaliClassListView(LoginRequiredMixin,ListView):
     def get_queryset(self):
         queryset =  super().get_queryset().filter(deleted_at=None).order_by('-created_at')
         return queryset
+    
+    def get_context_data(self,*args,**kwargs):
+        context = super().get_context_data(*args,**kwargs)
+        context['teachers'] = Teacher.objects.filter(user__deleted_at=None).all()
+        context['students'] = NepaliStudent.objects.filter(user__deleted_at=None).all()
+        return context
 
 
 class NepaliClassListView(LoginRequiredMixin,NepaliTeacherOrStudentRequiredMixin,ListView):
