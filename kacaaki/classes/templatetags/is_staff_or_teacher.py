@@ -1,5 +1,8 @@
 from django import template
-
+from django.utils.http import urlencode
+from django.utils.safestring import mark_safe
+from urllib.parse import urlparse, parse_qs
+import re
 register = template.Library()
 
 @register.filter(name='is_staff_or_teacher')
@@ -51,4 +54,21 @@ def dance_teacher(user):
         return False
     except:
         return False
+
+
+@register.filter(name='remove_page_param')
+def remove_query_param(url, param_name):
+
+    parsed_url = urlparse(url)
+    query_dict = parse_qs(parsed_url.query)
     
+    # Remove the specified parameter
+    query_dict.pop(param_name, None)
+    
+    # Reconstruct the query string without the removed parameter
+    new_query = urlencode(query_dict, doseq=True)
+    
+    # Reconstruct the URL with the new query string
+    new_url = parsed_url._replace(query=new_query).geturl()
+    
+    return new_url

@@ -68,7 +68,7 @@ class DashboardNepaliClassListView(LoginRequiredMixin,ListView):
     template_name = 'classes/nepaliclass/dashboard_nepaliclass_list.html'
     login_url = '/login/'
     model = NepaliClass
-    
+    paginate_by = 20
     
     def get_queryset(self,*args,**kwargs):
         queryset =  super().get_queryset().filter(deleted_at=None).order_by('-created_at')

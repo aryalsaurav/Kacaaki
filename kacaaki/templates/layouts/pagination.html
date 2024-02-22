@@ -16,9 +16,16 @@
                     <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
                 </li>
             {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ i }}&uid={{ value|default:'' }}&q={{ query|default:'' }}">{{ i }}</a>
-                </li>
+                {% if request.GET.student or request.GET.class_type or request.GET.teacher or request.GET.time %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}&class_type={{ request.GET.class_type }}&teacher={{request.GET.teacher}}&student={{request.GET.student}}&time={{request.GET.time}}">{{ i }}</a>
+                    </li>
+                {% else %}
+
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}&uid={{ value|default:'' }}&q={{ query|default:'' }}">{{ i }}</a>
+                    </li>
+                {% endif %}
             {% endif %}
         {% endfor %}
 
