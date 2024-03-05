@@ -1,9 +1,10 @@
+{% load is_staff_or_teacher %}
 {% if page_obj.paginator.num_pages > 1 %}
 <div class="pagination justify-content-center">
     <ul class="pagination">
         {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page=1{% if request.GET.urlencode|default:''|slice:":5" != 'page=' %}&{{ request.GET.urlencode }}{% endif %}" aria-label="First">
+                <a class="page-link" href="{% relative_url 1 'page' request.GET.urlencode %}" aria-label="First">
                     <span aria-hidden="true">&laquo;&laquo;</span>
                 </a>
             </li>
@@ -18,7 +19,7 @@
             {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
                 
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ i }}{% if request.GET.urlencode|default:''|slice:":5" != 'page=' %}&{{ request.GET.urlencode }}{% endif %}">{{ i }}</a>
+                        <a class="page-link" href="{% relative_url i 'page' request.GET.urlencode %}">{{ i }}</a>
                     </li>
             {% endif %}
         {% endfor %}
@@ -26,7 +27,7 @@
         {% if page_obj.has_next %}
             
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.urlencode|default:''|slice:":5" != 'page=' %}&{{ request.GET.urlencode }}{% endif %}" aria-label="Last">
+                <a class="page-link" href="{% relative_url page_obj.paginator.num_pages 'page' request.GET.urlencode %}" aria-label="Last">
                     <span aria-hidden="true">&raquo;&raquo;</span>
                 </a>
             </li>

@@ -351,9 +351,10 @@ def student_class_change(request):
     student_id = request.GET.get('student_id')
     status  = request.GET.get('status')
     np_class_id = int(request.GET.get('class_id'))
-    print(np_class_id,student_id,status)
     nepali_class = NepaliClass.objects.get(pk=np_class_id)
     student = NepaliStudent.objects.get(pk=student_id)
     nepali_class.students.remove(student)
     nepali_class.save()
+    student.current_status = status
+    student.save()
     return HttpResponse('success')
