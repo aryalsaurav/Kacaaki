@@ -40,13 +40,9 @@
                         {% for field in form %}
                         
                             <div class="form-group">
-                                {% if field == "students" %}
-    
-                                {{ field|as_crispy_field }}
                                 
-                                {% else %}
                                 {{ field|as_crispy_field }}
-                                {% endif %}
+
                             </div>
                             
                         {% endfor %}

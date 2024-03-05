@@ -3,7 +3,7 @@
     <ul class="pagination">
         {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page=1&uid={{ value|default:'' }}&q={{ query|default:'' }}" aria-label="First">
+                <a class="page-link" href="?page=1{% if request.GET.urlencode|default:''|slice:":5" != 'page=' %}&{{ request.GET.urlencode }}{% endif %}" aria-label="First">
                     <span aria-hidden="true">&laquo;&laquo;</span>
                 </a>
             </li>
@@ -16,23 +16,17 @@
                     <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
                 </li>
             {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
-                {% if request.GET.student or request.GET.class_type or request.GET.teacher or request.GET.time %}
+                
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ i }}&class_type={{ request.GET.class_type }}&teacher={{request.GET.teacher}}&student={{request.GET.student}}&time={{request.GET.time}}">{{ i }}</a>
+                        <a class="page-link" href="?page={{ i }}{% if request.GET.urlencode|default:''|slice:":5" != 'page=' %}&{{ request.GET.urlencode }}{% endif %}">{{ i }}</a>
                     </li>
-                {% else %}
-
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ i }}&uid={{ value|default:'' }}&q={{ query|default:'' }}">{{ i }}</a>
-                    </li>
-                {% endif %}
             {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
             
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&uid={{ value|default:'' }}&q={{ query|default:'' }}" aria-label="Last">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.urlencode|default:''|slice:":5" != 'page=' %}&{{ request.GET.urlencode }}{% endif %}" aria-label="Last">
                     <span aria-hidden="true">&raquo;&raquo;</span>
                 </a>
             </li>

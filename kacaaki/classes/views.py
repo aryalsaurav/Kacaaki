@@ -68,7 +68,7 @@ class DashboardNepaliClassListView(LoginRequiredMixin,ListView):
     template_name = 'classes/nepaliclass/dashboard_nepaliclass_list.html'
     login_url = '/login/'
     model = NepaliClass
-    paginate_by = 20
+    paginate_by = 1
     
     def get_queryset(self,*args,**kwargs):
         queryset =  super().get_queryset().filter(deleted_at=None).order_by('-created_at')
@@ -154,7 +154,7 @@ class NepaliClassUpdateView(LoginRequiredMixin,StaffOrNepaliTeacherRequiredMixin
     
     def get(self,request,*args,**kwargs):
         np_classes = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
-        form = NepaliClassForm(instance=np_classes, user=request.user)
+        form = NepaliClassUpdateForm(instance=np_classes)
         context = {
             'form':form,
         }
@@ -163,15 +163,9 @@ class NepaliClassUpdateView(LoginRequiredMixin,StaffOrNepaliTeacherRequiredMixin
     def post(self,request,*args,**kwargs):
         np_classes = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
         detail = request.POST.get('uid')
-        form = NepaliClassForm(request.POST, instance=np_classes, user=request.user)
+        form = NepaliClassUpdateForm(request.POST, instance=np_classes)
         if form.is_valid():
             np_class = form.save(commit=False)
-            students = form.cleaned_data['students']
-            if students.count() > 5:
-                messages.error(request, 'You cannot add more than 4 students')
-                return HttpResponseRedirect(reverse('classes:nepaliclass_add'))
-            np_class.save()
-            np_class.students.set(students)
             np_class.save()
             messages.success(request, 'Class updated successfully')
             if detail == 'detail':
@@ -203,7 +197,6 @@ class NepaliClassDetailView(LoginRequiredMixin,NeapliTeacherOrStudentInClassRequ
     template_name = 'classes/nepaliclass/nepaliclass_detail.html'
     login_url = '/login/'
     model = NepaliClass
-    paginate_by = 1
     
     def get(self,request,*args,**kwargs):
         np_class = get_object_or_404(NepaliClass, pk=self.kwargs['pk'])
@@ -230,7 +223,6 @@ class AssignmentAddView(LoginRequiredMixin,View):
     def post(self,request,*args,**kwargs):
         form = AssignmentForm(request.POST, request.FILES)
         class_id = request.POST.get('uid')
-        print(class_id)
         if form.is_valid():
             assignment = form.save(commit=False)
             nepali_class = NepaliClass.objects.get(pk=class_id)
@@ -353,3 +345,15 @@ class AssignmentSubmissionView(LoginRequiredMixin,View):
             messages.error(request, 'Assignment not submitted')
             return HttpResponseRedirect(reverse('classes:assignment_detail', kwargs={'pk':assignment_id}))
         
+
+
+def student_class_change(request):
+    student_id = request.GET.get('student_id')
+    status  = request.GET.get('status')
+    np_class_id = int(request.GET.get('class_id'))
+    print(np_class_id,student_id,status)
+    nepali_class = NepaliClass.objects.get(pk=np_class_id)
+    student = NepaliStudent.objects.get(pk=student_id)
+    nepali_class.students.remove(student)
+    nepali_class.save()
+    return HttpResponse('success')

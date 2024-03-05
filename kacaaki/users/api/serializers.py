@@ -34,7 +34,7 @@ def validate_class_time(value):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','email','password','full_name','gender','age','phone','photo','city','state','country','is_staff','is_superuser','is_active','created_at']
+        fields = ['id','email','password','full_name','gender','age','phone','photo','city','state','country','user_type','is_staff','is_superuser','is_active','created_at']
         extra_kwargs = {
             'password':{'write_only':True}
         }
@@ -100,7 +100,7 @@ class NepaliStudentSerializer(serializers.ModelSerializer):
     class_time = serializers.ListField(validators=[validate_class_time])
     class Meta:
         model = NepaliStudent
-        fields = fields = ['id','user','signing_for','parents_name','nepali_at_home','listening','speaking','reading','writing','course_level','session_type','class_time','goal_for_class','hear_from','special_request','other_classes','is_nepali_student']
+        fields = fields = ['id','user','signing_for','parents_name','nepali_at_home','listening','speaking','reading','writing','course_level','session_type','class_time','goal_for_class','hear_from','special_request','other_classes']
         
 
     def create(self, validated_data):
@@ -293,3 +293,18 @@ class UserLoginSerializer(serializers.Serializer):
         validated_data['user'] = user
         
         return validated_data
+    
+    
+
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+    def validate(self, attrs):
+        self.token = attrs['refresh']
+        return attrs
+    def save(self, **kwargs):
+        try:
+            RefreshToken(self.token).blacklist()
+        except TokenError:
+            self.fail('bad_token')

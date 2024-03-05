@@ -25,6 +25,7 @@
                                             <th>Age</th>
                                             <th>Parent's Name</th>
                                             <th>Date Joined</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     
@@ -37,6 +38,7 @@
                                             <td>{{object.user.age}}</td>
                                             <td>{{object.parents_name}}</td>
                                             <td>{{ object.user.created_at|date}}</td>
+                                            <td>{{object.current_status }}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>

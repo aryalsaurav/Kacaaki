@@ -14,6 +14,7 @@ from .serializers import  (
     PasswordChangeSerializer,
     PasswordResetSerializer,
     UserEmailSerializer,
+    LogoutSerializer,
 
 )
 from rest_framework.views import  APIView
@@ -44,7 +45,7 @@ import pickle
 import django_filters 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-
+from rest_framework_simplejwt.tokens import RefreshToken,OutstandingToken,BlacklistedToken
 # from rest_framework.authtoken.models import Token
 
 r = redis.Redis(host=settings.REDIS_HOST,port=settings.REDIS_PORT,db=0)
@@ -187,6 +188,7 @@ class UserFilterView(generics.ListAPIView):
 
 #Nepali Student View
 class NepaliStudentView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
     def get(self,request):
         if r.exists('nepali_student'):
             data = r.get('nepali_student')
@@ -710,13 +712,14 @@ class UserLoginView(APIView):
         if serializer.is_valid():
             email = serializer.data['email']
             user = serializer.validated_data['user']
-            token,created = Token.objects.get_or_create(user=user)
+            token = RefreshToken.for_user(user)
            
             response = {
                 'success': 200,
                 'message': 'User logged in  successfully',
                 'user': email,
-                'token': token.key,
+                'token': str(token.access_token),
+                'refresh': str(token),
                 
                 }
             status_code = status.HTTP_200_OK
@@ -731,15 +734,26 @@ class UserLoginView(APIView):
             return Response(context,status=400)
 
 
+class LogoutView(generics.GenericAPIView):
+    serializer_class = LogoutSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
         
-class LogoutView(APIView):
-    def post(self, request, format=None):
-        request.user.auth_token.delete()
-        context = {
-            'status':200,
-            'message':'User logged out successfully',
-        }
-        return Response(context,status=status.HTTP_200_OK)
+# class LogoutView(APIView):
+#     def post(self, request, format=None):
+#         token = request.data['token']
+#         outstanding_token = OutstandingToken.objects.filter(token=token)
+#         print(outstanding_token)
+#         BlacklistedToken.objects.create(token=outstanding_token[0])
+#         context = {
+#             'status':200,
+#             'message':'User logged out successfully',
+#         }
+#         return Response(context,status=status.HTTP_200_OK)
 
 
 class PasswordChangeView(APIView):

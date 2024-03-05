@@ -30,6 +30,27 @@ class NepaliClassForm(forms.ModelForm):
         else:
             del self.fields['teacher']
             
+
+
+
+class NepaliClassUpdateForm(forms.ModelForm):
+    time = forms.CharField(widget=forms.TextInput(attrs={'type': 'time'}))
+
+    
+    class Meta:
+        model = NepaliClass
+        fields = ('name',"day","time",'class_type')
+        
+    def __init__(self, *args, **kwargs):
+        super(NepaliClassUpdateForm, self).__init__(*args, **kwargs)
+        # self.fields['teacher'].queryset = Teacher.objects.filter(teacher_type='Nepali Teacher')
+
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control'
+            })
+        
+        
     
             
     
@@ -38,7 +59,7 @@ class AssignmentForm(forms.ModelForm):
     deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
     class Meta:
         model = Assignment
-        exclude = ['created_at','nepali_class']
+        exclude = ['created_at','nepali_class','deleted_at']
         
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
