@@ -267,8 +267,8 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title text-primary" id="updateModalLabel{{ student.id }}">Update Options for {{ student.user.full_name }}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <h5 class="modal-title text-primary" id="updateModalLabel{{ student.id }}">{{ student.user.full_name }}</h5>
+                        <button type="button" onclick="closeModal('{{student.id}}')" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -278,12 +278,13 @@
                             <select class="form-control" id="selectOption">
                                 <option value="Paused">Pause</option>
                                 <option value="Dropped">Drop</option>
+                                <option value="SendEmail">Send Class Email</option>
                             </select>
                         </div>
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                      <button type="button" class="btn btn-primary" onclick="saveChanges('{{ student.id }}')">Save Changes</button>
+                      <button type="button" class="btn btn-secondary" onclick="closeModal('{{student.id}}')"  id="cancel" data-dismiss="modal">Cancel</button>
+                      <button type="button" class="btn btn-primary" onclick="saveChanges('{{ student.id }}')">Ok</button>
                   </div>
                 </div>
             </div>
@@ -326,22 +327,41 @@
     </script>
 
     <script>
+      function closeModal(studentId) {
+          var modalId = 'updateModal' + studentId;
+          $('#' + modalId).modal('hide');
+      }
       function saveChanges(studentId) {
           var selectedOption = $('#selectOption').val();
           var class_id = '{{ np_class.id }}';
-          console.log(class_id,'class_id');  
+          if (selectedOption === 'SendEmail') {
+              var url ="{% url 'classes:send_class_email' %}?student_id=" + studentId + "&class_id={{ np_class.id }}";
+              $.ajax({
+                  url: url,
+                  type: 'GET',
+                  success: function (data) {
+                      // Hide the modal
+                      var modalId = 'updateModal' + studentId;
+                      $('#' + modalId).modal('hide');
+                  }
+              });
+              return;
+          }else{
+            console.log(selectedOption);
+            var url = '{% url "classes:student_class_change" %}?student_id=' + studentId + '&status=' + selectedOption + '&class_id=' + class_id;
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    // Hide the modal
+                    var modalId = 'updateModal' + studentId;
+                    $('#' + modalId).modal('hide');
+                    location.reload();
+                }
+            });
+
+          }
           // Construct the URL with parameters and option value
-          var url = '{% url "classes:student_class_change" %}?student_id=' + studentId + '&status=' + selectedOption + '&class_id=' + class_id;
-          $.ajax({
-              url: url,
-              type: 'GET',
-              success: function (data) {
-                  // Hide the modal
-                  var modalId = 'updateModal' + studentId;
-                  $('#' + modalId).modal('hide');
-                  location.reload();
-              }
-          });
           // Navigate to the constructed URL
 
       }

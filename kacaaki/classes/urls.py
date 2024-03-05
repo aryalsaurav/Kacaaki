@@ -16,4 +16,5 @@ urlpatterns = [
     path('nepali/assignment/submission/',views.AssignmentSubmissionView.as_view(),name='assignment_submission'),
     path('dashboard/nepali/class/list/',views.DashboardNepaliClassListView.as_view(),name='dashboard-nepali-class-list'),
     path('student/class/change',views.student_class_change,name='student_class_change'),
+    path('student/send/class/email/',views.student_email_send,name='send_class_email'),
 ]

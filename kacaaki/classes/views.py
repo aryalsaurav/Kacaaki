@@ -24,6 +24,9 @@ from .mixins import (
     NepaliTeacherOrStudentRequiredMixin,
     NeapliTeacherOrStudentInClassRequiredMixin,
 )
+from django.template.loader import render_to_string
+from main.utils import send_email_task
+from .utils import find_next_weekday_date
 # Create your views here.
 
 
@@ -55,6 +58,9 @@ class NepaliClassAddView(LoginRequiredMixin,StaffOrNepaliTeacherRequiredMixin, V
             np_class.save()
             np_class.students.add(*students)
             np_class.save()
+            for student in students:
+                student.current_status = 'Enrolled'
+                student.save()
             messages.success(request, 'Class added successfully')
             return redirect('classes:nepaliclass_list')
         else:
@@ -165,7 +171,12 @@ class NepaliClassUpdateView(LoginRequiredMixin,StaffOrNepaliTeacherRequiredMixin
         detail = request.POST.get('uid')
         form = NepaliClassUpdateForm(request.POST, instance=np_classes)
         if form.is_valid():
+            students = form.cleaned_data['students']
             np_class = form.save(commit=False)
+            np_class.save()
+            if students.count() > 5:
+                messages.error(request,"You cannot add more than 4 students")
+            np_class.students.set(students)
             np_class.save()
             messages.success(request, 'Class updated successfully')
             if detail == 'detail':
@@ -173,8 +184,6 @@ class NepaliClassUpdateView(LoginRequiredMixin,StaffOrNepaliTeacherRequiredMixin
             else:
                 return redirect('classes:nepaliclass_list')
         else:
-
-            print(form.errors,"33333333333333")
             messages.error(request, 'Class not updated')
             return HttpResponseRedirect(reverse('classes:nepaliclass_list'))
         
@@ -358,3 +367,33 @@ def student_class_change(request):
     student.current_status = status
     student.save()
     return HttpResponse('success')
+
+
+def student_email_send(request):
+    student_id = request.GET.get('student_id')
+    student = NepaliStudent.objects.get(pk=student_id)
+    class_id = request.GET.get('class_id')
+    np_class = NepaliClass.objects.get(pk=class_id)
+    student_email = student.user.email
+    class_week = np_class.day
+    class_time = np_class.time
+    teacher_name = np_class.teacher.user.full_name
+    zoom_link = np_class.teacher.zoom_link
+    start_date = find_next_weekday_date(class_week)
+    payment_portal_group = "https://kakaaki.com/payment"
+    payment_portal_one2one = "https://kakaaki.com/payment-one-to-one"
+    class_type = np_class.class_type
+    context = {
+        'class_day':class_week,
+        'class_time':class_time,
+        'teacher_name':teacher_name,
+        'zoom_link':zoom_link,
+        'start_date':start_date,
+        'payment_portal':payment_portal_group if class_type == 'Group Class' else payment_portal_one2one,
+        'book_link': 'https://kakaaki.com/buy-book',
+    }
+    # message = render_to_string(message_template, context)
+    send_email_task.delay(student_email,context)
+    return HttpResponse('success')
+    
+    

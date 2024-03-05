@@ -39,7 +39,7 @@ class NepaliClassUpdateForm(forms.ModelForm):
     
     class Meta:
         model = NepaliClass
-        fields = ('name',"day","time",'class_type')
+        fields = ('name',"day","time",'class_type','students')
         
     def __init__(self, *args, **kwargs):
         super(NepaliClassUpdateForm, self).__init__(*args, **kwargs)

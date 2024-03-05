@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Kakaaki Class</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p>Dear Parent,</p>
+        <p>Thank you for signing up for Kakaaki class. We are excited to be on this learning journey with you.</p>
+        <p>We have scheduled your weekly class to begin every {{ class_day }} beginning {{ start_date }} at {{ class_time }}.</p>
+        <p>Some important information regarding the class is listed below:</p>
+        <ul>
+            <li><strong>Teacher:</strong> {{ teacher_name }}</li>
+            <li><strong>Zoom Link:</strong> <a href="{{ zoom_link }}">{{ zoom_link }}</a> (please bookmark as this will be the link for every class)</li>
+            <li><strong>Google Classroom:</strong> Google classroom information has been emailed to you. Our teachers use Google classroom for homework and class communication. Students should upload their homework (pictures of homework) into Google classroom as well. (Please note that using Gmail and Chrome browser works better with Google Classroom)</li>
+        </ul>
+        <p><strong>Payment:</strong></p>
+        <p>We kindly request you to make the payment at your earliest convenience, by visiting our <a href="{{ payment_portal }}">{{payment_portal}}</a>.</p>
+        <p>Also, as a one-time cost, you can use this <a href="{{ book_link }}">{{ book_link }}</a> to purchase books for the class.</p>
+        <p>Please reach out to us should you have any questions or concerns.</p>
+        <p>Regards,<br>{{ sender_name }}</p>
+    </div>
+</body>
+</html>
