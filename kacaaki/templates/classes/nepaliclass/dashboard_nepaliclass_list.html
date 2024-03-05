@@ -78,9 +78,9 @@
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-primary-800 text-uppercase mb-1">
                                                     {{ object.name }}: {{object.teacher.user.full_name }}</div>
-                                                <div class="h5 mb-0 font-weight-small text-gray-800">Time:{{ object.time }}</div>
-                                                <div class="h5 mb-0 font-weight-small text-gray-800">Class:{{ object.class_type }}</div>
-                                                <div class="h5 mb-0 font-weight-small text-gray-800">Students:{% for student in object.students.all %}{{ student.user.full_name }},{% endfor %}</div>
+                                                <div class="h5 mb-0 font-weight-small text-gray-800">Time:  {{ object.time }}</div>
+                                                <div class="h5 mb-0 font-weight-small text-gray-800">Class: {{ object.class_type }}</div>
+                                                <div class="h5 mb-0 font-weight-small text-gray-800">Students:  {% for student in object.students.all %}{{ student.user.full_name }},{% endfor %}</div>
                                             </div>
                                             <div class="col-auto">
                                                 <i class="fas fa-calendar fa-2x text-gray-300"></i>
