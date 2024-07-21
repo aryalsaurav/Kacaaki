@@ -33,17 +33,10 @@
     <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-sm-6 py-5 custom-box m-2">
             <div class="col-lg-6 mx-auto">
-                <form class="" method="post" action="{% url 'classes:assignment_add' %}">
+                <form class="" method="post" action="" enctype="multipart/form-data">
                     {% csrf_token %}
                     
-                    {% for field in form %}
-                    
-                        <div class="form-group">
-                            
-                            {{ field|as_crispy_field }}
-                        </div>
-                        
-                    {% endfor %}
+                    {{form.as_p}}
                     <input type="hidden" name="uid" value="{{ request.GET.uid }}">
                     <div id="student-error-message" style="color: red;"></div>
                     <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
@@ -65,27 +58,7 @@
         
         
         </script>
-        <script type="text/javascript">
-            // Listen for changes in the student selection field
-            $('select#id_students').on('change', function () {
-                // Get the number of selected students
-                var selectedCount = $('select#id_students option:selected').length;
         
-                // Define the maximum allowed students
-                var maxAllowedStudents = 5;
-        
-                // Check if the selected count exceeds the maximum
-                if (selectedCount > maxAllowedStudents) {
-                    // Show an error message
-                    $('#student-error-message').text('Not allowed to select more than ' + maxAllowedStudents + ' students');
-                    $('#submit-button').prop('disabled', true);
-                } else {
-                    // Clear the error message
-                    $('#student-error-message').text('');
-                    $('#submit-button').prop('disabled', false);
-                }
-            });
-        </script>
     
 
         <script>

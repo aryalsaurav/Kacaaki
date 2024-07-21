@@ -29,6 +29,10 @@ from ..models import  (
     Token,
    
 )
+from ..pagination import CustomPagination
+
+
+
 from rest_framework import viewsets
 from rest_framework import  generics
 from django.utils.translation import gettext_lazy as _
@@ -46,6 +50,15 @@ import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework_simplejwt.tokens import RefreshToken,OutstandingToken,BlacklistedToken
+from rest_framework.throttling import UserRateThrottle,AnonRateThrottle
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import ListAPIView
+
+
+class CustomUserRateThrottle(UserRateThrottle):
+    rate = '10/min'
+
+
 # from rest_framework.authtoken.models import Token
 
 r = redis.Redis(host=settings.REDIS_HOST,port=settings.REDIS_PORT,db=0)
@@ -175,7 +188,30 @@ class UserFilterView(generics.ListAPIView):
 
 
 
-
+class UserListView(APIView):
+    # permission_classes = (permissions.IsAdminUser,)
+    def get(self,request):
+        queryset = User.objects.all()
+        paginator = CustomPagination()
+        result_page = paginator.paginate_queryset(queryset,request)
+        if result_page is not None:
+            serializer = UserSerializer(result_page,many=True)
+            return paginator.get_paginated_response(serializer.data)
+            # context = {
+            #     "status":200,
+            #     "message":"All User got successfully",
+            #     "data":data
+            # }
+            # return Response(context,status=200)
+        serializer = UserSerializer(queryset,many=True)
+        context = {
+            "status":200,
+            "message":"All User got successfully",
+            "data":serializer.data
+        }
+        return Response(context,status=200)
+ 
+    
 
 
 
@@ -189,6 +225,7 @@ class UserFilterView(generics.ListAPIView):
 #Nepali Student View
 class NepaliStudentView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
+    throttle_classes = [CustomUserRateThrottle]
     def get(self,request):
         if r.exists('nepali_student'):
             data = r.get('nepali_student')

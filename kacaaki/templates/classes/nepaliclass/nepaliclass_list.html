@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %} 
 {% load static %}
-
+{% load is_staff_or_teacher %}
 
 {% block title %}Nepali Classes{% endblock %}
 
@@ -14,20 +14,22 @@
 
 
 {% block content %}
-	<div class="container-xxl py-5 card shadow mt-5">
+	<div class="container-xxl py-5 card shadow mt-5 wow fadeInUp" data-wow-delay="0.1s">
 		<div class="container ">
 			<div class="row mb-2">
 				<div class="col-md-4">
 					
 				</div>
-				<div class="col-md-4" style="text-align: right;">
+				{% if request.user|is_staff_or_teacher %}
+				<div class="col-md-4" style="text-align: right; display:inline;">
 					<a href="{% url 'classes:nepaliclass_add' %}" class="btn btn-primary"><i class="material-icons">Add Class</i></a>
 				</div>
-				<div class="col-md-4" style="text-align: center;">
+				{% endif %}
+				<div class="col-md-4"  style="text-align: right; margin-left:auto; display:inline;">
 					<div class="search--document">
 						<form id="searchform" action="{% url 'classes:nepaliclass_list' %}" method="get" accept-charset="utf-8" style="display: inline;">
 							<div class="search-form search-form--light">
-								<div class="container" style="display: flex; align-items: center;">
+								<div class="container" style="display: flex; align-items: right;">
 									<input type="text" class="form-control" placeholder="Search..." id="searchSample03" name="q" style="margin-right: 10px;" value="{{query}}">
 									<button class="btn btn-primary" type="submit" role="button"><i class="material-icons">search</i></button>
 								</div>
@@ -47,7 +49,9 @@
 								<th>Day</th>
 								<th>Class Time</th>
 								<th>Teacher</th>
+								{% if request.user|is_staff_or_teacher%}
 								<th>Action</th>
+								{% endif %}
 							</tr>
 						</thead>
 						<tbody>
@@ -58,6 +62,7 @@
 								<td>{{ object.day }}</td>
 								<td>{{ object.time }} </td>
 								<td>{{ object.teacher }}</td>
+								{% if request.user|is_staff_or_teacher %}
 								<td>
 									<div class="dropdown">
 										<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -67,15 +72,16 @@
 											<a href="{% url 'classes:nepaliclass_detail' object.id %}" class="btn-sm dropdown-item btn btn-success-space">
 												<i class="fas fa-info"></i>&nbsp; Detail
 											</a> 
-										                                                     
+											                                                
 										  <a href="{% url 'classes:nepaliclass_update' object.id %}" class="btn-sm dropdown-item btn btn-success-space">
 											  <i class="fa fa-pencil-alt"></i> Modify
 										  </a>
-								
+										  
 
 									</div>
 								  	</div>
 								</td>
+								{% endif %}
 							</tr>
 							{% endfor %}   
 						</tbody>

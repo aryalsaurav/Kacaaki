@@ -17,4 +17,5 @@ urlpatterns = [
     path('dashboard/nepali/class/list/',views.DashboardNepaliClassListView.as_view(),name='dashboard-nepali-class-list'),
     path('student/class/change',views.student_class_change,name='student_class_change'),
     path('student/send/class/email/',views.student_email_send,name='send_class_email'),
+    path('student/add/class/',views.student_add,name='student_add_class'),
 ]

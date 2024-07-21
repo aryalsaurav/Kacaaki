@@ -8,7 +8,9 @@ from classes.models import *
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from .models import User,NepaliStudent,DanceStudent,Teacher
 from .forms import *
-from dal import autocomplete
+from .pagination import CustomPagination
+
+
 
 # Create your views here.
 
@@ -24,6 +26,12 @@ from dal import autocomplete
 #             qs = qs.filter(name__istartswith=self.q)
 
 #         return qs
+
+
+
+
+
+
 
 
 
@@ -45,7 +53,7 @@ class NepaliStudentListView(ListView):
 
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(user__deleted_at=None).all()
+        queryset = super().get_queryset().filter(user__deleted_at=None).prefetch_related('user').all()
         status = self.request.GET.get('status')
         query = self.request.GET.get('search')
         if status:

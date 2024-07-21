@@ -59,7 +59,7 @@ class NepaliClass(models.Model):
 
 class Assignment(models.Model):
     topic = models.CharField(max_length=250)
-    file = models.FileField("File", upload_to='files/', blank=True, null=True)
+    file_f = models.FileField("File", upload_to='files/', blank=True, null=True)
     nepali_class = models.ForeignKey(NepaliClass, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

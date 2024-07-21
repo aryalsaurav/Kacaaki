@@ -148,7 +148,7 @@ class DanceStudentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     class Meta:
         model = DanceStudent
-        fields = ['id','user','signing_for','parents_name','dance_skills','dance_style','session_type','class_time','goal_for_class','hear_from','special_request','other_classes','is_dance_student']
+        fields = ['id','user','signing_for','parents_name','dance_skills','dance_style','session_type','class_time','goal_for_class','hear_from','special_request','other_classes']
         
 
     def create(self, validated_data):
@@ -185,7 +185,7 @@ class TeacherSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     class Meta:
         model = Teacher
-        fields = ['id','user','teacher_type','zoom_link','is_teacher']
+        fields = ['id','user','teacher_type','zoom_link']
     
     def create(self, validated_data):
         user_data = validated_data.pop('user')

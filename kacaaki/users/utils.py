@@ -106,3 +106,22 @@ def check_password(password1,password2):
             'error':'Password must contain at least 1 special character'
         }
         return context
+    
+    
+
+
+
+
+
+def generate_otp():
+    import random
+    return random.randint(100000, 999999)
+
+
+
+def send_otp_email(user):
+    otp = generate_otp()
+    send_mail(
+        "Verify your email",
+        f"Please verify your email by entering the OTP: {otp}",
+    )

@@ -59,7 +59,7 @@ class AssignmentForm(forms.ModelForm):
     deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
     class Meta:
         model = Assignment
-        exclude = ['created_at','nepali_class','deleted_at']
+        fields = ['topic', 'file_f', 'deadline']
         
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
@@ -77,3 +77,12 @@ class AssignmentForm(forms.ModelForm):
         
 
 
+class StudentForm(forms.Form):
+    students = forms.ModelMultipleChoiceField(queryset=NepaliStudent.objects.all())
+    
+    def __init__(self, *args, **kwargs):
+        super(StudentForm, self).__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control'
+            })

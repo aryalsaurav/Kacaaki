@@ -41,6 +41,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             file_data = message.split(';base64,')[1]
             file_content = base64.b64decode(file_data)
             await sync_to_async(self.save_message)(file_content,user,room_id,data_type,file_name=file_name)
+        
+        
+        elif data_type == "audio":
+            pass
+        
         else:
             await sync_to_async(self.save_message)(message,user,room_id,data_type)
         await self.channel_layer.group_send(
@@ -53,7 +58,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
             })
         
         
-        
+    async def webrtc_signaling(self, event):
+        message = event['message']
+        user = event['user']
+        room_id = event['room_id']
+        signal_type = event['signal_type']
+
+        # Send signaling message to WebSocket
+        await self.send(text_data=json.dumps({
+            'type': signal_type,
+            'message': message,
+            'user': user,
+            'room_id': room_id,
+        }))
     
         
     
