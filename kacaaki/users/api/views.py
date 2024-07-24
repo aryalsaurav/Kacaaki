@@ -15,6 +15,7 @@ from .serializers import  (
     PasswordResetSerializer,
     UserEmailSerializer,
     LogoutSerializer,
+    VideoSerializer
 
 )
 from rest_framework.views import  APIView
@@ -878,3 +879,27 @@ class PasswordResetView(APIView):
                 "message":"Invalid token"
             }
             return Response(context, status=status.HTTP_400_BAD_REQUEST) 
+        
+        
+        
+
+
+class VideoView(APIView):
+    permission_classes = [permissions.AllowAny]
+    def post(self,request):
+        serializer = VideoSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            context = {
+                'status':201,
+                'message':'Video uploaded successfully',
+                'data':serializer.data
+            }
+            return Response(context,status=201)
+        else:
+            context = {
+                'status':400,
+                'message':'failed',
+                'error':serializer.errors
+            }
+            return Response(context,status=400)

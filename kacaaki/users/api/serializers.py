@@ -6,6 +6,7 @@ from ..models import (
     DanceStudent,
     Teacher,
     ClassTime,
+    VideoUpload
 )
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
@@ -209,7 +210,16 @@ class TeacherUpdateSerializer(serializers.ModelSerializer):
 
 
 
-
+class VideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VideoUpload
+        fields = ['video','adminVideo','clientVideo']
+    
+    
+    
+    def create(self, validated_data):
+        video = VideoUpload.objects.create(**validated_data)
+        return video
 
 
 

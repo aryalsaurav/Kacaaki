@@ -268,3 +268,14 @@ class OPT(models.Model):
     
     def __str__(self):
         return self.user.full_name
+    
+
+
+
+class VideoUpload(models.Model):
+    video = models.FileField(upload_to='videos/',null=True,blank=True)
+    adminVideo = models.FileField(upload_to='adminVideos/',null=True,blank=True)
+    clientVideo = models.FileField(upload_to='clientVideos/',null=True,blank=True)
+    
+    
+    
