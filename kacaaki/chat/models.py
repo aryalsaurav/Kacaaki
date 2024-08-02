@@ -53,7 +53,7 @@ class Person(models.Model):
     
     
 class Group(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,help_text="hllo world")
     members = models.ManyToManyField(Person, related_name='groups',through='Membership')
     
     def __str__(self):

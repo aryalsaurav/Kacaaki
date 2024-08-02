@@ -9,7 +9,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from .models import *
 
+
+import logging
+
 from classes.models import NepaliClass
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -19,6 +24,7 @@ def home(request):
 
 
 def about_us(request):
+    logger.info("About us page visited")
     template_name = "layouts/about_us.html"
     return render(request,template_name)
 

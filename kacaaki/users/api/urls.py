@@ -24,6 +24,7 @@ from .views import (
     UserFilterView,
     UserListView,
     VideoView,
+    OtpRequestView
 
 
     
@@ -57,6 +58,7 @@ urlpatterns = [
     path('user/filter/',UserFilterView.as_view(),name='user_filter'),
     path('user/list/view/',UserListView.as_view(),name='user_list_view'),
     path('upload/video/',VideoView.as_view(),name='video_upload'),
+    path('otp/request/',OtpRequestView.as_view(),name='otp_request'),
 
 
     

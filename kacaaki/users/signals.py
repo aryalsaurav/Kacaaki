@@ -10,7 +10,7 @@ import time
 from moviepy.editor import VideoFileClip, clips_array
 
 from .models import VideoUpload
-from .task import convert_and_merge_videos,hello
+from .tasks import convert_and_merge_videos,hello
 
 logger = logging.getLogger(__name__)
 

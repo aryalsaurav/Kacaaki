@@ -5,10 +5,11 @@ import os
 import subprocess
 import logging
 import time
+import random
 
 from moviepy.editor import VideoFileClip, clips_array
 
-from .models import VideoUpload
+from .models import VideoUpload,OPT,User
 
 
 logger = logging.getLogger(__name__)
@@ -67,4 +68,21 @@ def merge_videos(video_path_1, video_path_2, output_path):
         return output_path
     except Exception as e:
         raise Exception(f"An error occurred while merging videos: {e}")
-    
+
+
+
+
+
+
+
+@shared_task
+def generate_otp():
+    try:
+        random_number = random.randint(100000, 999999)
+        user = User.objects.first()
+        OPT.objects.create(otp=random_number,user=user)
+        return random_number
+    except Exception as e:
+        print('error',e)
+        return None
+        

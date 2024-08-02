@@ -22,6 +22,8 @@ from rest_framework.views import  APIView
 from rest_framework.parsers import  JSONParser
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework import status
+
+
 from ..models import  (
     User,
     NepaliStudent,
@@ -31,7 +33,8 @@ from ..models import  (
    
 )
 from ..pagination import CustomPagination
-
+from ..utils import verify_token,user_password_reset_email,check_password,verify_reset_token
+from ..tasks import generate_otp
 
 
 from rest_framework import viewsets
@@ -44,7 +47,6 @@ from rest_framework import  permissions
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth import login
-from ..utils import verify_token,user_password_reset_email,check_password,verify_reset_token
 import redis
 import pickle
 import django_filters 
@@ -903,3 +905,17 @@ class VideoView(APIView):
                 'error':serializer.errors
             }
             return Response(context,status=400)
+        
+
+
+
+class OtpRequestView(APIView):
+    permission_classes = [permissions.AllowAny]
+    def post(self,request):
+        user = User.objects.first()
+        generate_otp.delay()
+        context = {
+            'status':200,
+            'message':'Otp sent successfully'
+        }
+        return Response(context,status=200)
